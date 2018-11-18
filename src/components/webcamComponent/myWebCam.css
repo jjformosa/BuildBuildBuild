@@ -1,0 +1,145 @@
+.myWebCamPage {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  animation-fill-mode: forwards;
+}
+.myFlexRow {
+  position: relative;
+  max-width: 100%;
+  height: auto;
+  overflow: hidden;
+  padding: .5rem;
+}
+.myWebCamBtn {
+  display: inline-block;
+  margin: 0 10px;
+  width: 64px;
+  height: 64px;
+  font-size: 32px;
+  line-height: 64px;
+  cursor: pointer;
+  text-align: center;
+  border-radius: 64px;
+}
+.myWebCamBtn.disable{
+  background-color: gray;
+  color: darkred;
+  cursor: not-allowed;
+}
+
+/*攝影機*/
+.myWebCam {
+  width: auto;
+  height: auto;
+}
+.myWebCam video,
+.myWebCam canvas {
+  display: none;
+}
+.myWebCam canvas {
+  width: 320px;
+  height: 240px;
+}
+.btnInputFile {
+  animation-delay: .3s;
+  background-color: rgba(200,191,231);
+  color: rgba(44,93,117);
+}
+.btnCheese {
+  animation-delay: .6s;
+  background-color: rgba(200,191,231);
+  color: rgba(44,93,117);
+}
+.btnInputFile input,
+.btnCheese input{
+  display: none;
+  cursor: pointer;
+}
+.btnUpdateIt {
+  animation-delay: 1s;
+  animation-iteration-count: infinite;
+  color: snow;
+  background-color: deepskyblue;
+}
+
+/*相簿*/
+.myWebCamAlbum {
+  position: absolute;
+  left: 0;
+  display: inline-flex;
+  width: auto;
+  height: 300px;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: center;    
+  transition-property: left;
+  transition-duration: .5s;
+}
+
+.myWebCamAlbum > .myPhoto {
+  position: relative;
+  width: 320px;
+  height: 240px;
+  margin: 0 10px;
+  transition-property: transform opacity;
+  transition-duration: .8s;
+  transform-style: preserve-3d;
+  opacity: .1;
+  transform: perspective(300px) translateZ(-1000px);
+}
+.myWebCamAlbum > .myPhoto.focus {
+  opacity: 1.0;
+  transform: perspective(300px) translateZ(0);
+}
+.myWebCamAlbum > .myPhoto.focus2 {
+  opacity: .75;
+  transform: perspective(300px) translateZ(-100px);
+}
+.myWebCamAlbum > .myPhoto.focus3 {
+  opacity: .3;
+  transform: perspective(300px) translateZ(-300px);
+}
+.myPhoto > img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center center;
+}
+.myPhoto > .btnRemove {
+  position: absolute;
+  right: 8px;
+  top: 8px;
+  width: 16px;
+  height: 16px;
+  font-size: 16px;
+  opacity: .6;
+  color: snow;
+  cursor: pointer;
+}
+.myPhoto:hover > .btnRemove{
+  opacity: 1;
+  background-color: gray;
+  border: 2px solid snow; 
+}
+
+/*留言*/
+.leaveMsg{
+  position: relative;
+  width:500px;
+  height: 10rem;
+}
+.leaveMsg textarea{
+  position: absolute;
+  width:100%;
+  height: 100%;;
+}
+.leaveMsg .leaveMsgPlaceholder{
+  position: absolute;
+  margin: 5px 0 0 5px;
+  font-style: italic;
+}

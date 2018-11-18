@@ -1,0 +1,145 @@
+#myApp{
+  position: absolute;
+  width: 100vmax;
+  height: 100vmin;
+}
+
+@media only screen and (orientation: portrait) {
+  #myApp{
+    transform-origin: left top;
+    transform: translate(100vw, 0vh) rotate(90deg);
+  }
+}
+
+.flexbox{
+  display: flex;
+}
+.flexbox.inline{
+  display:inline-flex;
+}
+/*方向*/
+.flexbox.direct-col{
+  flex-direction: column;
+}
+.flexbox.direct-reverseCol{
+  flex-direction: column-reverse;
+}
+.flexbox.direct-row{
+  flex-direction: row;
+}
+.flexbox.direct-reverseRow{
+  flex-direction: row-reverse;
+}
+/*水平對齊*/
+.flexbox.justifyContent-center{  
+  justify-content: center;
+}
+.flexbox.justifyConent-start{
+  justify-content: flex-start;
+}
+.flexbox.justifyConent-end{
+  justify-content: flex-end;
+}
+.flexbox.justifyContent-spaceAround{
+  justify-content: space-around;
+}
+.flexbox.justifyContent-spaceBetween{
+  justify-content: space-between;
+}
+/* 單行垂直對齊 */
+.flexbox.alignItem-center{
+  align-items:  center;
+}
+.flexbox.alignItem-start{
+  align-items:  flex-start;
+}
+.flexbox.alignItem-end{
+  align-items:  flex-end;
+}
+.flexbox.alignItem-strech{
+  align-items:  stretch;
+}
+.flexbox.alignItem-baseline{
+  align-items:  baseline;
+}
+/* 多行垂直對齊 */
+.flexbox.alignContent-center{
+  align-content: center;
+}
+.flexbox.alignContent-start{
+  align-content: flex-start;
+}
+.flexbox.alignContent-end{
+  align-content: flex-end;
+}
+.flexbox.alignContent-spaceAround{
+  align-content: space-around;
+}
+.flexbox.alignContent-spaceBetween{
+  align-content: space-between;
+}
+.flexbox.alignContent-stretch{
+  align-content: stretch;
+}
+/* 行內元素重置垂直對齊 */
+.flexbox.alignSelf-center{
+  align-self: center;
+}
+.flexbox.alignSelf-start{
+  align-self: flex-start;
+}
+.flexbox.alignSelf-end{
+  align-self: flex-end;
+}
+.flexbox.alignSelf-strech{
+  align-self: stretch;
+}
+.flexbox.alignSelf-baseline{
+  align-self: baseline;
+}
+
+.myBlock {
+  position: absolute;
+  top:0;
+  left:0;
+  width: 100%;
+  height: 100%;
+  background-color: snow;
+  z-index: 99;
+  opacity: .8;
+}
+
+.myBlock-full {
+  width: 100vw;
+  height: 100vh;
+}
+
+.myBlock-waiting {
+  position: absolute;
+  top: calc(50% - 32px);
+  left: calc(50% - 32px);
+  border: 16px solid #f3f3f3;
+  border-radius: 50%;
+  border-top: 16px solid #3498db;
+  width: 64px;
+  height: 64px;
+  -webkit-animation: spin 2s linear infinite; /* Safari */
+  animation: spin 2s linear infinite;
+}
+
+/* Safari */
+@-webkit-keyframes spin {
+  0% { -webkit-transform: rotate(0deg); }
+  100% { -webkit-transform: rotate(360deg); }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/**/
+.attention {
+  background-color: crimson;
+  color: snow;
+}
