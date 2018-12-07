@@ -20,7 +20,7 @@ class MemoryBook extends Component {
       'accountData': props.accountData,
       'chps': props.chps,
       'illustrations': props.illustrations,
-      'curPage': 0,
+      'curPage': (!isNullOrUndefined(props.page)) ? props.page : 0,
       'nextPage': -1,
       'classList': ['memoryBook', 'fadeInUp', 'animated'],
       'animaName': '',
@@ -50,6 +50,10 @@ class MemoryBook extends Component {
     let toNum =  'next' === direction ? this.state.curPage + 1:
     'prev' === direction ? this.state.curPage -1 :
       Number.parseInt(target.innerText);
+    let nextContent = this.props.chps[toNum];
+    if('/WebCamPage' === nextContent) {
+
+    }
     this.flipIt(toNum);
     evt.preventDefault();
     evt.stopPropagation();

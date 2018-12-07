@@ -192,14 +192,10 @@ class MyIllustration extends Component {
   }
   componentWillReceiveProps(nextProps) {
     let _classList = ['myIllustartion', 'animated'],
-    _illustrations = [],
-    _curIndex = this.state.curIndex,
-    _nextIndex = this.state.nextIndex;
+    _illustrations = [];
     if(isNullOrUndefined(nextProps.illustrations) || 0 === nextProps.illustrations.length) {
       _classList.push('hide');
       _illustrations = [];
-      // _curIndex = 0;
-      // _nextIndex = 1;
     } else {
       _classList.push('fadeInDown');
       _illustrations = _.clone(nextProps.illustrations);

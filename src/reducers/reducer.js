@@ -11,39 +11,61 @@ import {
     ACTIONTYPE_ILLUSTRATION_SUCCESS,
     ACTIONTYPE_JUMPTOPAGE,
     ACTIONTYPE_ILLUSTRATION_REJECT,
+    ACTIONTYPE_ACCOUNT_ALLOWWEBCAM,
+    ACTIONTYPE_ACCOUNT_DENYWEBCAM,
+    ACTIONTYPE_UPDATECONTENTS_SUCCESS, 
+    ACTIONTYPE_UPDATECONTENTS_REJECT
 } from '../constants/actionTypes';
 
 const accountReducer = handleActions({
     [ACTIONTYPE_ACCOUNT_LOGINSUCCESS]: (state, accountData) => {
-        let nextState = _.cloneDeep(state),
-            nextpathname = '/WelcomePage';
-        if(!_.get(accountData, 'accountData.nick')) {
-            nextpathname = '/HaJiMeDePage';
-        }
-        _.assign(nextState, accountData, {
-            'nextpathname': nextpathname,
-        });
+        let nextState = _.cloneDeep(state);
+        _.assign(nextState, accountData);
+        _.set(nextState, 'step', 'webcam');
         return nextState;
     },
     [ACTIONTYPE_ACCOUNT_LOGINREJECT]: (state, err) => {
-        let nextState = _.cloneDeep(state);
+        let nextState = _.cloneDeep(state),
+            accountData = _.get(state, 'accountData');
+        _.set(accountData, 'nextpathname', '/LandingPage');
+        _.set(nextState, 'accountData', accountData);
+        _.set(nextState, 'step', 'login');
         _.assign(nextState, err);
+        return nextState;
+    },
+    [ACTIONTYPE_ACCOUNT_ALLOWWEBCAM]: (state) => {
+        let nextState = _.cloneDeep(state),
+            accountData = _.get(state, 'accountData');
+        _.set(accountData, 'allowWebCam', true);
+        _.set(nextState, 'step', 'go');
+        _.set(nextState, 'accountData', accountData);
+        return nextState;
+    },
+    [ACTIONTYPE_ACCOUNT_DENYWEBCAM]: (state) => {
+        let nextState = _.cloneDeep(state),
+            accountData = _.get(state, 'accountData');
+        _.set(accountData, 'allowWebCam', true);
+        _.set(nextState, 'step', 'go');
+        _.set(nextState, 'accountData', accountData);
         return nextState;
     },
     [ACTIONTYPE_ACCOUNT_CHANGENICKNAME]: (state, accountData) => {
         let nextState = _.cloneDeep(state),
             nextpathname = '/LandingPage';
         if(_.has(state, 'accountData')) {
-            nextpathname = '/WelcomePage';
+            nextpathname = '/WelcomePage/' + accountData.uid;
         }
         _.assign(nextState, accountData, {
             'nextpathname': nextpathname,
         })
         return nextState;
     },
-    [ACTIONTYPE_JUMPTOPAGE]: (state, params) => {
+    [ACTIONTYPE_JUMPTOPAGE]: (state, {pathname, ...params}) => {
         let nextState = _.cloneDeep(state);
-         _.assign(nextState, {'nextpathname': params.pathname});
+         _.assign(nextState, {'nextpathname': pathname});
+         _.forEach(params, (_v, _k)=>{
+             _.set(nextState, _k, _v);
+         });
         return nextState;
     }
 }, {'nextpathname': null,
@@ -66,6 +88,12 @@ const storyReducer = handleActions({
         _.set(nextState, 'illustrations', []);
         return nextState;
     },
+    [ACTIONTYPE_UPDATECONTENTS_SUCCESS]: function(state, {type, response}) {
+        
+    }, 
+    [ACTIONTYPE_UPDATECONTENTS_REJECT]: function(state, {type, err}) {
+
+    }
 }, {
     'chps': [],
     'illustrations': [],
@@ -84,8 +112,7 @@ const dataReducer = handleActions({
         _.set(nextState, 'waiting', false);
         return nextState;
     } 
-}, {
-    'waiting': false})
+}, {'waiting': false});
 
 const myAppReducer = combineReducers({accountReducer, storyReducer, dataReducer});
 

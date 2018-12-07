@@ -147,4 +147,14 @@ function BlobToDataURI(blob, callback) {
     fr.readAsDataURL(blob);
 }
 
-export {MyRandom, MyError, CreateMyRandomParam, MyVendorPrefix, EncodeByteArrayToDataUrl, DataURItoBlob, BlobToDataURI};
+function GetToday() {
+  let today = Date.now();
+  let year = today.getFullYear(),
+    month = today.getMonth(),
+    day = today.getDate();
+    if(month <= 9) month = ('0'+month);
+    if(day<= 9) day = ('0'+day);
+  return year+month+day;
+}
+
+export {MyRandom, MyError, CreateMyRandomParam, MyVendorPrefix, EncodeByteArrayToDataUrl, DataURItoBlob, BlobToDataURI, GetToday};

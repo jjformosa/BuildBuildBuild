@@ -15,16 +15,16 @@ export const getMyAccountData = (accountData) =>(dispatch)  =>  {
       'accountData': response,
     })
   }, (err)=>{
-    console.log(err);
     dispatch({
       'type': ACTIONTYPE_ACCOUNT_LOGINREJECT,
       'err': err,
     })
+  }).finally(()=>{
+    dispatch({
+      'type': ACTIONTYPE_WAITING_END,
+      'command': 'getMyAccountData'
+    });
   });
-  dispatch({
-    'type': ACTIONTYPE_WAITING_END,
-    'command': 'getMyAccountData'
-  })
 };
 
 export const setMyAccountNick = (accountData) =>(dispatch)  =>  {

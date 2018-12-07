@@ -126,7 +126,7 @@ class MyWebCamComponent extends Component {
        ratio = this.p_Video.videoHeight / this.p_Video.videoWidth;
       ctx.drawImage(this.p_Video, 0, 0, this.p_Video.videoWidth, this.p_Video.videoHeight,
         0, 0, 320, Math.floor(320 * ratio));
-      dataurlImg = this.p_Canvas.toDataURL();
+      dataurlImg = this.p_Canvas.toDataURL('image/jpeg');
     }
     this.props.handleBtnCheeseClick(evt, dataurlImg);
   }

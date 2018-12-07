@@ -21,7 +21,7 @@ class MyPhoto extends Component{
   }
   componentDidMount() {
     if(!isNullOrUndefined(this.props.imgData)) {
-      let imgData = this.props.imgData;
+      let imgData = this.props.imgData.body;
       BlobToDataURI(imgData, (dataUrl)=>{
         this.setState({
           'imgData': dataUrl,
@@ -146,7 +146,7 @@ class MyWebCamAlbum extends Component {
     evt.stopPropagation();
   }
   onBtnRemoveClick(evt, _index) {
-    this.props.handleBtnRemoveClick(evt, _index);
+    this.props.handleBtnRemovePhotoClick(evt, _index);
     evt.preventDefault();
     evt.stopPropagation();
   }

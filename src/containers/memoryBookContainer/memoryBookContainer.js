@@ -21,6 +21,8 @@ export default connect(
       _.set(nextState, 'chps', _.cloneDeep(chps));
     let illustrations = state.storyReducer.illustrations;
       _.set(nextState, 'illustrations', illustrations);
+    if(state.storyReducer.page) _.set(nextState, 'page', state.storyReducer.page);
+    else if(accountData.storyPage) _.set(nextState, 'page', accountData.storyPage);
     return nextState;
   },
   (dispatch) => ({

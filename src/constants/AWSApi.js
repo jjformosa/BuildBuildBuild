@@ -201,16 +201,22 @@ const _module = (function(){
       }
     });
   }
-
-  const putS3File = function putS3File(a_Key, blobData, {...props}) {
+  const putExtendParams = ['ContentType'];
+  const putS3File = function putS3File(a_Key, a_Data, {...props}) {
+    let param = {
+      'Bucket': 'jjformosatest',
+      'Key': a_Key,
+      'Body': a_Data,
+      'ACL': 'authenticated-read',
+    };
+    _.forEach(props, (_v, _k)=>{
+      if(_.has(putExtendParams, _k)) {
+        _.set(param, _k, _v);
+      }
+    });
     return new Promise((resovle, reject) => {
       if(myAppS3) {
-        myAppS3.putObject({
-          'Bucket': 'jjformosatest',
-          'Key': a_Key,
-          'Body': 'blobData',
-          'ACL': 'authenticated-read',
-        }, (err, data) => {
+        myAppS3.putObject(param, (err, data) => {
           if(err) {
             reject(err);
           } else {

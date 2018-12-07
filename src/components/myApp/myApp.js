@@ -8,7 +8,7 @@ import LandingPage from '../../containers/landingContainer/landingContainer';
 import WelcomePage from '../../containers/welcomeContainer/welcomeContainer';
 import HaJiMeDePage from '../../containers/hajimedeContainer/hajimedeContainer';
 import MemoryBook from '../../containers/memoryBookContainer/memoryBookContainer';
-import MyWebCamPage from '../../components/webcamComponent/myWebcam';
+import MyWebCamPage from '../../containers/webcamContainer/webcamContainer';
 import { isNullOrUndefined } from 'util';
 
 const InitClassName_MyApp = ['flexbox','inline',
@@ -30,19 +30,19 @@ class MyApp extends Component{
   componentWillReceiveProps(nextProps) {
     let nextpathname = _.get(nextProps, 'nextpathname');
     if(!isNullOrUndefined(nextpathname)) {
-      if(nextpathname !== this.props.location.pathname) {
+      if(nextpathname !== this.props.match.params.page) {
           let itmer = setTimeout(() => {
-          this.props.history.push(nextpathname);
-          clearTimeout(itmer);
+            this.props.history.push(nextpathname);
+            clearTimeout(itmer);
         }, 600);
       } else {
         this.setState({
-          'component': this.getChild(this.props.location.pathname),
+          'component': this.getChild(),
         })
       }
     } else {
       this.setState({
-        'component': this.getChild(this.props.location.pathname),
+        'component': this.getChild(),
       })
     }
     // if(nextProps.nextpathname !== this.props.nextpathname) {
@@ -60,10 +60,11 @@ class MyApp extends Component{
   }
   componentDidMount() {
     //this.props.history.push('/LandingPage');
-    this.props.history.push('/WebCamPage');
+    //this.props.history.push('/WebCamPage');
   }
   getChild() {
-    let path = this.props.location.pathname;
+    debugger;
+    let path = this.props.match.params.page;
     if('/LandingPage' === path) {
       return LandingPage;
     } else if('/WelcomePage' === path) {
@@ -83,7 +84,7 @@ class MyApp extends Component{
     return (
       <div>        
         <div id={'myApp'} className={InitClassName_MyApp.join(' ')}>
-          <Route component={this.getChild()}/>
+          <Route path='/:page/:uid' component={this.getChild()}/>
           <Waiting isDisplay={this.isWaiting()}></Waiting>
         </div>
       </div>

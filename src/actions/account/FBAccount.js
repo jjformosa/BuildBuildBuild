@@ -17,6 +17,24 @@ export const facebookLogin = () => (dispatch) => {
         });
     });
 }
+export const facebookChkStatus = () => (dispatch) => {
+    MyFBLoginApp.chkAuth().then(({status, ...response}) => {
+        if('connected' === status) {
+            let accesstoken = response.authResponse.accessToken;
+            dispatch(facebookGetProfile(accesstoken));
+        } else {
+            dispatch({
+                'type': ACTIONTYPE_ACCOUNT_LOGINREJECT,
+                'msg' : 'need facebook application permission!!',
+            });
+        }
+    }, () => {
+        dispatch({
+            'type': ACTIONTYPE_ACCOUNT_LOGINREJECT,
+            'msg' : 'login by facebook fail!!',
+        });
+    }); 
+}
 export const facebookGetProfile = (accessToken) => (dispatch) => {
     MyFBLoginApp.getProfile().then((response) => {
         let rtn = _.cloneDeep(response);

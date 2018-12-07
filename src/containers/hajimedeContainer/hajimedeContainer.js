@@ -9,7 +9,6 @@ export default connect(
   'nextpathname': _.get(state, ['accountReducer', 'nextpathname']),
 }), (dispatch) => ({
   'onNickConfirm' : function(evt, props, ...args) {
-    console.log(props);
     dispatch(setAccountNick(props.accountData));
   }
 }))(HaJiMeDePage);

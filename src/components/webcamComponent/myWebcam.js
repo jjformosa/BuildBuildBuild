@@ -7,7 +7,7 @@ import MyWebCamAlbum from './myWebCamAlbum';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faCloudUploadAlt} from '@fortawesome/free-solid-svg-icons';
 import '../../constants/animate.css';
-import {DataURItoBlob} from '../../constants/utility';
+import {DataURItoBlob, GetToday} from '../../constants/utility';
 import { isNullOrUndefined } from 'util';
 
 class BtnUpdateIt extends Component {
@@ -116,6 +116,15 @@ const MyFlexRow = (props) => (
   </div>
 );
 
+const MyAllocFileName = function () {
+  let count = 0,
+  today = GetToday();
+  return function(_format) {
+    let format = isNullOrUndefined(_format) ?　'jpg' : _format;
+    return today + '_' + (count++) + '.' + format;
+  }
+}();
+
 class MyWebCamPage extends Component {
   constructor(props) {
     super(props);
@@ -124,14 +133,29 @@ class MyWebCamPage extends Component {
       'photos': _.has(props, 'photos')? _.cloneDeep(props.photos): [],
     }
     _.set(this,'curPhotoIndex', null);
-    _.set(this,'leaveMsg', '');
+    let oriContent = _.get(props.chps, props.contentId);
+    if('/WebCamPage' === oriContent || isNullOrUndefined(oriContent)) oriContent = '';
+    _.set(this,'leaveMsg', oriContent);
   }
   newImg(_img, _format) {
     let photos = this.state.photos;
+    let contenttype, filename;
     if('blob' === _format) {
-      photos.push(_img);
+      filename = _img.name;
+      contenttype = _img.type;
+      photos.push({
+        'body': _img,
+        contenttype,
+        filename,
+      });
     } else if('dataurl' === _format) {
-      photos.push(DataURItoBlob(_img));
+      filename = MyAllocFileName();
+      contenttype = 'image/jpeg';
+      photos.push({
+        'body': DataURItoBlob(_img),
+        contenttype,
+        filename
+      });
     }
     _.set(this, 'curPhotoIndex', photos.length - 1);
     this.setState({
@@ -177,12 +201,11 @@ class MyWebCamPage extends Component {
     evt.stopPropagation();
   }
   onBtnUpdateItClick(evt) {
-    let updateStoryParam = {
-      'id': this.props.contentId,
-      'content':  _.get(this, 'leaveMsg'),
-      'illustrations': _.cloneDeep(this.state.photos),
-    };
-    this.props.handleUpdateStory(updateStoryParam);
+    let accountData = _.cloneDeep(this.props.accountData),
+      contentId = this.props.contentId,
+      newContent = _.set(this.props.chps, contentId,  _.get(this, 'leaveMsg')),      
+      illustrations = _.cloneDeep(this.state.photos);
+    this.props.handleUpdateStory(evt, accountData, contentId, newContent, illustrations);
   }
   getClassName()  {
     return this.state.classList.join(' ');
