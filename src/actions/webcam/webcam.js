@@ -15,8 +15,7 @@ export const updateStory = (accountData, contentId, newContents, newIllustration
 export const onUpdateStorySuccess = (accountData, contentId, newContents, newIllustrations) => (dispatch) =>{
   dispatch({
     'type': ACTIONTYPE_JUMPTOPAGE,
-    'pathname': '/MakeMemory',
-    'page': contentId,
+    'pathname': '/MakeMemory/' + contentId,
   });
   dispatch({
     'type': ACTIONTYPE_WAITING_END,

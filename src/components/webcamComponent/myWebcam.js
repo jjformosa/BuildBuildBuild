@@ -130,7 +130,7 @@ class MyWebCamPage extends Component {
     super(props);
     this.state = {
       'classList': ['myWebCamPage', 'animated', 'fadeInDown'],
-      'photos': _.has(props, 'photos')? _.cloneDeep(props.photos): [],
+      'photos': _.has(props, 'photos') ? _.cloneDeep(props.photos): [],
     }
     _.set(this,'curPhotoIndex', null);
     let oriContent = _.get(props.chps, props.contentId);

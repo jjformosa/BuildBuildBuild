@@ -53,7 +53,7 @@ const accountReducer = handleActions({
         let nextState = _.cloneDeep(state),
             nextpathname = '/LandingPage';
         if(_.has(state, 'accountData')) {
-            nextpathname = '/WelcomePage/' + accountData.uid;
+            nextpathname = '/WelcomePage/' + accountData.id;
         }
         _.assign(nextState, accountData, {
             'nextpathname': nextpathname,

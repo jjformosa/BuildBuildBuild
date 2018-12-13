@@ -140,6 +140,7 @@
 
 /**/
 .jumbotron {
+  margin: 0 auto;
   width: 60%;
   word-wrap:break-word;
   font-size: 1.2rem;

@@ -1,7 +1,9 @@
 import {connect} from 'react-redux';
+import { withRouter } from "react-router";
 import _ from 'lodash';
 import MemoryBook from '../../components/memoryBook/memoryBook';
 import {fetchStory, fetchIllustration} from '../../actions/memoryBook/memoryBook';
+import { ACTIONTYPE_JUMPTOPAGE } from '../../constants/actionTypes';
 
 const initState = {
   'accountData': {
@@ -12,7 +14,7 @@ const initState = {
   'illustrations': [],
 }
 
-export default connect(
+export default withRouter(connect(
   (state) => {
     let nextState = _.cloneDeep(initState);
     let accountData = state.accountReducer.accountData;
@@ -26,13 +28,20 @@ export default connect(
     return nextState;
   },
   (dispatch) => ({
-    'fetchStory': function(accountData, toNum, storyOwnerId, ...args) {
-      //let fetchId = isNullOrUndefined(storyOwnerId) ? accountData.id : storyOwnerId;
-      dispatch(fetchStory(accountData, toNum, {...args}));
+    'fetchStory': function(storyId, accountData, ...args) {
+      
+      dispatch(fetchStory(storyId, accountData, {...args}));
     },
-    'fetchIllustration': function(accountData, illustrationId) {
+    'fetchIllustration': function(storyId, accountData, illustrationId) {
       //let storyId = isNullOrUndefined(storyOwnerId) ? accountData.id : storyOwnerId;
-      dispatch(fetchIllustration(accountData, illustrationId));
+      dispatch(fetchIllustration(storyId, accountData, illustrationId));
+    },
+    'jumpToPage' : function(nextpathname, {...args}) {
+      dispatch({
+        'type': ACTIONTYPE_JUMPTOPAGE,
+        'pathname': nextpathname,
+        args
+      });
     }
   })
-)(MemoryBook);
+)(MemoryBook));

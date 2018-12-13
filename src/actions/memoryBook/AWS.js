@@ -5,8 +5,10 @@ import {ACTIONTYPE_FLIPBOOK_SUCCESS, ACTIONTYPE_FLIPBOOK_REJECT,
   ACTIONTYPE_WAITING_END} from '../../constants/actionTypes';
 import {EncodeByteArrayToDataUrl} from '../../constants/utility';
 
-export const fetchStoryContent = (accountData) => (dispatch) => {
-  let key = 'facebook-' + accountData.id + '/index.json';
+export const fetchStoryContent = (accountData, path) => (dispatch) => {
+  let key = 'facebook-' + accountData.id ;
+  if(path) key += path.join('/');
+  key += '/index.json';
   StorageFactory.getS3Object(key).then((awsData)=>{
     dispatch({
       'type': ACTIONTYPE_FLIPBOOK_SUCCESS,
@@ -24,8 +26,9 @@ export const fetchStoryContent = (accountData) => (dispatch) => {
   });
 }
 
-export const fetchIllustrationContent = (accountData, illustrationId) => (dispatch) => {
-  let path = 'facebook-' + accountData.id +'/Albums/' + illustrationId ;
+export const fetchIllustrationContent = (storyId, accountData, illustrationId) => (dispatch) => {
+  let path = (storyId === accountData.id) ? 'facebook-' + storyId +'/Albums/' + illustrationId :
+    'facebook-' + storyId + '/Share/Albums/' + illustrationId ;
   StorageFactory.listFilesUnderFolder(path).then((array_awsData)=>{
     dispatch(handleFetchIllustrationContent(array_awsData));
   }, (err) => {

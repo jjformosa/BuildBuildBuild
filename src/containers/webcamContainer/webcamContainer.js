@@ -1,7 +1,7 @@
 import {connect} from 'react-redux';
 import _ from 'lodash';
 import MyWebCamPage from '../../components/webcamComponent/myWebcam';
-import {updateStoryContents} from '../../actions/webcam/webcam';
+import {updateStory} from '../../actions/webcam/webcam';
 import {
   ACTIONTYPE_WAITING_START
 } from '../../constants/actionTypes';
@@ -20,6 +20,6 @@ export default connect((state)=>{
       'type': ACTIONTYPE_WAITING_START,
       'command': 'handleUpdateStory'
     });
-    updateStoryContents(accountData, a_id, a_newContents, a_illustrations);
+    updateStory(accountData, a_id, a_newContents, a_illustrations);
   },
 }))(MyWebCamPage);

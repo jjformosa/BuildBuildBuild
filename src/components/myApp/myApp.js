@@ -30,7 +30,10 @@ class MyApp extends Component{
   componentWillReceiveProps(nextProps) {
     let nextpathname = _.get(nextProps, 'nextpathname');
     if(!isNullOrUndefined(nextpathname)) {
-      if(nextpathname !== this.props.match.params.page) {
+      debugger;
+      let curPage = this.props.match.params.page; //this.props.location.pathname.split('/')[1];
+      let nextPage = nextpathname.split('/')[1];
+      if(nextPage !== curPage) {
           let itmer = setTimeout(() => {
             this.props.history.push(nextpathname);
             clearTimeout(itmer);
@@ -45,35 +48,22 @@ class MyApp extends Component{
         'component': this.getChild(),
       })
     }
-    // if(nextProps.nextpathname !== this.props.nextpathname) {
-    //   this.setState({
-    //     'component': this.getChild(this.props.nextpathname),
-    //   }, ()=>{
-    //     setTimeout(()=>{
-    //       this.setState({
-    //         'component': this.getChild(nextProps.nextpathname),
-    //       });
-    //       this.props.history.push(this.props.nextpathname);
-    //     }, 1000);
-    //   })
-    // }
   }
   componentDidMount() {
-    //this.props.history.push('/LandingPage');
-    //this.props.history.push('/WebCamPage');
   }
   getChild() {
-    debugger;
-    let path = this.props.match.params.page;
-    if('/LandingPage' === path) {
+    // let nodes = this.props.location.pathname.split('/');
+    // let page = nodes[1];
+    let page = this.props.match.params.page;
+    if('LandingPage' === page) {
       return LandingPage;
-    } else if('/WelcomePage' === path) {
+    } else if('WelcomePage' === page) {
       return WelcomePage;
-    } else if('/HaJiMeDePage' === path) {
+    } else if('HaJiMeDePage' === page) {
       return HaJiMeDePage;
-    } else if('/MemoryBook' === path) {
+    } else if('MemoryBook' === page) {
       return MemoryBook;
-    } else if('/WebCamPage' === path) {
+    } else if('WebCamPage' === page) {
       return MyWebCamPage;
     }
   }

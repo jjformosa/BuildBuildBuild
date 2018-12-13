@@ -7,10 +7,10 @@ export default connect((state)=>({
   'accountData': _.get(state, ['accountReducer', 'accountData']),
   'nextpathname': _.get(state, ['accountReducer', 'nextpathname']),
 }),  (dispatch)=>({
-  'startMemo': function(evt) {
+  'startMemo': function(evt, accountData) {
     dispatch({
       'type': ACTIONTYPE_JUMPTOPAGE,
-      'pathname': '/MemoryBook',
+      'pathname': '/MemoryBook/' + accountData.id,
     });
   },
 }))(WelcomePage);

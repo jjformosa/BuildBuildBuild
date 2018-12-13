@@ -1,5 +1,7 @@
 import _ from 'lodash';
 
+const admin = ['100000482253658'];
+
 const CreateMyRandomParam = {
   'values': [],
   'maxvalue': null,
@@ -148,7 +150,7 @@ function BlobToDataURI(blob, callback) {
 }
 
 function GetToday() {
-  let today = Date.now();
+  let today = new Date();
   let year = today.getFullYear(),
     month = today.getMonth(),
     day = today.getDate();
@@ -157,4 +159,4 @@ function GetToday() {
   return year+month+day;
 }
 
-export {MyRandom, MyError, CreateMyRandomParam, MyVendorPrefix, EncodeByteArrayToDataUrl, DataURItoBlob, BlobToDataURI, GetToday};
+export {admin, MyRandom, MyError, CreateMyRandomParam, MyVendorPrefix, EncodeByteArrayToDataUrl, DataURItoBlob, BlobToDataURI, GetToday};

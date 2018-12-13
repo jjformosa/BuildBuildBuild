@@ -8,101 +8,6 @@ import {faFacebookSquare, faGooglePlus} from '@fortawesome/free-brands-svg-icons
 import AnimaItem from '../share/animaItem';
 import { Enum_LoginIdentifyType } from '../../model/account';
 
-class AtFirst extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      'animaDelay': props.animaDelay,
-      'classList': [AnimaElementsClassName],
-      'animaName': '',
-      'onAnimationEnd': props.handleAnimationEnd,
-    }
-  }
-  getStyle() {
-    return {
-      'animationDelay': this.state.animaDelay + 's',
-      'fontSize': '2.5rem',
-      'marginBottom': '.5rem',
-    }
-  }
-  getClassName() {
-    return this.state.classList.join(' ');
-  }
-  componentWillMount() {
-    let _classList = _.clone(this.state.classList);
-    let _animaName = AnimaFactory.randomInAnima();
-      _classList.push(_animaName);
-      this.setState({
-        'classList': _.clone(_classList),
-        'animaName': _animaName,
-      });
-  }
-  onAnimationEnd(evt) {
-    if(0 < this.state.animaName.length){
-      let _classList = _.clone(this.state.classList);
-      _.pull(_classList, this.state.animaName);
-      this.setState({
-        'classList': _.clone(_classList),
-        'animaName': ''
-      })
-    }
-    evt.preventDefault();
-    evt.stopPropagation();
-  }
-  render() {
-    return(
-      <h1 className={this.getClassName()} style={this.getStyle()}
-      onAnimationEnd={(evt)=>this.onAnimationEnd(evt)}>@First</h1>
-    );
-  }
-}
-class WhoRU extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      'animaDelay': props.animaDelay,
-      'classList': [AnimaElementsClassName],
-      'animaName': '',
-      'onAnimationEnd': props.handleAnimationEnd,
-    }
-  }
-  getStyle() {
-    return {
-      'animationDelay': this.state.animaDelay + 's',
-      'fontSize': '1.2rem',
-    }
-  }
-  getClassName() {
-    return this.state.classList.join(' ');
-  }
-  componentWillMount() {
-    let _classList = _.clone(this.state.classList);
-    let _animaName = AnimaFactory.randomInAnima();
-      _classList.push(_animaName);
-      this.setState({
-        'classList': _.clone(_classList),
-        'animaName': _animaName,
-      });
-  }
-  onAnimationEnd(evt) {
-    if(0 < this.state.animaName.length){
-      let _classList = _.clone(this.state.classList);
-      _.pull(_classList, this.state.animaName);
-      this.setState({
-        'classList': _.clone(_classList),
-        'animaName': ''
-      })
-    }
-    evt.preventDefault();
-    evt.stopPropagation();
-  }
-  render() {
-    return(
-      <strong className={this.getClassName()} style={this.getStyle()}
-      onAnimationEnd={(evt)=>this.onAnimationEnd(evt)}>Plz let me know who r u</strong>
-    );
-  }
-}
 class LongInBtn extends Component {
   constructor(props) {
     super(props);
@@ -517,7 +422,7 @@ class LandingPage extends Component {
   }
   getAttentionGoParam() {
     return {
-      'onBtnGoClick': evt => this.props.onBtnGoClick(evt),
+      'onBtnGoClick': evt => this.props.onBtnGoClick(evt, _.get(this.props, 'accountData')),
       'animaDelay': 0,
       'animaName': (this.state.jumbotronContentTransition)? 'fadeOut' : '',
       'accountData': _.get(this.props, 'accountData'),

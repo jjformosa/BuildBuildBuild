@@ -10,12 +10,10 @@ class DeerSomeOne extends AnimaItem {
   constructor(props){
     super(props);  
     this.state = {
-      'accountData': props.accountData,
       'onBtnNextClick': props.startMemo,
       'classList': [AnimaElementsClassName],
       'animaName': '',
       'animaDelay': props.animaDelay,
-      'callName': props.callName,
     }  
   }
   getStyle() {
@@ -29,7 +27,7 @@ class DeerSomeOne extends AnimaItem {
   }
   render() {
     return <span style={this.getStyle()} className={this.getClassName()}>
-      {this.state.callName}<br/></span>
+      {this.props.callName}<br/></span>
   }
 }
 
@@ -40,8 +38,6 @@ class WelcomePage extends Component {
       'animaDelay': 0,
       'animaName': '',
       'classList': [AnimaElementsClassName],
-      'accountData': props.accountData,
-      'onBtnNextClick': props.startMemo,
       'visibility': true
     }  
   }
@@ -54,6 +50,9 @@ class WelcomePage extends Component {
         'animaName': 'fadeOutUp'
       });
     }
+  }
+  onBtnNextClick (evt) { 
+    this.props.startMemo(evt, this.props.accountData)
   }
   getClassName() {
     return this.state.classList.join(' ');
@@ -68,9 +67,9 @@ class WelcomePage extends Component {
     };
   }
   getCallName() {
-    return (this.state.accountData.nick) ? this.state.accountData.nick :
-      (this.state.accountData.mynick) ? this.state.accountData.mynick : 
-      this.state.accountData.name;
+    return (this.props.accountData.nick) ? this.props.accountData.nick :
+      (this.props.accountData.mynick) ? this.props.accountData.mynick : 
+      this.props.accountData.name;
   }
   onAnimationEnd(evt) {
     if(!this){
@@ -94,10 +93,10 @@ class WelcomePage extends Component {
     return (
       <div className={this.getClassName()} style={this.getStyle()} 
         onAnimationEnd={(evt)=>{this.onAnimationEnd(evt)}}>
-        <p style={{'lineHeight': '2rem'}}>Deer<DeerSomeOne callName={this.getCallName()} animaDelay={.5}></DeerSomeOne>不知不覺也跟你/妳認識了這麼久時間，去過這麼多地方，為了對那些足以
-        稱為紀念的珍貴光陰表達敬意，雖然接下來的遣詞僅有膚淺，留下的照片相較於回憶也僅是海灘上的幾片貝殼，
-        我也是很努力地把這一切集結成
-          <FontAwesomeIcon icon={faBook} onClick={(evt)=>{this.state.onBtnNextClick(evt)}} style={{
+        <p style={{'lineHeight': '2rem'}}>Deer<DeerSomeOne callName={this.getCallName()} animaDelay={.5}></DeerSomeOne>不知不覺也跟你/妳認識了這麼久時間。
+        雖然，關於對那些堪稱回憶的光陰，我的文字所能表達的感謝，就像海上搖曳的粼粼波光那麼淺，
+        我也是很努力地把這一切集結成一本專屬你/妳的
+          <FontAwesomeIcon icon={faBook} onClick={(evt)=>{this.onBtnNextClick(evt)}} style={{
             'cursor': 'pointer'
           }}>            
           </FontAwesomeIcon>

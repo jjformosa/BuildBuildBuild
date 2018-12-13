@@ -33,9 +33,9 @@ export default connect(
             });
         },
         'onBtnGoClick': (evt, accountData) => {
-            let nextpathname = '/WelcomePage/' + accountData.uid;
-            if(!_.get(accountData, 'accountData.nick')) {
-                nextpathname = '/HaJiMeDePage/' + accountData.uid;
+            let nextpathname = '/WelcomePage/' + accountData.id;
+            if(!_.get(accountData, 'nick')) {
+                nextpathname = '/HaJiMeDePage/' + accountData.id;
             }
             dispatch({
                 'type': ACTIONTYPE_JUMPTOPAGE,
