@@ -10,7 +10,7 @@ import * as serviceWorker from './serviceWorker';
 ReactDOM.render(
   <Provider store={MyAppStore}>
     <BrowserRouter>
-      <Route path='/:page/:uid' render={(props) => <MyApp {...props} ></MyApp>}/>
+      <Route path='/:page' render={(props) => <MyApp {...props} ></MyApp>}/>
     </BrowserRouter>
   </Provider>,
   document.getElementById('root'));

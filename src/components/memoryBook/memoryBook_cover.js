@@ -11,12 +11,12 @@ const MemoryBookPageInner = ({content, illustrations, innerClassName}) => (
   </div>
 );
 
-const MemoryBookCoverPage = ({pageClassName, curContent, nextContent }) => (
-  <div className={['memoryBookCoverPage', ...pageClassName].join(' ')}>
-    <MemoryBookPageInner innerClassName={['front']} {...curContent}></MemoryBookPageInner>
-    <MemoryBookPageInner innerClassName={['back']} {...nextContent}></MemoryBookPageInner>
-  </div>
-);
+const MemoryBookCoverPage = ({pageClassName, curContent, nextContent }) => {
+    return <div className={['memoryBookCoverPage', pageClassName].join(' ')}>
+      <MemoryBookPageInner innerClassName={['front']} {...curContent}></MemoryBookPageInner>
+      <MemoryBookPageInner innerClassName={['back']} {...nextContent}></MemoryBookPageInner>
+    </div>;
+};
 
 class MemoryBookCover extends Component {
   constructor(props) {
@@ -53,10 +53,10 @@ class MemoryBookCover extends Component {
     return this.state.direction;
   }
   getPageParams() {
-    return {
-      'curContent': _.cloneDeep(this.state.curContent),
-      'nextContent': _.cloneDeep(this.state.nextContent),
-    }
+      return {
+        'curContent': _.cloneDeep(this.state.curContent),
+        'nextContent': _.cloneDeep(this.state.nextContent),
+      }
   }
   clearIt() {
     //少了flip會讓display變none
@@ -75,8 +75,8 @@ class MemoryBookCover extends Component {
   render() {
     return (
     <div className={this.getClassName()} onAnimationEnd={(evt)=>{this.onAnimationEnd(evt)}}>
-      <MemoryBookCoverPage pageClassName= {['left']}  {...this.getPageParams()}></MemoryBookCoverPage>
-      <MemoryBookCoverPage pageClassName= {['right']} {...this.getPageParams()}></MemoryBookCoverPage>
+      <MemoryBookCoverPage pageClassName= {'left'}  {...this.getPageParams()}></MemoryBookCoverPage>
+      <MemoryBookCoverPage pageClassName= {'right'} {...this.getPageParams()}></MemoryBookCoverPage>
     </div>);
   }
 }

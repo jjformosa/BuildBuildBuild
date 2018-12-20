@@ -8,7 +8,6 @@ class MyPhoto extends Component{
   constructor(props) {
     super(props);
     this.state = {
-      'index': props.index,
       'classList': _.concat(['myPhoto'], props.classList),
       'imgData': null,
     }
@@ -30,13 +29,13 @@ class MyPhoto extends Component{
     }
   }
   onPhotoClick(evt) {
-    this.props.handleOnPhotoClick(evt,  this.state.index);
+    this.props.handleOnPhotoClick(evt,  this.props.index);
   }
   onMouseEnter(evt) {
-    this.props.handleMouseEnterPhoto(evt,  this.state.index);
+    this.props.handleMouseEnterPhoto(evt,  this.props.index);
   }
   onBtnRemoveClick(evt) {
-    this.props.handleBtnRemoveClick(evt,  this.state.index);
+    this.props.handleBtnRemoveClick(evt,  this.props.index);
   }
   getClassName() { 
     return this.state.classList.join(' ');
@@ -69,11 +68,15 @@ class MyWebCamAlbum extends Component {
   componentWillReceiveProps(nextProps) {
     if(!isNullOrUndefined(nextProps.curPhotoIndex) && nextProps.curPhotoIndex !== this.curPhotoIndex) {
       _.set(this, 'curPhotoIndex', nextProps.curPhotoIndex);
+    }
+    if(!isNullOrUndefined(nextProps.photos) && nextProps.photos.length !== this.photos.length) {
       _.set(this, 'photos', nextProps.photos);
       this.setState({
         'myPhotos': this.makeMyPhotos(),
       });
-      this.moveToPhoto(this.photos.length -1);
+      if(Number.isInteger(this.curPhotoIndex)) {
+        this.moveToPhoto(this.curPhotoIndex);     
+      } 
     }
   }
   makeMyPhotos() {

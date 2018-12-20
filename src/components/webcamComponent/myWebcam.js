@@ -163,13 +163,21 @@ class MyWebCamPage extends Component {
     });
   }
   removeImg(_index) {
-    let photos = _.cloneDeep(this.state.photos);
-    if(0 < _index && _index < photos.length) {
-      photos = _.pullAt(photos, _index);
+    let oriPhotos = _.cloneDeep(this.state.photos);
+    if(0 <= _index && _index < this.state.photos.length) {
+      _.pullAt(oriPhotos, _index);
     }
-    _.set(this, 'curPhotoIndex', null);
+    let curPhotoIndex = _.get(this, 'curPhotoIndex');
+    if(curPhotoIndex - 1 >= 0 ) {
+      curPhotoIndex -=1;
+    } else if(curPhotoIndex + 1 < oriPhotos.length) {
+      curPhotoIndex += 1;
+    } else {
+      curPhotoIndex = null;
+    }
+    _.set(this, 'curPhotoIndex', curPhotoIndex);
     this.setState({
-      'photos': photos,
+      'photos': oriPhotos,
     });
   }
   onInputFileChanged(evt, a_Img) {

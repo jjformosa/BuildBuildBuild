@@ -20,6 +20,6 @@ export default connect((state)=>{
       'type': ACTIONTYPE_WAITING_START,
       'command': 'handleUpdateStory'
     });
-    updateStory(accountData, a_id, a_newContents, a_illustrations);
+    dispatch(updateStory(accountData, a_id, a_newContents, a_illustrations));
   },
 }))(MyWebCamPage);

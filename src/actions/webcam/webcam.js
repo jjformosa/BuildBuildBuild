@@ -1,25 +1,22 @@
 
 import {updateStoryContents} from './AWS';
-import {ACTIONTYPE_WAITING_START,ACTIONTYPE_WAITING_END,
+import {ACTIONTYPE_WAITING_END,
   ACTIONTYPE_JUMPTOPAGE,
+  ACTIONTYPE_UPDATECONTENTS_SUCCESS,
   ACTIONTYPE_UPDATECONTENTS_REJECT} from '../../constants/actionTypes'
 
-export const updateStory = (accountData, contentId, newContents, newIllustrations) => (dispatch) => {  
-  dispatch({
-      'type': ACTIONTYPE_WAITING_START,
-      'command': 'updateStory'
-  }); 
+export const updateStory = (accountData, contentId, newContents, newIllustrations) => (dispatch) => {
   dispatch(updateStoryContents(accountData, contentId, newContents, newIllustrations));
 }
 
 export const onUpdateStorySuccess = (accountData, contentId, newContents, newIllustrations) => (dispatch) =>{
   dispatch({
-    'type': ACTIONTYPE_JUMPTOPAGE,
-    'pathname': '/MakeMemory/' + contentId,
-  });
-  dispatch({
     'type': ACTIONTYPE_WAITING_END,
     'command': 'onUpdateStorySuccess'
+  });
+  dispatch({
+    'type': ACTIONTYPE_JUMPTOPAGE,
+    'pathname': '/MemoryBook/'+ accountData.id + '/' + contentId,
   });
 }
 export const onUpdateStoryFail = (err) => (dispatch) =>{

@@ -10,7 +10,7 @@ export default connect((state)=>({
   'startMemo': function(evt, accountData) {
     dispatch({
       'type': ACTIONTYPE_JUMPTOPAGE,
-      'pathname': '/MemoryBook/' + accountData.id,
+      'pathname': '/MemoryBook/' + accountData.id + '/0',
     });
   },
 }))(WelcomePage);

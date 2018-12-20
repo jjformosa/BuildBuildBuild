@@ -36,11 +36,11 @@ export default withRouter(connect(
       //let storyId = isNullOrUndefined(storyOwnerId) ? accountData.id : storyOwnerId;
       dispatch(fetchIllustration(storyId, accountData, illustrationId));
     },
-    'jumpToPage' : function(nextpathname, {...args}) {
+    'jumpToPage' : function({pathname, ...args}) {
       dispatch({
         'type': ACTIONTYPE_JUMPTOPAGE,
-        'pathname': nextpathname,
-        args
+        'pathname': pathname,
+        ...args
       });
     }
   })

@@ -261,6 +261,8 @@ class BtnGift extends Component {
         'cursor': 'pointer',
         'animationDelay': this.state.animaDelay +'s',
         'textAlign': 'center',
+        'color': 'limegreen',
+        'backgroundColor': 'crimson',
       }
     }
   componentWillMount() {
@@ -334,9 +336,9 @@ class AttentionWebCam extends AnimaItem {
     return (<div className={this.getClassName()}>
       接著，希望您使用有相機的裝置，並允許我借用您的鏡頭。請別擔心！
       <Attention>所有會使用相機的功能都會經過您的操作，並且您是唯一決定使用權的角色</Attention>！
-      如果同意請您點一下<BtnAllowWebCam animaDelay={this.state.animaDelay+.5}
+      如果同意請您點一下<BtnAllowWebCam animaDelay={this.state.animaDelay+1}
           handleBtnWebCamClick={this.props.onBtnWebCamClick}></BtnAllowWebCam>
-      ，不同意也可以繼續喔！<BtnDenyWebCam animaDelay={this.state.animaDelay+1}
+      ，不同意也可以繼續喔！<BtnDenyWebCam animaDelay={this.state.animaDelay+1.5}
           handleBtnWebCamClick={this.props.onBtnWebCamClick}></BtnDenyWebCam>
     </div>);
   }

@@ -235,6 +235,7 @@
   transform-style: preserve-3d;
   backface-visibility: hidden;
   overflow: hidden;
+  background-color: dimgray;
 }
 
 .memoryBookCoverPage .back {

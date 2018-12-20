@@ -45,9 +45,8 @@ const handleFetchIllustrationContent = (listResult) => (dispatch) => {
     return _key.endsWith('.jpg') || _key.endsWith('.png');
   });
   Promise.all(_.map(array_awsData, function(awsData){
-    return StorageFactory.getS3Object(awsData.Key, awsData.ETag);
+    return StorageFactory.getS3Object(decodeURIComponent(awsData.Key), awsData.ETag);
   })).then((response) => {
-    debugger;
     dispatch({
       'type': ACTIONTYPE_ILLUSTRATION_SUCCESS,
       'response': _.map(response, function(awsData){

@@ -59,7 +59,7 @@ class WelcomePage extends Component {
   }
   getStyle(){
     return {
-      'maxWidth': '75%',
+      'maxWidth': '50vmax',
       'maxHeight': '50%',
       'fontSize': '1.4rem',
       'animationDelay': this.state.animaDelay + 's',
@@ -94,14 +94,14 @@ class WelcomePage extends Component {
       <div className={this.getClassName()} style={this.getStyle()} 
         onAnimationEnd={(evt)=>{this.onAnimationEnd(evt)}}>
         <p style={{'lineHeight': '2rem'}}>Deer<DeerSomeOne callName={this.getCallName()} animaDelay={.5}></DeerSomeOne>不知不覺也跟你/妳認識了這麼久時間。
-        雖然，關於對那些堪稱回憶的光陰，我的文字所能表達的感謝，就像海上搖曳的粼粼波光那麼淺，
-        我也是很努力地把這一切集結成一本專屬你/妳的
+        關於對那些堪稱回憶的時光，如果回憶的總和像沙灘的沙俯拾即是，那麼我所能記得的僅是幾片留在岸上的貝殼吧！如果所有的感謝像海那麼深，那麼接下來的文字所能表達的，就像海上搖曳的粼粼波光那麼淺；
+        但我也是很努力地把這些點點滴滴蒐集起來，成一本專屬你/妳的
           <FontAwesomeIcon icon={faBook} onClick={(evt)=>{this.onBtnNextClick(evt)}} style={{
-            'cursor': 'pointer'
+            'cursor': 'pointer', 'color': 'brown'
           }}>            
           </FontAwesomeIcon>
         了呢！但是，我還要厚著臉皮的請你/妳再
-        花點時間幫個忙── 一起完成紀念冊的最後一頁吧 ──，如果你/妳願意的話，請先翻下去吧！
+        花點時間幫個忙── 一起完成紀念冊的最後一頁吧 ──
         </p>
       </div>
     );

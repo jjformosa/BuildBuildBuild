@@ -14,14 +14,6 @@ class MemoryBookPageContent extends Component{
     this.state = {
       'topBlurClassList': ['top', 'hide'],
       'bottomBlurClassList': ['bottom'],
-      'content': props.content,
-    }
-  }
-  componentWillReceiveProps(nextProps) {
-    if(!isNullOrUndefined(nextProps) && _.has(nextProps, 'content')) {      
-      this.setState({
-        'content': nextProps.content
-      })
     }
   }
   onscroll(evt) {
@@ -40,9 +32,9 @@ class MemoryBookPageContent extends Component{
   render() {
   return (
   <div className={'myContent'}>
-    <article className={'myContent-inner'} onScroll={this.onscroll}>
-      {this.state.content}
-    </article>
+    <p className={'myContent-inner'} onScroll={this.onscroll}>
+      {this.props.content}
+    </p>
     <MemoryBookPageContentBlur className={this.state.topBlurClassList}></MemoryBookPageContentBlur>
     <MemoryBookPageContentBlur className={this.state.bottomBlurClassList}></MemoryBookPageContentBlur>
   </div>
@@ -53,22 +45,14 @@ class MemoryBookPage extends Component {
   constructor(props){
     super(props);   
     this.state = {
-      'content': props.content,
-      'illustrations': props.illustrations,
       'classList': ['memoryBookPage'],
     }
   }
-  componentWillReceiveProps(nextProps) {
-    this.setState({
-      'content': nextProps.content,
-      'illustrations': nextProps.illustrations,
-    })
-  }
   getContent() {
-    return this.state.content;
+    return this.props.content;
   }
   getIllustrations() {
-      return  _.cloneDeep(this.state.illustrations);
+      return  _.cloneDeep(this.props.illustrations);
   }
   getIllustrationsParams() {
     let rtn = {

@@ -18,11 +18,11 @@ class MemoryBook extends Component {
     super(props);    
     this.state = {
       'illustrations': props.illustrations,
-      'curPage': (!isNullOrUndefined(props.page)) ? props.page : 0,
       'nextPage': -1,
       'classList': ['memoryBook', 'fadeInUp', 'animated'],
       'animaName': '',
     }
+    this.isFlip = false;
   }
   componentWillMount() {
     if(!this.props.chps || 0 === this.props.chps.length) {
@@ -30,12 +30,10 @@ class MemoryBook extends Component {
     } 
   }
   componentDidMount() {
-    this.props.fetchIllustration(this.getStoryId(), this.props.accountData, 0);
+    this.props.fetchIllustration(this.getStoryId(), this.props.accountData, this.getPageNum());
   }
   componentWillReceiveProps(nextProps) {
-    let nextPageNum = this.getPageNum(nextProps.location.pathname),
-      curPageNum = this.getPageNum();
-    if(curPageNum === nextPageNum) {
+    if(!this.isFlip) {
         let nextState = {};
         _.forEach(nextProps, (value, key)=>{
           if('chps' === key) {
@@ -45,12 +43,13 @@ class MemoryBook extends Component {
           }
         });
         this.setState({...nextState});
-    } else {
-      //翻頁了
-      debugger;
-      this.props.fetchIllustration(this.props.accountData, nextPageNum);
-    }
-  }
+      } else {      
+        this.isFlip = false;
+        let toNum = this.getPageNum(this.props.history.location.pathname);
+        //翻頁了
+        this.props.fetchIllustration(this.getStoryId(), this.props.accountData, toNum);
+      }
+    } 
   getStoryId(path) {
     // let pathname = isNullOrUndefined(path) ? this.props.location.pathname : path;
     // let nodes = pathname.split('/');
@@ -62,6 +61,7 @@ class MemoryBook extends Component {
     let nodes = pathname.split('/');
     let curPage = Number.parseInt(nodes[3]);
     return Number.isNaN(curPage) ? 0 : curPage;
+    //return this.state.curPage;
   }
   onBtnStepClick(evt, direction) {
     let target = evt.target;
@@ -89,21 +89,20 @@ class MemoryBook extends Component {
     }
   }
   flipIt(toNum) {
+    this.isFlip = true;
     //先Show Cover
     this.setState({
-      'curPage': toNum,
-      'nextPage': this.state.curPage,
+      'nextPage': toNum,
     });    
     //再更新Page
     let timer = setTimeout(() => {   
       clearTimeout(timer);
       this.setState({
-        'curPage': toNum,
         'illustrations': [],
         'nextPage': -1,
-      });  
+      }); 
       this.props.history.push('/MemoryBook/'+ _.get(this.props, 'accountData.id') +'/' + toNum);
-    }, 1800);
+    }, 1600);
   }
   getClassName() {
     return this.state.classList.join(' ');
@@ -121,10 +120,12 @@ class MemoryBook extends Component {
     if(isNullOrUndefined(chps) || 0 === chps.length) return '';
     let _index = (Number.isInteger(a_index) && a_index >= 0 && a_index < chps.length) ? 
       a_index : this.getPageNum();
-    return _.clone(chps[_index]).replace("{:nick}", this.getNick()).replace("{:mynick}", this.getMyNick());
+    return _.clone(chps[_index]).replace("{:nick}", this.getNick())
+      .replace("{:mynick}", this.getMyNick()
+      .replace("\r\n", "<br />"));
   }
   getCurPageContent() {
-    let _content = this.getContent();
+    let _content = (-1 < this.state.nextPage) ? this.getContent(this.state.nextPage) : this.getContent();
     if(isNullOrUndefined(_content)) {
       _content = '';
     }
@@ -136,31 +137,25 @@ class MemoryBook extends Component {
     }
   }
   getCoverPageContent() {
-    let _index = this.state.nextPage,
-    _content = this.getContent(_index);
-    if(isNullOrUndefined(_content)) {
-      _content = '';
-    }
-    let illustration = isNullOrUndefined(this.state.illustrations) ? '' :
-      isNullOrUndefined(curIllustrationIndex) ? '' : 
-      this.state.illustrations[curIllustrationIndex];
-    return {
-      'content': _content,
-      'illustrations': illustration,
-    }
-  }
-  getNextPageContent() {
     let _content = this.getContent();
     if(isNullOrUndefined(_content)) {
       _content = '';
     }
-    if(-1 < this.state.nextPage) {
-      return {
-        'content': _content,
-        'illustrations': [],
-      }
-    } else {
-      return null;
+    let _illustrations =  _.cloneDeep(this.state.illustrations);
+    return {
+      'content': _content,
+      'illustrations': _illustrations,
+      'handleImgChanged': (playIndex) => {this.onImageChanged(playIndex);}
+    }
+  }
+  getNextPageContent() {
+    let _content = this.getContent(this.state.nextPage);
+    if(isNullOrUndefined(_content)) {
+      _content = '';
+    }
+    return {
+      'content': _content,
+      'illustrations': [],
     }
   }
   getFlipCoverParam() {
@@ -174,8 +169,8 @@ class MemoryBook extends Component {
     }
     let curPage = this.getPageNum();
     if(-1 !== this.state.nextPage) {
-      let _direction = (curPage > this.state.nextPage) ? 'right2left' : 
-      (curPage < this.state.nextPage) ? 'left2right' : null;
+      let _direction = (curPage < this.state.nextPage) ? 'right2left' : 
+      (curPage > this.state.nextPage) ? 'left2right' : null;
       if(!isNullOrUndefined(_direction)) {
         _.set(rtn, 'direction', _direction);
       }
