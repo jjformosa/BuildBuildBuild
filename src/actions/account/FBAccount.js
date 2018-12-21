@@ -1,6 +1,6 @@
 ﻿import _ from 'lodash';
 import MyFBLoginApp from '../../constants/FBApi';
-import {ACTIONTYPE_ACCOUNT_LOGINREJECT, ACTIONTYPE_ACCOUNT_LOGOUT} from '../../constants/actionTypes';
+import {ACTIONTYPE_ACCOUNT_LOGINREJECT, ACTIONTYPE_ACCOUNT_LOGOUT, ACTIONTYPE_ACCOUNT_AUTOLOGINREJECT} from '../../constants/actionTypes';
 import {Enum_LoginIdentifyType} from '../../model/account';
 import {getMyAccount} from './account';
 
@@ -41,7 +41,7 @@ export const facebookGetProfile = (accessToken) => (dispatch) => {
         _.assign(rtn, {
             'accessToken': accessToken,
             'identifyType': Enum_LoginIdentifyType.Facebook,
-    });
+        });
         dispatch(getMyAccount(rtn));
     });
 }
@@ -53,4 +53,30 @@ export const facebookLogout = () => (dispatch) => {
             success
         });
     });
+}
+export const autoLogin = () => (dispatch) => {
+    MyFBLoginApp.chkAuth().then(({status, ...response}) => {
+        if('connected' === status) {
+            let accesstoken = response.authResponse.accessToken;  
+            return Promise.all(new Promise((resolve) => {resolve(accesstoken)}), MyFBLoginApp.getProfile());
+        } else {
+            dispatch({
+                'type': ACTIONTYPE_ACCOUNT_AUTOLOGINREJECT,
+                'msg' : 'need facebook application permission!!',
+            });
+            return null;
+        }
+    }).then((accessToken, response) => {
+        let rtn = _.cloneDeep(response);
+        _.assign(rtn, {
+            'accessToken': accessToken,
+            'identifyType': Enum_LoginIdentifyType.Facebook,
+        });
+        dispatch(getMyAccount(rtn));
+    }).catch(err=>{
+        dispatch({
+            'type': ACTIONTYPE_ACCOUNT_AUTOLOGINREJECT,
+            'msg' : 'login by facebook fail!!',
+        });
+    });     
 }

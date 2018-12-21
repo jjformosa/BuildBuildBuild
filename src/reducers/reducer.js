@@ -4,6 +4,7 @@ import { handleActions } from 'redux-actions';
 import { 
     ACTIONTYPE_ACCOUNT_LOGINSUCCESS, 
     ACTIONTYPE_ACCOUNT_LOGINREJECT,
+    ACTIONTYPE_ACCOUNT_AUTOLOGINREJECT,
     ACTIONTYPE_ACCOUNT_CHANGENICKNAME,
     ACTIONTYPE_WAITING_START,
     ACTIONTYPE_WAITING_END,
@@ -20,17 +21,24 @@ import {
 const accountReducer = handleActions({
     [ACTIONTYPE_ACCOUNT_LOGINSUCCESS]: (state, accountData) => {
         let nextState = _.cloneDeep(state);
-        _.assign(nextState, accountData);
         _.set(nextState, 'step', 'webcam');
+        _.assign(nextState, accountData);
         return nextState;
     },
     [ACTIONTYPE_ACCOUNT_LOGINREJECT]: (state, err) => {
         let nextState = _.cloneDeep(state),
             accountData = _.get(state, 'accountData');
-        _.set(accountData, 'nextpathname', '/LandingPage');
+        _.set(accountData, 'nextpathname', '/LandingPage/me');
         _.set(nextState, 'accountData', accountData);
         _.set(nextState, 'step', 'login');
         _.assign(nextState, err);
+        return nextState;
+    },
+    [ACTIONTYPE_ACCOUNT_AUTOLOGINREJECT]: (state, err) => {
+        let nextState = _.cloneDeep(state),
+        accountData = _.get(state, 'accountData');
+        _.set(accountData, 'nextpathname', '/LandingPage/me');
+        _.set(nextState, 'step', 'login');
         return nextState;
     },
     [ACTIONTYPE_ACCOUNT_ALLOWWEBCAM]: (state) => {

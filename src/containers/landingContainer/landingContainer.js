@@ -2,6 +2,7 @@
 import _ from 'lodash';
 import LandingPage from '../../components/landingPage/landingPage';
 import {accountLogin} from '../../actions/account/account';
+import {autoLogin} from '../../actions/account/FBAccount';
 import { Enum_LoginIdentifyType } from '../../model/account';
 import {
     ACTIONTYPE_ACCOUNT_DENYWEBCAM, 
@@ -19,6 +20,9 @@ export default connect(
         return rtn;
     },
     (dispatch)=>({
+        'onautologin': function(id) {
+          dispatch(autoLogin());
+        },  
         'onBtnLoginClick': (evt) => {
             dispatch(accountLogin(Enum_LoginIdentifyType.Facebook));
         },

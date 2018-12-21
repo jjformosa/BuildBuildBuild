@@ -10,7 +10,6 @@ import HaJiMeDePage from '../../containers/hajimedeContainer/hajimedeContainer';
 import MemoryBook from '../../containers/memoryBookContainer/memoryBookContainer';
 import MyWebCamPage from '../../containers/webcamContainer/webcamContainer';
 import { isNullOrUndefined } from 'util';
-import {facebookChkStatus} from '../../actions/account/FBAccount';
 
 const InitClassName_MyApp = ['flexbox','inline',
   'direct-col','justifyContent-center','alignItem-center','alignContent-center'];
@@ -49,12 +48,6 @@ class MyApp extends Component{
       })
     }
   }
-  componentDidMount() {
-    let uid = this.props.match.uid;
-    if(!isNullOrUndefined(uid)) {
-      this.props.onautologin();
-    }
-  }
   getChild() {
     // let nodes = this.props.location.pathname.split('/');
     // let page = nodes[1];
@@ -91,7 +84,4 @@ export default connect((state)=>{
   'nextpathname': _.get(state, ['accountReducer','nextpathname']),
   'waiting': _.get(state, ['dataReducer', 'waiting']),
 }}, (dispatch)=>({
-  'onautologin': function(id) {
-    dispatch(facebookChkStatus());
-  }  
 }))(withRouter(MyApp));

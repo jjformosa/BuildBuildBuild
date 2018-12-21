@@ -7,12 +7,12 @@ import {
   ACTIONTYPE_WAITING_END,
 } from '../../constants/actionTypes';
 
-export const getMyAccountData = (accountData) =>(dispatch)  =>  {
-  InitAWS(accountData);
-  DBFactory.getAccountDataByName(accountData).then((response)=>{
+export const getMyAccountData = (account) =>(dispatch)  =>  {
+  InitAWS(account);
+  DBFactory.getAccountDataByName(account).then((accountData)=>{
     dispatch({
       'type':ACTIONTYPE_ACCOUNT_LOGINSUCCESS,
-      'accountData': response,
+      accountData,
     })
   }, (err)=>{
     dispatch({
