@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
 import '../../constants/animate.css'
+import './landingPage.css';
 import _ from 'lodash';
 import AnimaFactory, { AnimaElementsClassName} from '../../constants/animate';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPhone, faTimesCircle,faCheckCircle,faGift } from '@fortawesome/free-solid-svg-icons';
 import {faFacebookSquare, faGooglePlus} from '@fortawesome/free-brands-svg-icons';
-import AnimaItem from '../share/animaItem';
+import AnimaItem, {MyPulseItem} from '../share/animaItem';
 import { Enum_LoginIdentifyType } from '../../model/account';
 
 class LongInBtn extends Component {
@@ -170,11 +171,11 @@ class BtnAllowWebCam extends Component {
     evt.stopPropagation();
   }
   render() {
-    return(<span className={this.getClassName()} style={this.getStyle()}
+    return(<MyPulseItem><span className={this.getClassName()} style={this.getStyle()}
       onAnimationEnd={(evt)=>this.onAnimationEnd(evt)}
       onClick={(evt)=>this.onClick(evt)}>
       <FontAwesomeIcon icon={faCheckCircle}></FontAwesomeIcon>
-    </span>);
+    </span></MyPulseItem>);
   }
 }
 
@@ -261,8 +262,7 @@ class BtnGift extends Component {
         'cursor': 'pointer',
         'animationDelay': this.state.animaDelay +'s',
         'textAlign': 'center',
-        'color': 'limegreen',
-        'backgroundColor': 'crimson',
+        'color': 'crimson',
       }
     }
   componentWillMount() {
@@ -332,6 +332,9 @@ class AttentionWebCam extends AnimaItem {
       })
     }
   }
+  getClassName() {
+    return 'myAttention';
+  }
   render () {
     return (<div className={this.getClassName()}>
       接著，希望您使用有相機的裝置，並允許我借用您的鏡頭。請別擔心！
@@ -383,6 +386,12 @@ class LandingPage extends Component {
       'step': props.step,
       'jumbotronContentTransition': false,
     }
+  }
+  componentDidMount() {
+    // let uid = this.props.match.params.uid;
+    // if(!isNullOrUndefined(uid)) {
+    //   this.props.onautologin(uid);
+    // }
   }
   componentWillReceiveProps(nextProps) {
     if(nextProps.nextpathname !== this.props.nextpathname){

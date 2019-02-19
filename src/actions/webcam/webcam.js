@@ -11,6 +11,12 @@ export const updateStory = (accountData, contentId, newContents, newIllustration
 
 export const onUpdateStorySuccess = (accountData, contentId, newContents, newIllustrations) => (dispatch) =>{
   dispatch({
+    'type': ACTIONTYPE_UPDATECONTENTS_SUCCESS,
+    'contentid': contentId,
+    'newcontents': newContents,
+    'newillustrations': newIllustrations
+  });
+  dispatch({
     'type': ACTIONTYPE_WAITING_END,
     'command': 'onUpdateStorySuccess'
   });

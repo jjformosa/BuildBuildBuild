@@ -124,8 +124,7 @@ class MyWebCamComponent extends Component {
     if(_.has(this, 'p_Video') && _.has(this, 'p_Canvas')) {
       let ctx = this.p_Canvas.getContext('2d'),
        ratio = this.p_Video.videoHeight / this.p_Video.videoWidth;
-      ctx.drawImage(this.p_Video, 0, 0, this.p_Video.videoWidth, this.p_Video.videoHeight,
-        0, 0, 320, Math.floor(320 * ratio));
+      ctx.drawImage(this.p_Video, 0, 0, 320, Math.floor(320 * ratio));
       dataurlImg = this.p_Canvas.toDataURL('image/jpeg');
     }
     this.props.handleBtnCheeseClick(evt, dataurlImg);
@@ -147,8 +146,8 @@ class MyWebCamComponent extends Component {
     return (
       <div className={'myFlexRow'}>
         <div className={this.getClassName()}>
-          <video autoPlay ref={this.createVideoRef}></video>
-          <canvas ref={this.createCanvasRef}></canvas>
+          <video autoPlay ref={(el) => {this.createVideoRef(el)}}></video>
+          <canvas ref={(el)=>{this.createCanvasRef(el)}}></canvas>
           <BtnInputFile {...this.getBtnInputFileParams()}></BtnInputFile>
           <BtnCheese {...this.getBtnCheese()}></BtnCheese>
         </div>

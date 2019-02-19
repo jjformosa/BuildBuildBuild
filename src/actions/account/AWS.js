@@ -1,4 +1,3 @@
-import _ from 'lodash';
 import {DBFactory, InitAWS} from '../../constants/AWSApi';
 import {
   ACTIONTYPE_ACCOUNT_LOGINSUCCESS, 
@@ -9,16 +8,20 @@ import {
 
 export const getMyAccountData = (account) =>(dispatch)  =>  {
   InitAWS(account);
-  DBFactory.getAccountDataByName(account).then((accountData)=>{
-    dispatch({
-      'type':ACTIONTYPE_ACCOUNT_LOGINSUCCESS,
-      accountData,
-    })
+  DBFactory.getMyAccountData(account).then((accountData)=>{
+    if(!accountData) {
+      dispatch(createAccountData(account));
+    } else {
+      dispatch({
+          'type':ACTIONTYPE_ACCOUNT_LOGINSUCCESS,
+          accountData,
+      });
+    }
   }, (err)=>{
     dispatch({
       'type': ACTIONTYPE_ACCOUNT_LOGINREJECT,
       'err': err,
-    })
+    });
   }).finally(()=>{
     dispatch({
       'type': ACTIONTYPE_WAITING_END,
@@ -27,8 +30,34 @@ export const getMyAccountData = (account) =>(dispatch)  =>  {
   });
 };
 
+const createAccountData = (accout) => (dispatch) => {
+  DBFactory.createAccountData(accout).then((accountData)=>{
+    dispatch(createAccountRoot(accountData));
+  }).catch((err)=>{
+    dispatch({
+      'type': ACTIONTYPE_ACCOUNT_LOGINREJECT,
+      'err': err,
+    });
+  });
+}
+
+const createAccountRoot = (accountData)=> (dispatch) => {  
+  let indexFileKey = 'facebook-' + accountData.id + '/index.json';
+  DBFactory.putS3File(indexFileKey, JSON.stringify({'contents': []})).then(()=>{
+    dispatch({
+      'type':ACTIONTYPE_ACCOUNT_LOGINSUCCESS,
+      accountData,
+    });
+  }).catch(err=>{
+    dispatch({
+      'type': ACTIONTYPE_ACCOUNT_LOGINREJECT,
+      'err': err,
+    });
+  });
+}
+
 export const setMyAccountNick = (accountData) =>(dispatch)  =>  {
-  DBFactory.setMyAccountData(accountData).then((response)=>{
+  DBFactory.setAccountNick(accountData).then((response)=>{
     dispatch({
       'type':ACTIONTYPE_ACCOUNT_CHANGENICKNAME,
       'accountData': response,

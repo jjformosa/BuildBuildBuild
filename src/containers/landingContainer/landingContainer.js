@@ -1,8 +1,7 @@
 ﻿import { connect } from 'react-redux';
 import _ from 'lodash';
 import LandingPage from '../../components/landingPage/landingPage';
-import {accountLogin} from '../../actions/account/account';
-import {autoLogin} from '../../actions/account/FBAccount';
+import {accountLogin, autoLogin} from '../../actions/account/account';
 import { Enum_LoginIdentifyType } from '../../model/account';
 import {
     ACTIONTYPE_ACCOUNT_DENYWEBCAM, 

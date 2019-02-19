@@ -7,14 +7,13 @@ export default class AnimaItem extends Component {
   constructor(props){
     super(props);    
     this.state = {
-      'animaDelay': props.animaDelay,
       'classList': [AnimaElementsClassName],
       'animaName': '',
     }
   }
   getStyle() {
     return {
-      'animationDelay': this.state.animaDelay + 's',
+      'animationDelay': this.props.animaDelay + 's',
     }
   }
   getClassName() {
@@ -47,8 +46,37 @@ export default class AnimaItem extends Component {
   render() {
     return (
       <div className={this.getClassName()} style={this.getStyle()} 
-      onAnimationEnd={this.onAnimationEnd}>測試動畫父類別
+      onAnimationEnd={this.onAnimationEnd}>
       </div>
     );
+  }
+}
+
+export class MyPulseItem extends Component {
+  getClassName() {
+    return 'myPulse';
+  }
+  getContentClassName() {
+    return 'myPulseContent';
+  }
+  getAnimaClassName() {
+    return 'myPulseAnima';
+  }
+  getStyle() {
+    return {
+      'animationDelay': this.props.animaDelay + 's',
+    };
+  }
+  getFontStyle() {
+    return this.props.fontStyleSetting;
+  }
+  getBackgroundStyle() {
+    return this.props.backgroundStyleSetting;
+  }
+  render() {
+    return <div className={this.getClassName()} style={this.getStyle()}>
+      <div className={this.getAnimaClassName()} style={this.getBackgroundStyle()}></div>
+      <div className={this.getContentClassName()} style={this.getFontStyle()}>{this.props.children}</div>
+    </div>
   }
 }

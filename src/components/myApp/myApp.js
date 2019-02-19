@@ -3,7 +3,6 @@ import {Route,withRouter} from 'react-router-dom';
 import { connect } from 'react-redux';
 import _ from 'lodash';
 import '../myApp.css';
-//import LandingPage from '../landingPage/landingPage';
 import LandingPage from '../../containers/landingContainer/landingContainer';
 import WelcomePage from '../../containers/welcomeContainer/welcomeContainer';
 import HaJiMeDePage from '../../containers/hajimedeContainer/hajimedeContainer';

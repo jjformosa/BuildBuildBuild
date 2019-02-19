@@ -35,7 +35,7 @@ const decodeDynamoDBItem = function (a_Item) {
     let rtn = {};
     _.each(a_Item, (value, key) => {
       let _v = _.has(value, 'S') ? _.get(value, 'S') : 
-        _.has(value, 'N') ? _.get(value, 'N'): null;
+        _.has(value, 'N') ? Number.parseInt(_.get(value, 'N')): null;
         _.set(rtn, key, _v);
     });
     return rtn;
@@ -44,7 +44,7 @@ const decodeDynamoDBItem = function (a_Item) {
 
 const _module = (function(){
   let isInited = (document) ? null !== document.getElementById('aws-sdk'): false,
-  myAppDB, myAppS3, customerDB, customerS3;
+  myAppDB, myAppS3;
 
   InitAWS = function (a_Account) {
     myAppDB = new AWS.DynamoDB(makeAWSApiSetting(a_Account.accessToken));
@@ -76,6 +76,7 @@ const _module = (function(){
           },
           'TableName': 'myAccount'
         }, (err, responseData)=>{
+          debugger;
           if(err) {
             reject(err);
           } else {
@@ -121,7 +122,32 @@ const _module = (function(){
     });
   }
 
-  const setAccountData = function (a_data) {
+  const createAccountData = function (a_Account) {
+    return new Promise((resolve, reject)=>{
+      if(!myAppDB) {
+        reject(false, 'not init aws db');
+      } else {
+        let param = {
+          'TableName':'myAccount',
+          'Item': {
+            'uid': {'S' :a_Account.id},
+            'uname': {'S' :a_Account.name},
+          },
+          'ReturnValues': 'ALL_NEW'
+        };
+        myAppDB.putItem(param, (err, responseData)=>{
+          if(err) {
+            reject(err);
+          } else {
+            let rtn = decodeDynamoDBItem(responseData.Attributes);
+            resolve(rtn);
+          }
+        });
+      }
+    });
+  }
+
+  const setAccountNick = function (a_data) {
     return new Promise((resolve, reject) => {
       if(!myAppDB) {
         reject(false, 'not init aws db');
@@ -129,7 +155,7 @@ const _module = (function(){
         let param = {
           'TableName':'myAccount',
           'Key': {
-            'uid': {'S' :a_data.id},
+            'uid': {'S' :a_data.uid},
             'uname': {'S' :a_data.name},
           },
           'UpdateExpression': 'set nick = :nick',
@@ -245,7 +271,8 @@ const _module = (function(){
   
   DBFactory.getMyAccountData = getAccountData;
   DBFactory.getAccountDataByName = getAccountDataByName;
-  DBFactory.setMyAccountData = setAccountData;
+  DBFactory.setAccountNick = setAccountNick;
+  DBFactory.createAccountData = createAccountData;
 
   StorageFactory.getS3Object = getS3Object;
   StorageFactory.listFilesUnderFolder = listFilesUnderFolder;

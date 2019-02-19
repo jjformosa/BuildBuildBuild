@@ -1,7 +1,12 @@
+@import url('https://fonts.googleapis.com/css?family=Roboto');
+@import url('https://fonts.googleapis.com/css?family=Noto+Sans+TC');
+
 #myApp{
   position: absolute;
   width: 100vmax;
   height: 100vmin;
+  font-size: 16px;
+  font-family: 'Roboto', 'Noto Sans TC', serif, PMingLiU;
 }
 
 @media only screen and (orientation: portrait) {
@@ -146,10 +151,22 @@
   font-size: 1.2rem;
   line-height: 2.4rem;
   letter-spacing: .25rem;
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 .attention {
   background-color: crimson;
   color: snow;
   font-weight: bold;
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+p {
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  user-select: none;
 }

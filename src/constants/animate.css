@@ -3621,3 +3621,59 @@
     transition: none !important;
   }
 }
+
+/*自訂*/
+.myPulse{
+  position: relative;
+  display:inline-block;
+  margin: 0 2px;
+  min-height: 1.6rem;
+  min-width: 1.6rem;
+  overflow: visible;
+  background-color: transparent;
+}
+.myPulse .myPulseContent{
+  position:absolute;
+  font-size: 1rem;
+  color: white;
+  left: 50%;
+  top: 50%;
+  -webkit-transform: translate(-50%, -50%);
+  -ms-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+}
+
+@keyframes myAnimaPulse {
+  20%{
+    -webkit-transform: scale(1.2, 1.2);
+    -ms-transform: scale(1.2, 1.2);
+    transform: scale(1.2, 1.2);
+    -webkit-box-shadow: 0 0 0 0px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 0 0 0px rgba(0, 0, 0, 0.2);
+  }
+  60%{
+    -webkit-transform: scale(1.0, 1.0);
+    -ms-transform: scale(1.0, 1.0);
+    transform: scale(1.0, 1.0);
+    -webkit-box-shadow: 0 0 0 32px rgba(0, 0, 0, 0);
+    box-shadow: 0 0 0 32px rgba(0, 0, 0, 0);
+  }
+  100%{
+    -webkit-transform: scale(1.0, 1.0);
+    -ms-transform: scale(1.0, 1.0);
+    transform: scale(1.0, 1.0);
+    -webkit-box-shadow: 0 0 0 0px rgba(0, 0, 0, 0);
+    box-shadow: 0 0 0 0px rgba(0, 0, 0, 0);
+  }
+}
+
+.myPulse .myPulseAnima {  
+  position:absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 100%;
+  border-color: transparent;
+  background-color: violet;
+  -webkit-animation: myAnimaPulse 2s linear infinite;
+  animation: myAnimaPulse 2s linear infinite;
+}

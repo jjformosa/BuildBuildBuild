@@ -27,7 +27,7 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "open": " concurrently \"cd build\" \"serve -l 5000\" \"open http://localhost:5000/LandingPage/me\""
+    "open": " concurrently \"serve build\""
   },
   "eslintConfig": {
     "extends": "react-app"

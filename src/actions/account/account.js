@@ -1,7 +1,15 @@
 ﻿import { Enum_LoginIdentifyType } from '../../model/account';
-import {facebookLogin} from './FBAccount';
+import {facebookLogin, facebookAutoLogin} from './FBAccount';
 import {getMyAccountData, setMyAccountNick} from './AWS';
 import {ACTIONTYPE_WAITING_START} from '../../constants/actionTypes';
+
+export const autoLogin = (id) => (dispatch) => {  
+    dispatch({
+        'type': ACTIONTYPE_WAITING_START,
+        'command': 'autoLogin'
+    }); 
+    dispatch(facebookAutoLogin(id));
+}
 
 export const accountLogin = (identifyType) => (dispatch) => {   
     dispatch({

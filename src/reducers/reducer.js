@@ -96,8 +96,11 @@ const storyReducer = handleActions({
         _.set(nextState, 'illustrations', []);
         return nextState;
     },
-    [ACTIONTYPE_UPDATECONTENTS_SUCCESS]: function(state, {type, response}) {
-        
+    [ACTIONTYPE_UPDATECONTENTS_SUCCESS]: function(state, {type, contentid, newcontents, newillustrations}) {
+        let nextState = _.cloneDeep(state);
+        var newStory = {'chps': newcontents, 'illustrations': newillustrations};
+        _.merge(nextState, newStory);
+        return nextState;        
     }, 
     [ACTIONTYPE_UPDATECONTENTS_REJECT]: function(state, {type, err}) {
 

@@ -54,7 +54,7 @@ export const facebookLogout = () => (dispatch) => {
         });
     });
 }
-export const autoLogin = () => (dispatch) => {
+export const facebookAutoLogin = () => (dispatch) => {
     MyFBLoginApp.chkAuth().then(({status, ...response}) => {
         if('connected' === status) {
             let accesstoken = response.authResponse.accessToken;  

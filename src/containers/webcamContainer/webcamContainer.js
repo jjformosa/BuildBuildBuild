@@ -16,6 +16,7 @@ export default connect((state)=>{
   return nextState;
 },  (dispatch)=>({
   'handleUpdateStory': function(evt, accountData, a_id, a_newContents, a_illustrations) {
+    if('/WebCamPage' !== _.last(a_newContents)) a_newContents.push('/WebCamPage');
     dispatch({
       'type': ACTIONTYPE_WAITING_START,
       'command': 'handleUpdateStory'

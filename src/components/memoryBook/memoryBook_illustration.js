@@ -39,7 +39,7 @@ class BtnIllustration extends Component {
     let _style = {};
     if(this.state.isDisable) {
       _.assign(_style, {
-        'backgroundColor': 'gray',
+        'backgroundColor': 'lightcoral',
         'cursor': 'not-allowed'
       })
     }
@@ -47,15 +47,17 @@ class BtnIllustration extends Component {
   }
   onBtnIllustrationClick(evt) {
     let btnIconName = this.state.iconname;
-    this.props.handleBtnIllustrationClick(evt, btnIconName);
-    if('play' === btnIconName) {
-      this.setState({
-        'iconname': 'pause'
-      });
-    } else if ('pause' === btnIconName) {
-      this.setState({
-        'iconname': 'play'
-      });
+    if(!this.state.isDisable) {
+      this.props.handleBtnIllustrationClick(evt, btnIconName);
+      if('play' === btnIconName) {
+        this.setState({
+          'iconname': 'pause'
+        });
+      } else if ('pause' === btnIconName) {
+        this.setState({
+          'iconname': 'play'
+        });
+      }
     }
     evt.preventDefault();
     evt.stopPropagation();

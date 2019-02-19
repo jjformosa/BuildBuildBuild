@@ -71,6 +71,9 @@
   height: 48%;
   overflow: hidden;
   white-space: pre;
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  user-select: none;
 }
 .myContent .myContent-inner {
   display: block;
@@ -156,13 +159,17 @@
   width: 48px;
   height: 48px;
   font-size: 32px;
-  border:solid gray 2px;
-  background-color: transparent;
-  color: black;
+  border:solid white 3px;
+  background-color: lightgreen;
+  color: white;
   border-radius: 100%;
   cursor: pointer;
   line-height: 48px;
   text-align: center;
+  opacity: .7;
+}
+.btnIllustration:hover {
+  opacity: 1;
 }
 .btnIllustration i{
   display: inline-block;

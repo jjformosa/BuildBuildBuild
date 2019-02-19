@@ -22,7 +22,6 @@ export const updateStoryContents = (accountData, a_id, newContents, illustration
 
 export const updateStoryIllustrations = (accountData, a_id, newContents, illustrations) => (dispatch) => {
   let root = ['facebook-' + accountData.id, 'Albums', a_id].join('/');
-  //let root = 'facebook-2434715163221202/Albums/2/';
   let _all = Promise.all(_.map(illustrations, (illustration) => {
     let _path = root + '/' + illustration.filename;
     return StorageFactory.putS3File(_path, illustration.body, {

@@ -94,7 +94,7 @@ class WelcomePage extends Component {
       <div className={this.getClassName()} style={this.getStyle()} 
         onAnimationEnd={(evt)=>{this.onAnimationEnd(evt)}}>
         <p style={{'lineHeight': '2rem'}}>Deer<DeerSomeOne callName={this.getCallName()} animaDelay={.5}></DeerSomeOne>不知不覺也跟你/妳認識了這麼久時間。
-        關於對那些堪稱回憶的時光，如果回憶的總和像沙灘的沙俯拾即是，那麼我所能記得的僅是幾片留在岸上的貝殼吧！如果所有的感謝像海那麼深，那麼接下來的文字所能表達的，就像海上搖曳的粼粼波光那麼淺；
+        關於對那些堪稱回憶的時光，如果回憶的總和像沙灘那樣綿延，那麼還記得的，只是幾片留在岸上的貝殼吧！如果所有的感謝像海那麼深，那麼文字能表達的，僅止於搖曳著粼粼波光的深度而已；
         但我也是很努力地把這些點點滴滴蒐集起來，成一本專屬你/妳的
           <FontAwesomeIcon icon={faBook} onClick={(evt)=>{this.onBtnNextClick(evt)}} style={{
             'cursor': 'pointer', 'color': 'brown'

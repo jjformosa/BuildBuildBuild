@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import _ from 'lodash';
 import MyIllustration, { MyCoverIllustration } from './memoryBook_illustration';
 import './memoryBook.css';
-import { isNullOrUndefined } from 'util';
 
 const MemoryBookPageContentBlur = ({className}) => (
   <span className={['myContent-blur', ...className].join(' ')}></span>
