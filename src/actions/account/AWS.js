@@ -1,4 +1,4 @@
-import {DBFactory, InitAWS} from '../../constants/AWSApi';
+import {DBFactory, StorageFactory, InitAWS} from '../../constants/AWSApi';
 import {
   ACTIONTYPE_ACCOUNT_LOGINSUCCESS, 
   ACTIONTYPE_ACCOUNT_LOGINREJECT,
@@ -31,8 +31,8 @@ export const getMyAccountData = (account) =>(dispatch)  =>  {
 };
 
 const createAccountData = (accout) => (dispatch) => {
-  DBFactory.createAccountData(accout).then((accountData)=>{
-    dispatch(createAccountRoot(accountData));
+  DBFactory.createAccountData(accout).then((_)=>{
+    dispatch(createAccountRoot(accout));
   }).catch((err)=>{
     dispatch({
       'type': ACTIONTYPE_ACCOUNT_LOGINREJECT,
@@ -41,13 +41,10 @@ const createAccountData = (accout) => (dispatch) => {
   });
 }
 
-const createAccountRoot = (accountData)=> (dispatch) => {  
-  let indexFileKey = 'facebook-' + accountData.id + '/index.json';
-  DBFactory.putS3File(indexFileKey, JSON.stringify({'contents': []})).then(()=>{
-    dispatch({
-      'type':ACTIONTYPE_ACCOUNT_LOGINSUCCESS,
-      accountData,
-    });
+const createAccountRoot = (account)=> (dispatch) => {  
+  let indexFileKey = 'facebook-' + account.id + '/index.json';
+  StorageFactory.putS3File(indexFileKey, JSON.stringify({'contents': []})).then(()=>{
+    dispatch(getMyAccountData(account));
   }).catch(err=>{
     dispatch({
       'type': ACTIONTYPE_ACCOUNT_LOGINREJECT,

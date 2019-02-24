@@ -76,7 +76,6 @@ const _module = (function(){
           },
           'TableName': 'myAccount'
         }, (err, responseData)=>{
-          debugger;
           if(err) {
             reject(err);
           } else {
@@ -133,7 +132,6 @@ const _module = (function(){
             'uid': {'S' :a_Account.id},
             'uname': {'S' :a_Account.name},
           },
-          'ReturnValues': 'ALL_NEW'
         };
         myAppDB.putItem(param, (err, responseData)=>{
           if(err) {

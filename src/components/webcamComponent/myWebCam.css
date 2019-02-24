@@ -40,10 +40,8 @@
 .myWebCam video,
 .myWebCam canvas {
   display: none;
-}
-.myWebCam canvas {
-  width: 320px;
-  height: 240px;
+  width: 640px;
+  height: 480px;
 }
 .btnInputFile {
   animation-delay: .3s;
@@ -120,6 +118,7 @@
   opacity: .6;
   color: snow;
   cursor: pointer;
+  text-align: center;
 }
 .myPhoto:hover > .btnRemove{
   opacity: 1;

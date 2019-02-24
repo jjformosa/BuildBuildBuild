@@ -32,14 +32,14 @@ export default class AnimaItem extends Component {
     if(!this){
       return;
     }
-    if(0 < this.state.animaName.length){
-      let _classList = _.clone(this.state.classList);
-      _.pull(_classList, this.state.animaName);
-      this.setState({
-        'classList': _.clone(_classList),
-        'animaName': ''
-      })
-    }
+    // if(0 < this.state.animaName.length){
+    //   let _classList = _.clone(this.state.classList);
+    //   _.pull(_classList, this.state.animaName);
+    //   this.setState({
+    //     'classList': _.clone(_classList),
+    //     'animaName': ''
+    //   })
+    // }
     evt.preventDefault();
     evt.stopPropagation();
   }

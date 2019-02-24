@@ -53,7 +53,7 @@ class BtnCheese extends Component {
     super(props);
     this.idForCamera = 'btnCheese';
     this.state = {
-      'classList': ['myWebCamBtn btnCheese animated'],
+      'classList': ['myWebCamBtn', 'btnCheese', 'animated'],
     }
   }
   componentDidMount() {
@@ -68,13 +68,13 @@ class BtnCheese extends Component {
   animaIt() {
     this.animaTimer = setInterval(()=>{
       this.setState({
-        'classList': ['myWebCamBtn btnCheese animated rubberBand'],
+        'classList': ['myWebCamBtn', 'btnCheese', 'animated', 'rubberBand'],
       });
     }, 5000);
   }
   onAnimaEnd(evt) {
     this.setState({
-      'classList': ['myWebCamBtn btnCheese animated'],
+      'classList': ['myWebCamBtn', 'btnCheese', 'animated'],
     });
     evt.preventDefault();
     evt.stopPropagation();
@@ -103,9 +103,12 @@ class MyWebCamComponent extends Component {
     this.getMediaPermission();
   }
   getMediaPermission() {
-    navigator.mediaDevices.getUserMedia({'video': true}).then(stream=>{
-      if(_.has(this, 'p_Video')) {
-        this.p_Video.srcObject = stream;
+    let the = this;
+    navigator.mediaDevices.getUserMedia({'video': { width: 640, height: 480 }}).then(stream=>{
+      if(_.has(the, 'p_Video')) {
+        the.p_Video.srcObject = stream;
+        the.p_Canvas.width = 320;
+        the.p_Canvas.height = 240;
       }
     });
   }
@@ -116,15 +119,17 @@ class MyWebCamComponent extends Component {
     _.set(this, 'p_Canvas', el);
   }
   onInputFileChange(evt) {
+    if(!evt.target.files) return;
+    if(0 === evt.target.files.length) return;
     let fileBlob = evt.target.files[0];
     this.props.handleInputFileChanged(evt, fileBlob);
   }
   onBtnCheeseClick(evt) {
     let dataurlImg = null;
     if(_.has(this, 'p_Video') && _.has(this, 'p_Canvas')) {
-      let ctx = this.p_Canvas.getContext('2d'),
-       ratio = this.p_Video.videoHeight / this.p_Video.videoWidth;
-      ctx.drawImage(this.p_Video, 0, 0, 320, Math.floor(320 * ratio));
+      let ctx = this.p_Canvas.getContext('2d');
+      ctx.drawImage(this.p_Video, 0, 0, this.p_Video.videoWidth,this.p_Video.videoHeight,
+        0, 0, 320, 240);
       dataurlImg = this.p_Canvas.toDataURL('image/jpeg');
     }
     this.props.handleBtnCheeseClick(evt, dataurlImg);

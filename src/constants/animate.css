@@ -3627,6 +3627,8 @@
   position: relative;
   display:inline-block;
   margin: 0 2px;
+  width: auto;
+  height: auto;
   min-height: 1.6rem;
   min-width: 1.6rem;
   overflow: visible;

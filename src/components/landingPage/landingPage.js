@@ -4,7 +4,7 @@ import './landingPage.css';
 import _ from 'lodash';
 import AnimaFactory, { AnimaElementsClassName} from '../../constants/animate';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPhone, faTimesCircle,faCheckCircle,faGift } from '@fortawesome/free-solid-svg-icons';
+import { faPhone, faTimes,faCheck, faGift } from '@fortawesome/free-solid-svg-icons';
 import {faFacebookSquare, faGooglePlus} from '@fortawesome/free-brands-svg-icons';
 import AnimaItem, {MyPulseItem} from '../share/animaItem';
 import { Enum_LoginIdentifyType } from '../../model/account';
@@ -13,21 +13,18 @@ class LongInBtn extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      'animaDelay': props.animaDelay,
       'classList': [AnimaElementsClassName],
       'animaName': '',
-      'onAnimationEnd': props.handleAnimationEnd,
-      'identifyType': props.identifyType,
       'onClick': props.handleClickOnLogin,
       'disable': (true === props.isDisable)
     }
   }
   getIcon() {
-    if(Enum_LoginIdentifyType.Facebook === this.state.identifyType) {
+    if(Enum_LoginIdentifyType.Facebook === this.props.identifyType) {
       return faFacebookSquare;
-    } else if(Enum_LoginIdentifyType.Google === this.state.identifyType) {
+    } else if(Enum_LoginIdentifyType.Google === this.props.identifyType) {
       return faGooglePlus;
-    } else if(Enum_LoginIdentifyType.Phone === this.state.identifyType) {
+    } else if(Enum_LoginIdentifyType.Phone === this.props.identifyType) {
       return faPhone;
     }
   }
@@ -41,7 +38,7 @@ class LongInBtn extends Component {
       'height': '2rem',
       'fontSize': '1.5rem',
       'cursor': 'pointer',
-      'animationDelay': this.state.animaDelay +'s',
+      'animationDelay': this.props.animaDelay +'s',
       'color': 'royalblue',
     }
   }
@@ -129,14 +126,10 @@ class BtnAllowWebCam extends Component {
   }
   getStyle() {
       return {
-        'margin': '.25rem',
-        'width': '2rem',
-        'height': '2rem',
-        'fontSize': '1.5rem',
+        'fontSize': '1.2rem',
         'cursor': 'pointer',
-        'animationDelay': this.state.animaDelay +'s',
         'textAlign': 'center',
-        'color': 'limegreen',
+        'color': 'white',
       }
     }
   componentWillMount() {
@@ -170,11 +163,14 @@ class BtnAllowWebCam extends Component {
     evt.preventDefault();
     evt.stopPropagation();
   }
+  getPlusBackgroundColor() {
+    return {
+      'backgroundColor': '#43A047'
+    }
+  }
   render() {
-    return(<MyPulseItem><span className={this.getClassName()} style={this.getStyle()}
-      onAnimationEnd={(evt)=>this.onAnimationEnd(evt)}
-      onClick={(evt)=>this.onClick(evt)}>
-      <FontAwesomeIcon icon={faCheckCircle}></FontAwesomeIcon>
+    return(<MyPulseItem backgroundStyleSetting={this.getPlusBackgroundColor()}><span style={this.getStyle()} onClick={(evt)=>this.onClick(evt)}>
+      <FontAwesomeIcon icon={faCheck}></FontAwesomeIcon>
     </span></MyPulseItem>);
   }
 }
@@ -184,7 +180,7 @@ class BtnDenyWebCam extends Component {
     super(props);
     this.state = {
       'animaDelay': props.animaDelay,
-      'classList': [AnimaElementsClassName],
+      'classList': [AnimaElementsClassName, 'tada'],
       'animaName': '',
       'onAnimationEnd': props.handleAnimationEnd,
       'onClick': props.handleClickOnLogin,
@@ -194,35 +190,40 @@ class BtnDenyWebCam extends Component {
     return this.state.classList.join(' ');
   }
   getStyle() {
-      return {
-        'margin': '.25rem',
-        'width': '2rem',
-        'height': '2rem',
-        'fontSize': '1.5rem',
-        'cursor': 'pointer',
-        'animationDelay': this.state.animaDelay +'s',
-        'textAlign': 'center',
-        'color': 'palevioletred'
-      }
+    return {
+      'position': 'relative',
+      'display': 'inline-block',
+      'fontSize': '1.2rem',
+      'cursor': 'pointer',
+      'textAlign': 'center',
+      'width': '1.5rem',
+      'height': '1.5rem',
+      'lineHeight': '1.5rem',
+      'backgroundColor': 'palevioletred',
+      'color': 'white',
+      'borderRadius': '100%'
     }
-  componentWillMount() {
-    let _classList = _.clone(this.state.classList);
-    let _animaName = AnimaFactory.randomInAnima();
-      _classList.push(_animaName);
+  }
+  componentDidMount() {
+    let tmpTimer = setTimeout(() => {
+      this.animatIt();
+      clearTimeout(tmpTimer);
+    }, 500);
+  }
+  componentWillUnmount() {
+    clearInterval(this.animaTimer);
+  }
+  animatIt() {
+    this.animaTimer = setInterval(()=>{
       this.setState({
-        'classList': _.clone(_classList),
-        'animaName': _animaName,
+        'classList': ['animated tada'],
       });
+    }, 5000);
   }
   onAnimationEnd(evt) {
-    if(0 < this.state.animaName.length){
-      let _classList = _.clone(this.state.classList);
-      _.pull(_classList, this.state.animaName);
-      this.setState({
-        'classList': _.clone(_classList),
-        'animaName': ''
-      })
-    }
+    this.setState({
+      'classList': ['animated'],
+    });
     evt.preventDefault();
     evt.stopPropagation();
   }
@@ -235,7 +236,7 @@ class BtnDenyWebCam extends Component {
     return(<span className={this.getClassName()} style={this.getStyle()}
       onAnimationEnd={(evt)=>this.onAnimationEnd(evt)}
       onClick={(evt)=>this.onClick(evt)}>
-      <FontAwesomeIcon icon={faTimesCircle}></FontAwesomeIcon>
+      <FontAwesomeIcon icon={faTimes}></FontAwesomeIcon>
     </span>);
   }
 }
@@ -315,10 +316,10 @@ class AttentionLogin extends AnimaItem {
   }
   render () {
     return (<div className={this.getClassName()}>
-      首先，請您點一下<LongInBtn animaDelay={this.state.animaDelay+1}
+      首先，請您點一下<LongInBtn animaDelay={this.props.animaDelay+1}
           identifyType={Enum_LoginIdentifyType.Facebook}
           handleClickOnLogin={this.props.onBtnLoginClick}>            
-          </LongInBtn>，並允許Facebook應用程式告訴我誰來光臨了。請不用擔心授權問題，我只會獲得您的<Attention>id</Attention>製作專屬禮物而已呦！
+          </LongInBtn>，並允許Facebook應用程式告訴我誰來光臨了！
     </div>);
   }
 }
@@ -331,9 +332,6 @@ class AttentionWebCam extends AnimaItem {
         'animaName': props.animaName,
       })
     }
-  }
-  getClassName() {
-    return 'myAttention';
   }
   render () {
     return (<div className={this.getClassName()}>
@@ -415,29 +413,38 @@ class LandingPage extends Component {
     }
   }
   getAttentionLoginParam() {
-    return {
+    let param = {
       'onBtnLoginClick': evt => this.props.onBtnLoginClick(evt),
       'animaDelay': 0,
-      'animaName': (this.state.jumbotronContentTransition)? 'fadeOut' : '',
+    };
+    if(this.state.jumbotronContentTransition) {
+      _.set(param, "animaName", "fadeOut");
     }
+    return param; 
   }
   getAttentionWebCamParam() {
-    return {
+    let param = {
       'onBtnWebCamClick': (evt, isAllow) => {
         if(isAllow) this.props.onBtnAllowWebCamClick(evt);
         else this.props.onBtnDenyWebCamClick(evt);
       },
       'animaDelay': 0,
-      'animaName': (this.state.jumbotronContentTransition)? 'fadeOut' : '',
+    };
+    if(this.state.jumbotronContentTransition) {
+      _.set(param, "animaName", "fadeOut");
     }
+    return param;
   }
   getAttentionGoParam() {
-    return {
+    let param = {
       'onBtnGoClick': evt => this.props.onBtnGoClick(evt, _.get(this.props, 'accountData')),
       'animaDelay': 0,
-      'animaName': (this.state.jumbotronContentTransition)? 'fadeOut' : '',
       'accountData': _.get(this.props, 'accountData'),
+    };
+    if(this.state.jumbotronContentTransition) {
+      _.set(param, "animaName", "fadeOut");
     }
+    return param;
   }
   getClassName() {
     return this.state.classList.join(' ');

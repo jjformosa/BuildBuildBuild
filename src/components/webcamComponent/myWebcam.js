@@ -165,7 +165,7 @@ class MyWebCamPage extends Component {
   removeImg(_index) {
     let oriPhotos = _.cloneDeep(this.state.photos);
     if(0 <= _index && _index < this.state.photos.length) {
-      _.pullAt(oriPhotos, _index);
+      _.pullAt(oriPhotos, [_index]);
     }
     let curPhotoIndex = _.get(this, 'curPhotoIndex');
     if(curPhotoIndex - 1 >= 0 ) {

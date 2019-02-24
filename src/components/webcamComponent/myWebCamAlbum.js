@@ -155,7 +155,7 @@ class MyWebCamAlbum extends Component {
   }
   render() {
     return (
-      <div className={'myFlexRow'} style={{'width': '100%', 'height': '200px'}}>
+      <div className={'myFlexRow'} style={{'width': '100%', 'height': '280px'}}>
         <div className={this.getClassName()} style={this.getStyle()}>
           {this.state.myPhotos}
         </div>

@@ -1,3 +1,4 @@
+@charset "UTF-8";
 @import url('https://fonts.googleapis.com/css?family=Roboto');
 @import url('https://fonts.googleapis.com/css?family=Noto+Sans+TC');
 
@@ -5,8 +6,10 @@
   position: absolute;
   width: 100vmax;
   height: 100vmin;
-  font-size: 16px;
-  font-family: 'Roboto', 'Noto Sans TC', serif, PMingLiU;
+  font-family: 'Roboto', 'Noto Sans TC', Arial, 
+    "文泉驛正黑", "WenQuanYi Zen Hei", 
+    "儷黑 Pro", "LiHei Pro", 
+    "微軟正黑體", "Microsoft JhengHei", sans-serif;
 }
 
 @media only screen and (orientation: portrait) {
@@ -157,8 +160,9 @@
 }
 
 .attention {
-  background-color: crimson;
-  color: snow;
+  background-color: #FFCDD2;
+  padding: .2rem;
+  color: #F44336;
   font-weight: bold;
   -moz-user-select: none;
   -webkit-user-select: none;
