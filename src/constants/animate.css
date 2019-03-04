@@ -3679,3 +3679,26 @@
   -webkit-animation: myAnimaPulse 2s linear infinite;
   animation: myAnimaPulse 2s linear infinite;
 }
+
+.myTooltip {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width:100%;
+  background-color: snow;
+  border-radius: 10%;
+  font-size:.8rem;
+  transition-property: height, opacity;
+  transition-duration: 1s;
+  z-index: 999;
+}
+
+.myTooltip.show {
+  opacity: 1;
+  height: 1rem;
+}
+
+.myTooltip.hide {
+  opacity: 0;
+  height: 0;
+}

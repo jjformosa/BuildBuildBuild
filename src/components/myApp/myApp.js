@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Route,withRouter} from 'react-router-dom';
+import {Route,withRouter,Switch} from 'react-router-dom';
 import { connect } from 'react-redux';
 import _ from 'lodash';
 import '../myApp.css';
@@ -17,6 +17,10 @@ const Waiting = (param) => (
   <div className={'myBlock'} style={{'display': param.isDisplay}} >
     <div className={'myBlock-waiting'} ></div>
   </div>
+);
+
+const MyWTF = (props) =>(
+  <div>"WtF" </div>
 );
 
 class MyApp extends Component{
@@ -61,6 +65,8 @@ class MyApp extends Component{
       return MemoryBook;
     } else if('WebCamPage' === page) {
       return MyWebCamPage;
+    } else {
+      return MyWTF
     }
   }
   isWaiting() {
@@ -70,8 +76,10 @@ class MyApp extends Component{
     return (
       <div>        
         <div id={'myApp'} className={InitClassName_MyApp.join(' ')}>
+        <Switch>
           <Route path='/:page/:uid' component={this.getChild()}/>
           <Waiting isDisplay={this.isWaiting()}></Waiting>
+          </Switch>
         </div>
       </div>
     );

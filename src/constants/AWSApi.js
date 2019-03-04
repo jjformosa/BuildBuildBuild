@@ -132,6 +132,7 @@ const _module = (function(){
             'uid': {'S' :a_Account.id},
             'uname': {'S' :a_Account.name},
           },
+          'ReturnValues': 'ALL_OLD'
         };
         myAppDB.putItem(param, (err, responseData)=>{
           if(err) {

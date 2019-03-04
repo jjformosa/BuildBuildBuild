@@ -26,7 +26,7 @@ class App extends Component {
         <header className="App-header">
           <img src={_.get(this.state, "log")} className="App-logo" alt="logo" />
           <p>
-            Edit <code>src/App.js</code> and save to reload.
+            Edit <code>src/App.js</code> and save to {this.props.match.params.page}}.
           </p>
           <a
             className="App-link"

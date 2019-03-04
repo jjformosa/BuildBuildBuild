@@ -12,4 +12,3 @@ IF NOT EXIST %AppData%\npm\node_modules\serve\bin\serve.js (
 REM ±Ò°ÊÂP
 serve -s build
 start http://loaclhost:5000/LandingPage/me
-

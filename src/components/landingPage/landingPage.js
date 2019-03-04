@@ -6,7 +6,7 @@ import AnimaFactory, { AnimaElementsClassName} from '../../constants/animate';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPhone, faTimes,faCheck, faGift } from '@fortawesome/free-solid-svg-icons';
 import {faFacebookSquare, faGooglePlus} from '@fortawesome/free-brands-svg-icons';
-import AnimaItem, {MyPulseItem} from '../share/animaItem';
+import AnimaItem from '../share/animaItem';
 import { Enum_LoginIdentifyType } from '../../model/account';
 
 class LongInBtn extends Component {
@@ -114,42 +114,48 @@ class BtnAllowWebCam extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      'animaDelay': props.animaDelay,
-      'classList': [AnimaElementsClassName],
+      'classList': [AnimaElementsClassName, 'rubberBand'],
       'animaName': '',
-      'onAnimationEnd': props.handleAnimationEnd,
-      'onClick': props.handleClickOnLogin,
     }
   }
   getClassName() {
     return this.state.classList.join(' ');
   }
   getStyle() {
-      return {
-        'fontSize': '1.2rem',
-        'cursor': 'pointer',
-        'textAlign': 'center',
-        'color': 'white',
-      }
+    return {
+      'position': 'relative',
+      'display': 'inline-block',
+      'fontSize': '1.2rem',
+      'cursor': 'pointer',
+      'textAlign': 'center',
+      'width': '1.5rem',
+      'height': '1.5rem',
+      'lineHeight': '1.5rem',
+      'backgroundColor': '#43A047',
+      'color': 'white',
+      'borderRadius': '100%'
     }
-  componentWillMount() {
-    let _classList = _.clone(this.state.classList);
-    let _animaName = AnimaFactory.randomInAnima();
-      _classList.push(_animaName);
+  }
+  componentDidMount() {
+    let tmpTimer = setTimeout(() => {
+      this.animatIt();
+      clearTimeout(tmpTimer);
+    }, 500);
+  }
+  componentWillUnmount() {
+    clearInterval(this.animaTimer);
+  }
+  animatIt() {
+    this.animaTimer = setInterval(()=>{
       this.setState({
-        'classList': _.clone(_classList),
-        'animaName': _animaName,
+        'classList': ['animated', 'rubberBand'],
       });
+    }, 3000);
   }
   onAnimationEnd(evt) {
-    if(0 < this.state.animaName.length){
-      let _classList = _.clone(this.state.classList);
-      _.pull(_classList, this.state.animaName);
-      this.setState({
-        'classList': _.clone(_classList),
-        'animaName': ''
-      })
-    }
+    this.setState({
+      'classList': ['animated'],
+    });
     evt.preventDefault();
     evt.stopPropagation();
   }
@@ -163,15 +169,12 @@ class BtnAllowWebCam extends Component {
     evt.preventDefault();
     evt.stopPropagation();
   }
-  getPlusBackgroundColor() {
-    return {
-      'backgroundColor': '#43A047'
-    }
-  }
   render() {
-    return(<MyPulseItem backgroundStyleSetting={this.getPlusBackgroundColor()}><span style={this.getStyle()} onClick={(evt)=>this.onClick(evt)}>
-      <FontAwesomeIcon icon={faCheck}></FontAwesomeIcon>
-    </span></MyPulseItem>);
+    return(<span className={this.getClassName()} style={this.getStyle()}
+    onAnimationEnd={(evt)=>this.onAnimationEnd(evt)}
+    onClick={(evt)=>this.onClick(evt)}>
+    <FontAwesomeIcon icon={faCheck}></FontAwesomeIcon>
+  </span>);
   }
 }
 
@@ -179,11 +182,8 @@ class BtnDenyWebCam extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      'animaDelay': props.animaDelay,
       'classList': [AnimaElementsClassName, 'tada'],
       'animaName': '',
-      'onAnimationEnd': props.handleAnimationEnd,
-      'onClick': props.handleClickOnLogin,
     }
   }
   getClassName() {
@@ -208,7 +208,7 @@ class BtnDenyWebCam extends Component {
     let tmpTimer = setTimeout(() => {
       this.animatIt();
       clearTimeout(tmpTimer);
-    }, 500);
+    }, 1000);
   }
   componentWillUnmount() {
     clearInterval(this.animaTimer);
@@ -216,9 +216,9 @@ class BtnDenyWebCam extends Component {
   animatIt() {
     this.animaTimer = setInterval(()=>{
       this.setState({
-        'classList': ['animated tada'],
+        'classList': ['animated', 'tada'],
       });
-    }, 5000);
+    }, 3000);
   }
   onAnimationEnd(evt) {
     this.setState({
@@ -245,10 +245,8 @@ class BtnGift extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      'animaDelay': props.animaDelay,
-      'classList': [AnimaElementsClassName],
+      'classList': [AnimaElementsClassName, 'rubberBand'],
       'animaName': '',
-      'onAnimationEnd': props.handleAnimationEnd,
     }
   }
   getClassName() {
@@ -256,37 +254,41 @@ class BtnGift extends Component {
   }
   getStyle() {
       return {
-        'margin': '.25rem',
-        'width': '2rem',
-        'height': '2rem',
-        'fontSize': '1.5rem',
+        'position': 'relative',
+        'display': 'inline-block',
+        'fontSize': '1.2rem',
         'cursor': 'pointer',
-        'animationDelay': this.state.animaDelay +'s',
         'textAlign': 'center',
-        'color': 'crimson',
+        'width': '1.5rem',
+        'height': '1.5rem',
+        'lineHeight': '1.5rem',
+        'color': 'palevioletred',
+        'backgroundColor': 'transparent',
       }
     }
-  componentWillMount() {
-    let _classList = _.clone(this.state.classList);
-    let _animaName = AnimaFactory.randomInAnima();
-      _classList.push(_animaName);
-      this.setState({
-        'classList': _.clone(_classList),
-        'animaName': _animaName,
-      });
-  }
-  onAnimationEnd(evt) {
-    if(0 < this.state.animaName.length){
-      let _classList = _.clone(this.state.classList);
-      _.pull(_classList, this.state.animaName);
-      this.setState({
-        'classList': _.clone(_classList),
-        'animaName': ''
-      })
+    componentDidMount() {
+      let tmpTimer = setTimeout(() => {
+        this.animatIt();
+        clearTimeout(tmpTimer);
+      }, 500);
     }
-    evt.preventDefault();
-    evt.stopPropagation();
-  }
+    componentWillUnmount() {
+      clearInterval(this.animaTimer);
+    }
+    animatIt() {
+      this.animaTimer = setInterval(()=>{
+        this.setState({
+          'classList': ['animated', 'rubberBand'],
+        });
+      }, 3000);
+    }
+    onAnimationEnd(evt) {
+      this.setState({
+        'classList': ['animated'],
+      });
+      evt.preventDefault();
+      evt.stopPropagation();
+    }
   onClick(evt) {
     this.props.onBtnGoClick(evt);
     evt.preventDefault();
@@ -337,10 +339,8 @@ class AttentionWebCam extends AnimaItem {
     return (<div className={this.getClassName()}>
       接著，希望您使用有相機的裝置，並允許我借用您的鏡頭。請別擔心！
       <Attention>所有會使用相機的功能都會經過您的操作，並且您是唯一決定使用權的角色</Attention>！
-      如果同意請您點一下<BtnAllowWebCam animaDelay={this.state.animaDelay+1}
-          handleBtnWebCamClick={this.props.onBtnWebCamClick}></BtnAllowWebCam>
-      ，不同意也可以繼續喔！<BtnDenyWebCam animaDelay={this.state.animaDelay+1.5}
-          handleBtnWebCamClick={this.props.onBtnWebCamClick}></BtnDenyWebCam>
+      如果同意請您點一下<BtnAllowWebCam handleBtnWebCamClick={this.props.onBtnWebCamClick}></BtnAllowWebCam>
+      ，不同意也可以繼續喔！<BtnDenyWebCam handleBtnWebCamClick={this.props.onBtnWebCamClick}></BtnDenyWebCam>
     </div>);
   }
 }

@@ -80,3 +80,33 @@ export class MyPulseItem extends Component {
     </div>
   }
 }
+
+export class MyTooltip extends Component {
+  constructor(props) {
+    super(props);    
+    this.state = {
+      'classList': ['myTooltip', 'hide']
+    }
+  }
+  componentWillReceiveProps(props) {
+    if(props.showtip) {
+      let newClassList = ['myTooltip', 'show'];
+      this.setState({
+        'classList': newClassList,
+      });
+    } else {
+      let newClassList = ['myTooltip', 'hide'];
+      this.setState({
+        'classList': newClassList,
+      });
+    }
+  }
+  getClassName() {
+    return this.state.classList.join(' ');
+  }
+  render() {
+    return <div className={this.getClassName()}>
+      {this.props.tip}
+    </div>
+  }
+}

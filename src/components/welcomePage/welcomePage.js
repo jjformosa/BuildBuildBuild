@@ -31,6 +31,68 @@ class DeerSomeOne extends AnimaItem {
   }
 }
 
+class BtnBook extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      'classList': [AnimaElementsClassName, 'heartBeat'],
+      'animaName': '',
+    }
+  }
+  getClassName() {
+    return this.state.classList.join(' ');
+  }
+  getStyle() {
+      return {
+        'position': 'relative',
+        'display': 'inline-block',
+        'fontSize': '1.2rem',
+        'cursor': 'pointer',
+        'textAlign': 'center',
+        'width': '1.5rem',
+        'height': '1.5rem',
+        'lineHeight': '1.5rem',
+        'color': 'brown',
+        'backgroundColor': 'transparent',
+      }
+    }
+    componentDidMount() {
+      let tmpTimer = setTimeout(() => {
+        this.animatIt();
+        clearTimeout(tmpTimer);
+      }, 500);
+    }
+    componentWillUnmount() {
+      clearInterval(this.animaTimer);
+    }
+    animatIt() {
+      this.animaTimer = setInterval(()=>{
+        this.setState({
+          'classList': ['animated', 'heartBeat'],
+        });
+      }, 3000);
+    }
+    onAnimationEnd(evt) {
+      this.setState({
+        'classList': ['animated'],
+      });
+      evt.preventDefault();
+      evt.stopPropagation();
+    }
+  onClick(evt) {
+    this.props.onBtnBookClick(evt);
+    evt.preventDefault();
+    evt.stopPropagation();
+  }
+  render() {
+    return(<span className={this.getClassName()} style={this.getStyle()}
+      onAnimationEnd={(evt)=>this.onAnimationEnd(evt)}
+      onClick={(evt)=>this.onClick(evt)}>
+      <FontAwesomeIcon icon={faBook}></FontAwesomeIcon>
+    </span>);
+  }
+}
+
 class WelcomePage extends Component {
   constructor(props){
     super(props);  
@@ -93,15 +155,14 @@ class WelcomePage extends Component {
     return (
       <div className={this.getClassName()} style={this.getStyle()} 
         onAnimationEnd={(evt)=>{this.onAnimationEnd(evt)}}>
-        <p style={{'lineHeight': '2rem'}}>Deer<DeerSomeOne callName={this.getCallName()} animaDelay={.5}></DeerSomeOne>不知不覺也跟你/妳認識了這麼久時間。
-        關於對那些堪稱回憶的時光，如果回憶的總和像沙灘那樣綿延，那麼還記得的，只是幾片留在岸上的貝殼吧！如果所有的感謝像海那麼深，那麼文字能表達的，僅止於搖曳著粼粼波光的深度而已；
-        但我也是很努力地把這些點點滴滴蒐集起來，成一本專屬你/妳的
-          <FontAwesomeIcon icon={faBook} onClick={(evt)=>{this.onBtnNextClick(evt)}} style={{
-            'cursor': 'pointer', 'color': 'brown'
-          }}>            
-          </FontAwesomeIcon>
-        了呢！但是，我還要厚著臉皮的請你/妳再
-        花點時間幫個忙── 一起完成紀念冊的最後一頁吧 ──
+        <p style={{'lineHeight': '2rem'}}>Deer<DeerSomeOne callName={this.getCallName()} animaDelay={.5}></DeerSomeOne>
+        不知不覺也浪費了你/妳這麼多時間跟我一起做這個做那個，
+        關於那些堪稱回憶的點點滴滴，還有說不完的謝謝，
+        我只能號稱努力地把這些都蒐集起來，用拙劣的文字和程式碼編成一本專屬你/妳的
+          <BtnBook icon={faBook} onBtnBookClick={(evt)=>{this.onBtnNextClick(evt)}} >            
+          </BtnBook>
+        了！但是，到了這一步還要厚著臉皮的請你/妳再
+        花點時間幫個忙── 就一路翻到最後一頁吧 ──
         </p>
       </div>
     );

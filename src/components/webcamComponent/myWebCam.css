@@ -16,6 +16,7 @@
   padding: .5rem;
 }
 .myWebCamBtn {
+  position: relative;
   display: inline-block;
   margin: 0 10px;
   width: 64px;

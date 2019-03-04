@@ -43,7 +43,7 @@ class BtnUpdateIt extends Component {
   }
   onAnimaEnd(evt) {
     this.setState({
-      'classList': ['myWebCamBtn btnUpdateIt animated'],
+      'classList': ['myWebCamBtn', 'btnUpdateIt', 'animated'],
     });
     evt.preventDefault();
     evt.stopPropagation();
@@ -63,7 +63,7 @@ class BtnUpdateIt extends Component {
 
 const PlaceholderLeaveMsg = ({ishide}) => {
   if(false === ishide) {
-    return (<i className={'leaveMsgPlaceholder'}>想說些什麼嗎?......</i>);
+    return (<i className={'leaveMsgPlaceholder'}>這就是請你/妳幫的最後一個忙嚕，想說些什麼的話都可以留在這裡！然後左上的按鈕是鎧之...是上傳你/妳珍藏的照片!右上的按鈕可以拍照喲</i>);
   } else {
     return (<i className={'leaveMsgPlaceholder hide'}></i>);
   }

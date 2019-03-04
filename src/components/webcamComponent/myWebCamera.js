@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import _ from 'lodash';
 import './myWebCam.css';
+import {MyTooltip} from '../share/animaItem';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faFileImage, faCamera} from '@fortawesome/free-solid-svg-icons';
 
@@ -9,7 +10,8 @@ class BtnInputFile extends Component {
     super(props);
     this.idForFile = 'inputMyPhoto';
     this.state = {
-      'classList': ['myWebCamBtn btnInputFile animated'],
+      'classList': ['myWebCamBtn', 'btnInputFile', 'animated'],
+      'showtip': false
     }
   }
   componentDidMount() {
@@ -20,15 +22,29 @@ class BtnInputFile extends Component {
   }
   animaIt() {
     this.animaTimer = setInterval(()=>{
-      this.setState({
-        'classList': ['myWebCamBtn btnInputFile animated tada'],
-      });
+      let nextState = _.cloneDeep(this.state);
+      _.set(nextState, 'classList', ['myWebCamBtn', 'btnInputFile', 'animated', 'tada']);
+      this.setState(nextState);
     }, 5000);
   }
   onAnimaEnd(evt) {
-    this.setState({
-      'classList': ['myWebCamBtn btnInputFile animated'],
-    });
+    let nextState = _.cloneDeep(this.state);
+    _.set(nextState, 'classList', ['myWebCamBtn', 'btnInputFile', 'animated']);
+    this.setState(nextState);
+    evt.preventDefault();
+    evt.stopPropagation();
+  }
+  onMouseEnter(evt) {
+    let nextState = _.cloneDeep(this.state);
+    _.set(nextState, 'showtip', true);
+    this.setState(nextState);
+    evt.preventDefault();
+    evt.stopPropagation();
+  }
+  onMouseLeave(evt) {
+    let nextState = _.cloneDeep(this.state);
+    _.set(nextState, 'showtip', false);
+    this.setState(nextState);
     evt.preventDefault();
     evt.stopPropagation();
   }
@@ -37,7 +53,8 @@ class BtnInputFile extends Component {
   }
   render () {
     return (
-    <div className={this.getClassName()} onAnimationEnd={evt=>{this.onAnimaEnd(evt)}}>
+    <div className={this.getClassName()} onAnimationEnd={evt=>{this.onAnimaEnd(evt)}}
+      onMouseEnter={evt=>{this.onMouseEnter(evt)}} onMouseLeave={evt=>{this.onMouseLeave(evt)}}>
       <label htmlFor={this.idForFile}>
         <FontAwesomeIcon icon={faFileImage}></FontAwesomeIcon>
         <input id={this.idForFile} type={'file'} onChange={evt=>{this.props.handleInputFileChanged(evt)}}
