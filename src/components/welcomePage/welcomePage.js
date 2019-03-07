@@ -152,20 +152,31 @@ class WelcomePage extends Component {
     evt.stopPropagation();
   }
   render() {
-    return (
-      <div className={this.getClassName()} style={this.getStyle()} 
-        onAnimationEnd={(evt)=>{this.onAnimationEnd(evt)}}>
-        <p style={{'lineHeight': '2rem'}}>Deer<DeerSomeOne callName={this.getCallName()} animaDelay={.5}></DeerSomeOne>
-        不知不覺也浪費了你/妳這麼多時間跟我一起做這個做那個，
-        關於那些堪稱回憶的點點滴滴，還有說不完的謝謝，
-        我只能號稱努力地把這些都蒐集起來，用拙劣的文字和程式碼編成一本專屬你/妳的
-          <BtnBook icon={faBook} onBtnBookClick={(evt)=>{this.onBtnNextClick(evt)}} >            
-          </BtnBook>
-        了！但是，到了這一步還要厚著臉皮的請你/妳再
-        花點時間幫個忙── 就一路翻到最後一頁吧 ──
-        </p>
-      </div>
-    );
+    if(true === this.props.accountData.storyReady) {
+      return (
+        <div className={this.getClassName()} style={this.getStyle()} 
+          onAnimationEnd={(evt)=>{this.onAnimationEnd(evt)}}>
+          <p style={{'lineHeight': '2rem'}}>Deer<DeerSomeOne callName={this.getCallName()} animaDelay={.5}></DeerSomeOne>
+          不知不覺也浪費了你/妳這麼多時間跟我一起做這個做那個，
+          關於那些堪稱回憶的點點滴滴，還有說不完的謝謝，
+          我只能號稱努力地把這些都蒐集起來，用拙劣的文字和程式碼編成一本專屬你/妳的
+            <BtnBook icon={faBook} onBtnBookClick={(evt)=>{this.onBtnNextClick(evt)}} >            
+            </BtnBook>
+          了！但是，到了這一步還要厚著臉皮的請你/妳再
+          花點時間幫個忙── 就一路翻到最後一頁吧 ──
+          </p>
+        </div>
+      );
+    } else {
+      return (
+        <div className={this.getClassName()} style={this.getStyle()} 
+          onAnimationEnd={(evt)=>{this.onAnimationEnd(evt)}}>
+          <p style={{'lineHeight': '2rem'}}>
+          謝謝你/妳在這裡停了腳步，我會很快準備好給<DeerSomeOne callName={this.getCallName()} animaDelay={.5}></DeerSomeOne>的禮物，恩......很快!!
+          </p>
+        </div>
+      );
+    }
   }
 }
 

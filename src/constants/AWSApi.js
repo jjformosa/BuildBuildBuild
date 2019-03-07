@@ -195,6 +195,23 @@ const _module = (function(){
     });
   }
 
+  const headS3Object = function (a_key) {
+    return new Promise((resovle, reject) => {
+      if(myAppS3) {
+        let param = {'Bucket': 'jjformosatest', 'Key': a_key};
+        myAppS3.headObject(param, (err, data) => {
+          if(err) {
+            reject(err);
+          } else {
+            resovle(data);
+          }
+        })
+      } else {
+        reject ("getS3Object: S3 not init!");
+      }
+    });
+  }
+
   const listFilesUnderFolder = function(a_path) {
     return new Promise((resovle, reject) => {
       if(myAppS3) {
@@ -274,6 +291,7 @@ const _module = (function(){
   DBFactory.createAccountData = createAccountData;
 
   StorageFactory.getS3Object = getS3Object;
+  StorageFactory.headS3Object = headS3Object;
   StorageFactory.listFilesUnderFolder = listFilesUnderFolder;
   StorageFactory.putS3File = putS3File;
   return null;

@@ -321,7 +321,7 @@ class AttentionLogin extends AnimaItem {
       首先，請您點一下<LongInBtn animaDelay={this.props.animaDelay+1}
           identifyType={Enum_LoginIdentifyType.Facebook}
           handleClickOnLogin={this.props.onBtnLoginClick}>            
-          </LongInBtn>，並允許Facebook應用程式告訴我誰來光臨了！
+          </LongInBtn>，並允許Facebook應用程式告訴我是誰大駕光臨
     </div>);
   }
 }
@@ -337,8 +337,8 @@ class AttentionWebCam extends AnimaItem {
   }
   render () {
     return (<div className={this.getClassName()}>
-      接著，希望您使用有相機的裝置，並允許我借用您的鏡頭。請別擔心！
-      <Attention>所有會使用相機的功能都會經過您的操作，並且您是唯一決定使用權的角色</Attention>！
+      接著，希望您使用有相機的裝置，並允許網站借用您的鏡頭。請別擔心！
+      <Attention>所有使用相機的功能都會經過您的操作，並且您是唯一決定使用權的角色</Attention>！
       如果同意請您點一下<BtnAllowWebCam handleBtnWebCamClick={this.props.onBtnWebCamClick}></BtnAllowWebCam>
       ，不同意也可以繼續喔！<BtnDenyWebCam handleBtnWebCamClick={this.props.onBtnWebCamClick}></BtnDenyWebCam>
     </div>);
@@ -384,12 +384,6 @@ class LandingPage extends Component {
       'step': props.step,
       'jumbotronContentTransition': false,
     }
-  }
-  componentDidMount() {
-    // let uid = this.props.match.params.uid;
-    // if(!isNullOrUndefined(uid)) {
-    //   this.props.onautologin(uid);
-    // }
   }
   componentWillReceiveProps(nextProps) {
     if(nextProps.nextpathname !== this.props.nextpathname){

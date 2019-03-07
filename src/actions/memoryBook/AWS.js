@@ -2,7 +2,7 @@ import _ from 'lodash';
 import {StorageFactory} from '../../constants/AWSApi';
 import {ACTIONTYPE_FLIPBOOK_SUCCESS, ACTIONTYPE_FLIPBOOK_REJECT,
   ACTIONTYPE_ILLUSTRATION_SUCCESS, ACTIONTYPE_ILLUSTRATION_REJECT,
-  ACTIONTYPE_WAITING_END} from '../../constants/actionTypes';
+  ACTIONTYPE_WAITING_END, ACTIONTYPE_STORY_READY, ACTIONTYPE_STORY_UNREADY} from '../../constants/actionTypes';
 import {EncodeByteArrayToDataUrl} from '../../constants/utility';
 
 export const fetchStoryContent = (accountData, path) => (dispatch) => {
@@ -58,6 +58,24 @@ const handleFetchIllustrationContent = (listResult) => (dispatch) => {
     dispatch({
       'type': ACTIONTYPE_ILLUSTRATION_REJECT,
       err
+    });
+  });
+}
+
+export const headStory = (accountData) => (dispatch) => {
+  let key = 'facebook-' + accountData.id ;
+  key += '/index.json';
+  StorageFactory.headS3Object(key).then((awsData)=>{
+    dispatch({
+      'type': ACTIONTYPE_STORY_READY
+    });
+    dispatch({
+      'type': ACTIONTYPE_WAITING_END,
+      'command': 'headStory',
+    });
+  }, (err)=>{
+    dispatch({
+      'type': ACTIONTYPE_STORY_UNREADY
     });
   });
 }

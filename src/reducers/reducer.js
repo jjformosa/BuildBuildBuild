@@ -15,7 +15,9 @@ import {
     ACTIONTYPE_ACCOUNT_ALLOWWEBCAM,
     ACTIONTYPE_ACCOUNT_DENYWEBCAM,
     ACTIONTYPE_UPDATECONTENTS_SUCCESS, 
-    ACTIONTYPE_UPDATECONTENTS_REJECT
+    ACTIONTYPE_UPDATECONTENTS_REJECT,
+    ACTIONTYPE_STORY_READY,
+    ACTIONTYPE_STORY_UNREADY
 } from '../constants/actionTypes';
 
 const accountReducer = handleActions({
@@ -68,6 +70,19 @@ const accountReducer = handleActions({
         })
         return nextState;
     },
+    [ACTIONTYPE_STORY_READY]: function(state) {
+        let nextState = _.cloneDeep(state),
+        accountData = _.get(state, 'accountData');
+        _.set(accountData, 'storyReady', true);
+        _.set(nextState, 'accountData', accountData);
+        return nextState;        
+    },
+    [ACTIONTYPE_STORY_UNREADY]: function(state) {
+        let nextState = _.cloneDeep(state),
+        accountData = _.get(state, 'accountData');
+        _.set(accountData, 'storyReady', false);
+        _.set(nextState, 'accountData', accountData);
+    },
     [ACTIONTYPE_JUMPTOPAGE]: (state, {pathname, ...params}) => {
         let nextState = _.cloneDeep(state);
          _.assign(nextState, {'nextpathname': pathname});
@@ -98,7 +113,7 @@ const storyReducer = handleActions({
     },
     [ACTIONTYPE_UPDATECONTENTS_SUCCESS]: function(state, {type, contentid, newcontents, newillustrations}) {
         let nextState = _.cloneDeep(state);
-        var newStory = {'chps': newcontents, 'illustrations': newillustrations};
+        let newStory = {'chps': newcontents, 'illustrations': newillustrations};
         _.merge(nextState, newStory);
         return nextState;        
     }, 

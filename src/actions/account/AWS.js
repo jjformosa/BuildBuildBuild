@@ -1,4 +1,5 @@
 import {DBFactory, StorageFactory, InitAWS} from '../../constants/AWSApi';
+import _ from 'lodash';
 import {
   ACTIONTYPE_ACCOUNT_LOGINSUCCESS, 
   ACTIONTYPE_ACCOUNT_LOGINREJECT,
@@ -6,29 +7,47 @@ import {
   ACTIONTYPE_WAITING_END,
 } from '../../constants/actionTypes';
 
-export const getMyAccountData = (account) =>(dispatch)  =>  {
+export const getMyAccountData = (account) => (dispatch) => {
   InitAWS(account);
   DBFactory.getMyAccountData(account).then((accountData)=>{
     if(!accountData) {
       dispatch(createAccountData(account));
     } else {
-      dispatch({
-          'type':ACTIONTYPE_ACCOUNT_LOGINSUCCESS,
-          accountData,
-      });
+      dispatch(headAccountStoryAfterGetMyAccountData(accountData));
     }
   }, (err)=>{
     dispatch({
       'type': ACTIONTYPE_ACCOUNT_LOGINREJECT,
       'err': err,
     });
-  }).finally(()=>{
     dispatch({
       'type': ACTIONTYPE_WAITING_END,
       'command': 'getMyAccountData'
     });
   });
 };
+
+const headAccountStoryAfterGetMyAccountData = (accountData) => (dispatch) => {
+  let path = accountData.id + '/index.json';
+  StorageFactory.headS3Object(path).then(
+    () => {
+      _.set(accountData, 'storyReady', true);
+    }, 
+    () => {
+      _.set(accountData, 'storyReady', false);
+    }
+  ).finally(()=>{
+      dispatch({
+        'type':ACTIONTYPE_ACCOUNT_LOGINSUCCESS,
+        accountData
+      });
+      dispatch({
+        'type': ACTIONTYPE_WAITING_END,
+        'command': 'getMyAccountData'
+      });
+    },
+  );
+}
 
 const createAccountData = (accout) => (dispatch) => {
   DBFactory.createAccountData(accout).then((_)=>{

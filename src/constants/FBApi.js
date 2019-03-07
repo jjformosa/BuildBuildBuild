@@ -6,32 +6,17 @@ const MyFBLoginApp = (function () {
 
     };
 
+    const fbScriptId = 'fb-jssdk';
     const initLoginAppSetting = {
         appId: '1896046937300584',
         status: true,
         version: 'v3.2'
     };
-
-    const fbScriptId = 'fb-jssdk';
-
     const TYPEOF_LOGINSTATUS = {
         'AUTH': 'connected',
         'EXPIRED': 'authorization_expired',
         'NEEDAUTH': 'not_authorized',
         'NONE': null
-    }
-
-    let isInited = false,
-        lastErrMsg = null;
-
-    let getLastErrMsg = function getLastErrMsg() {
-        return lastErrMsg;
-    },
-    resetApp = function resetApp() {
-        lastErrMsg = null;
-    },
-    chkErr = function chkErr () {
-        return (null === lastErrMsg);
     },
     getProfile = function getProfile () {
         return new Promise((resolve)=>{
@@ -45,9 +30,9 @@ const MyFBLoginApp = (function () {
             FB.login((response)=>{
                 let loginStatus = response.status;
                 if(TYPEOF_LOGINSTATUS.AUTH === loginStatus) {
-                    resolve({loginStatus, ...response});
+                    resolve(response);
                 } else {
-                    reject(loginStatus, response);
+                    reject(response);
                 }
             });
         })
@@ -57,18 +42,15 @@ const MyFBLoginApp = (function () {
             FB.getLoginStatus((response)=>{
                 let loginStatus = response.status;
                 if(TYPEOF_LOGINSTATUS.AUTH === loginStatus) {
-                    resolve(loginStatus);
+                    resolve(response);
                 } else {
-                    reject(loginStatus);
+                    reject(response);
                 }
             });
         })
     }    
 
     Object.defineProperties(instance, {
-        'reset': {
-            'value': resetApp,
-        },
         'getinitLoginAppSetting': {
             'get': function() {
                 return _.cloneDeep(initLoginAppSetting);
@@ -81,22 +63,21 @@ const MyFBLoginApp = (function () {
             'value': doLogin,
         },
         'chkAuth': {
-            'chkAuth': chkAuth,
+            'value': chkAuth,
         }
     });
 
-    if(window && !isInited) {
+    if(window) {
         window.fbAsyncInit = ()=>{
             if('undefined' !== typeof(FB)) {                        
                 FB.init({
-                    appId      : initLoginAppSetting.appId,
+                    appId      : '1896046937300584',
                     version    : 'v3.2', 
                 });
-                isInited = true;
             };
         }
     }
-    if(document && !isInited) {
+    if(document) {
         let fbScript = document.getElementById(fbScriptId);
         if(!fbScript) {
             fbScript = document.createElement('SCRIPT');
@@ -105,7 +86,6 @@ const MyFBLoginApp = (function () {
             document.head.appendChild(fbScript);
         }
     }
-
     return instance;
 }());
 

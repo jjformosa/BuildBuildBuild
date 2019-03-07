@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Route,withRouter,Switch} from 'react-router-dom';
+import {Route,withRouter} from 'react-router-dom';
 import { connect } from 'react-redux';
 import _ from 'lodash';
 import '../myApp.css';
@@ -17,10 +17,6 @@ const Waiting = (param) => (
   <div className={'myBlock'} style={{'display': param.isDisplay}} >
     <div className={'myBlock-waiting'} ></div>
   </div>
-);
-
-const MyWTF = (props) =>(
-  <div>"WtF" </div>
 );
 
 class MyApp extends Component{
@@ -55,9 +51,7 @@ class MyApp extends Component{
     // let nodes = this.props.location.pathname.split('/');
     // let page = nodes[1];
     let page = this.props.match.params.page;
-    if('LandingPage' === page) {
-      return LandingPage;
-    } else if('WelcomePage' === page) {
+    if('WelcomePage' === page) {
       return WelcomePage;
     } else if('HaJiMeDePage' === page) {
       return HaJiMeDePage;
@@ -66,7 +60,7 @@ class MyApp extends Component{
     } else if('WebCamPage' === page) {
       return MyWebCamPage;
     } else {
-      return MyWTF
+      return LandingPage;
     }
   }
   isWaiting() {
@@ -76,10 +70,8 @@ class MyApp extends Component{
     return (
       <div>        
         <div id={'myApp'} className={InitClassName_MyApp.join(' ')}>
-        <Switch>
           <Route path='/:page/:uid' component={this.getChild()}/>
           <Waiting isDisplay={this.isWaiting()}></Waiting>
-          </Switch>
         </div>
       </div>
     );
