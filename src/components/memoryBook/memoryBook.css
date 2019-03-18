@@ -58,19 +58,19 @@
   height: 100%;
   width: 100%;
   background-color: snow;
-  line-height: 2.2rem;
-  font-size: 1.6rem;
+  line-height: 1.6;
+  letter-spacing: .4rem;
+  font-size: 1.5rem;
 }
 /*文字內容*/
 .memoryBook .memoryBookPage .myContent { 
   display: block;
   position: absolute;
   top: 50%;
-  left: 10%;
-  width: 80%;
+  left: 20%;
+  width: 60%;
   height: 48%;
   overflow: hidden;
-  white-space: pre;
   -moz-user-select: none;
   -webkit-user-select: none;
   user-select: none;
@@ -79,11 +79,10 @@
   display: block;
   position:absolute;
   left: 0;
-  width:104%;
+  width:100%;
   height:100%;
-  overflow-y: scroll; 
+  overflow-y: auto; 
   overflow-x: hidden;
-  padding: 0 2.5%;
 }
 .myContent .myContent-blur{
   position:absolute;
@@ -100,6 +99,11 @@
   left: 0;
   bottom: 0;
   background-image: linear-gradient(to bottom, transparent, snow);
+}
+.myContent .behide {
+  text-align: center;
+  font-size: .8rem;
+  opacity: .6;
 }
 /*卷首跟捲尾的時候隱藏blur*/
 .myContent .myContent-blur.hide {
@@ -130,6 +134,11 @@
 .myIllustartion.hide{
   height: 0;
   opacity: 0;
+}
+.myIllustartion.hide + .myContent {
+  position: absolute;
+  top: 10%;
+  height: 80%;
 }
 .myIllustartion .myImg.hide{
   opacity: 0;

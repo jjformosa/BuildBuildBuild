@@ -19,6 +19,9 @@ const getClientEnvironment = require('./env');
 const getCacheIdentifier = require('react-dev-utils/getCacheIdentifier');
 const ModuleNotFoundPlugin = require('react-dev-utils/ModuleNotFoundPlugin');
 
+const marked = require("marked");
+const mdRenderer = new marked.Renderer();
+
 // Webpack uses `publicPath` to determine where the app is being served from.
 // It requires a trailing slash, or the file assets will get an incorrect path.
 const publicPath = paths.servedPath;
@@ -410,6 +413,18 @@ module.exports = {
           // Make sure to add the new loader(s) before the "file" loader.
         ],
       },
+      /*Markdown,純抄襲*/
+      {
+        test: /\.md$/,
+        use: [
+            {
+                loader: "html-loader"
+            },
+            {
+                loader: "markdown-loader"
+            }
+        ]
+    }
     ],
   },
   plugins: [

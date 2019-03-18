@@ -27,7 +27,7 @@ class DeerSomeOne extends AnimaItem {
   }
   render() {
     return <span style={this.getStyle()} className={this.getClassName()}>
-      {this.props.callName}<br/></span>
+      {this.props.callName}</span>
   }
 }
 
@@ -157,7 +157,7 @@ class WelcomePage extends Component {
         <div className={this.getClassName()} style={this.getStyle()} 
           onAnimationEnd={(evt)=>{this.onAnimationEnd(evt)}}>
           <p style={{'lineHeight': '2rem'}}>Deer<DeerSomeOne callName={this.getCallName()} animaDelay={.5}></DeerSomeOne>
-          不知不覺也浪費了你/妳這麼多時間跟我一起做這個做那個，
+          <br/>不知不覺也浪費了你/妳這麼多時間跟我一起做這個做那個，
           關於那些堪稱回憶的點點滴滴，還有說不完的謝謝，
           我只能號稱努力地把這些都蒐集起來，用拙劣的文字和程式碼編成一本專屬你/妳的
             <BtnBook icon={faBook} onBtnBookClick={(evt)=>{this.onBtnNextClick(evt)}} >            
@@ -172,7 +172,7 @@ class WelcomePage extends Component {
         <div className={this.getClassName()} style={this.getStyle()} 
           onAnimationEnd={(evt)=>{this.onAnimationEnd(evt)}}>
           <p style={{'lineHeight': '2rem'}}>
-          謝謝你/妳在這裡停了腳步，我會很快準備好給<DeerSomeOne callName={this.getCallName()} animaDelay={.5}></DeerSomeOne>的禮物，恩......很快!!
+            謝謝你/妳在這裡停了腳步，<DeerSomeOne callName={this.getCallName()} animaDelay={.5}></DeerSomeOne>是第一次光臨吧！但是跟你/妳的回憶有好多，請再給我一點點時間整理一下你/妳的專屬禮物喔!!
           </p>
         </div>
       );

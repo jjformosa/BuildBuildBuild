@@ -1,5 +1,5 @@
 ﻿import { Enum_LoginIdentifyType } from '../../model/account';
-import {facebookAutoLogin} from './FBAccount';
+import { facebookAutoLogin} from './FBAccount';
 import {getMyAccountData, setMyAccountNick} from './AWS';
 import {ACTIONTYPE_WAITING_START} from '../../constants/actionTypes';
 

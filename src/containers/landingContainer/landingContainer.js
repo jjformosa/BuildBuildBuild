@@ -1,7 +1,9 @@
-﻿import { connect } from 'react-redux';
+﻿/*global FB*/
+import { connect } from 'react-redux';
 import _ from 'lodash';
 import LandingPage from '../../components/landingPage/landingPage';
 import {accountLogin} from '../../actions/account/account';
+import {facebookGetProfile} from '../../actions/account/FBAccount';
 import { Enum_LoginIdentifyType } from '../../model/account';
 import {
     ACTIONTYPE_ACCOUNT_DENYWEBCAM, 
@@ -20,7 +22,12 @@ export default connect(
     },
     (dispatch)=>({
         'onBtnLoginClick': (evt) => {
-            dispatch(accountLogin(Enum_LoginIdentifyType.Facebook));
+            //dispatch(accountLogin(Enum_LoginIdentifyType.Facebook));
+            FB.login((response)=>{
+                if('connected' === response.status) {
+                    dispatch(facebookGetProfile(response.authResponse.accessToken));
+                }
+            });
         },
         'onBtnAllowWebCamClick': evt=> {
             dispatch({

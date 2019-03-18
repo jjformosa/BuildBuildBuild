@@ -4,6 +4,7 @@ import MemoryBookPage from './memoryBook_page';
 import MemoryBookCover from './memoryBook_cover';
 import './memoryBook.css';
 import { isNullOrUndefined } from 'util';
+import MyYouTubePlayer from '../ytPlayer/ytPlayer';
 
 const BtnStep = ({handleBtnStepClick, className, direction}) => (
   <div className={['btn-step', ...className].join(' ')} onClick={(evt)=>{handleBtnStepClick(evt, direction)}}>
@@ -120,8 +121,8 @@ class MemoryBook extends Component {
     if(isNullOrUndefined(chps) || 0 === chps.length) return '';
     let _index = (Number.isInteger(a_index) && a_index >= 0 && a_index < chps.length) ? 
       a_index : this.getPageNum();
-    return _.clone(chps[_index]).replace("{:nick}", this.getNick())
-      .replace("{:mynick}", this.getMyNick());
+    let rtn = _.clone(chps[_index]).replace(/{:nick}/g, this.getNick()).replace(/{:mynick}/g, this.getMyNick());
+    return rtn;
   }
   getCurPageContent() {
     let _content = (-1 < this.state.nextPage) ? this.getContent(this.state.nextPage) : this.getContent();
@@ -140,7 +141,10 @@ class MemoryBook extends Component {
     if(isNullOrUndefined(_content)) {
       _content = '';
     }
-    let _illustrations =  _.cloneDeep(this.state.illustrations);
+    let _illustrations = _.cloneDeep(this.state.illustrations);
+    if(!isNullOrUndefined(_illustrations) && _illustrations.length > 1) {
+      _illustrations = _illustrations[curIllustrationIndex];
+    }
     return {
       'content': _content,
       'illustrations': _illustrations,
@@ -161,7 +165,7 @@ class MemoryBook extends Component {
     let curcontent = this.getCoverPageContent(),
     nextcontent = this.getNextPageContent();
     let rtn = {
-      'curContent': curcontent
+      'curContent': curcontent,
     }
     if(!isNullOrUndefined(nextcontent)){
       _.set(rtn, 'nextContent', nextcontent);
@@ -192,7 +196,8 @@ class MemoryBook extends Component {
   }
   render() {
     return (
-      <div className={this.getClassName()}>
+      <div className={this.getClassName()}>       
+      <MyYouTubePlayer playindex={this.getPageNum()}></MyYouTubePlayer>
         <MemoryBookPage {...this.getCurPageContent()}></MemoryBookPage>
         <BtnStep handleBtnStepClick={(evt, toNum) => this.onBtnStepClick(evt, toNum)}
           direction={'prev'} className={this.getBtnPrevClassName()}>            

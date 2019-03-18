@@ -1,12 +1,12 @@
 @charset "UTF-8";
-@import url('https://fonts.googleapis.com/css?family=Roboto');
-@import url('https://fonts.googleapis.com/css?family=Noto+Sans+TC');
+/* @import url('https://fonts.googleapis.com/css?family=Roboto');
+@import url('https://fonts.googleapis.com/css?family=Noto+Sans+TC'); */
 
 #myApp{
   position: absolute;
   width: 100vmax;
   height: 100vmin;
-  font-family: 'Roboto', 'Noto Sans TC', Arial, 
+  font-family: Arial, 
     "文泉驛正黑", "WenQuanYi Zen Hei", 
     "儷黑 Pro", "LiHei Pro", 
     "微軟正黑體", "Microsoft JhengHei", sans-serif;
@@ -16,6 +16,7 @@
   #myApp{
     transform-origin: left top;
     transform: translate(100vw, 0vh) rotate(90deg);
+    overflow: auto;
   }
 }
 

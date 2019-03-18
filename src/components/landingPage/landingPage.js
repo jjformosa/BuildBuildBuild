@@ -358,8 +358,7 @@ class AttentionGo extends AnimaItem {
     return (<div className={this.getClassName()} style={{'lineHeight': '1.6rem'}}>
     <i style={{'fontStyle':'italic', 'textDecoration': 'underline'}}>
       {this.props.accountData.name}
-    </i>,這是您的Facebook身分嗎？提醒您，最佳瀏覽裝置是
-    <Attention>解析度1024*768，具備照相功能的螢幕</Attention>喔！都準備好了就打開
+    </i>,這是您的Facebook身分嗎？都準備好了就打開
     <BtnGift onBtnGoClick={evt=>this.props.onBtnGoClick(evt)}></BtnGift>
     </div>);
   }
@@ -367,7 +366,8 @@ class AttentionGo extends AnimaItem {
 
 const Jumbotron = (props) => (
   <div className={'jumbotron'}>
-    這裡有個小小的交換禮物活動，請您詳閱<Attention>注意內容</Attention>再決定是否繼續喔！
+    這裡有個小小的交換禮物活動，請您詳閱<Attention>注意內容</Attention>再決定是否繼續喔！也歡迎您看看關於本站的<a href="https://wqz7ucm2bk.execute-api.us-east-1.amazonaws.com/1/privacypage" rel="noopener noreferrer" target="_blank">隱私權政策。提醒您，最佳瀏覽裝置是
+    <Attention>解析度1024*768以上，具備照相功能的電腦螢幕</Attention>喔！</a>
     <LandingHr></LandingHr>
     {props.children}
   </div>
@@ -444,12 +444,22 @@ class LandingPage extends Component {
     return this.state.classList.join(' ');
   }
   getStyle() {
-    return {
-      'padding': '.5rem',
-      'maxWidth': '50vmax',
-      'width': 'auto',
-      'overflow': 'hidden',
-      'animationDelay': this.state.animaDelay + 's',
+    if(window.innerWidth > 480) {
+      return {
+        'padding': '.5rem',
+        'maxWidth': '60vmax',
+        'width': 'auto',
+        'overflow': 'hidden',
+        'animationDelay': this.state.animaDelay + 's',
+      }
+    } else {
+      return {
+        'padding': '.5rem',
+        'maxWidth': '60vmax',
+        'width': 'auto',
+        'overflow': 'auto',
+        'animationDelay': this.state.animaDelay + 's',
+      }
     }
   }
   onAnimationEnd(evt) {
@@ -474,7 +484,7 @@ class LandingPage extends Component {
     <AttentionLogin {...this.getAttentionLoginParam()}></AttentionLogin>;
     return (
       <div style={this.getStyle()} className={this.getClassName()}
-        onAnimationEnd={(evt)=>{this.onAnimationEnd(evt)}}>
+        onAnimationEnd={(evt)=>{this.onAnimationEnd(evt)}}> 
       <Jumbotron>
         {jumbotronContent}
       </Jumbotron>

@@ -9,7 +9,7 @@ export const fetchStoryContent = (accountData, path) => (dispatch) => {
   let key = 'facebook-' + accountData.id ;
   if(path) key += path.join('/');
   key += '/index.json';
-  StorageFactory.getS3Object(key).then((awsData)=>{
+  StorageFactory.getS3Object(key, null, accountData).then((awsData)=>{
     dispatch({
       'type': ACTIONTYPE_FLIPBOOK_SUCCESS,
       'response': JSON.parse(awsData.Body.toString('utf-8'))
@@ -29,8 +29,8 @@ export const fetchStoryContent = (accountData, path) => (dispatch) => {
 export const fetchIllustrationContent = (storyId, accountData, illustrationId) => (dispatch) => {
   let path = (storyId === accountData.id) ? 'facebook-' + storyId +'/Albums/' + illustrationId :
     'facebook-' + storyId + '/Share/Albums/' + illustrationId ;
-  StorageFactory.listFilesUnderFolder(path).then((array_awsData)=>{
-    dispatch(handleFetchIllustrationContent(array_awsData));
+  StorageFactory.listFilesUnderFolder(path, accountData).then((array_awsData)=>{
+    dispatch(handleFetchIllustrationContent(array_awsData, accountData));
   }, (err) => {
     dispatch({
       'type': ACTIONTYPE_ILLUSTRATION_REJECT,
@@ -39,13 +39,13 @@ export const fetchIllustrationContent = (storyId, accountData, illustrationId) =
   });
 }
 
-const handleFetchIllustrationContent = (listResult) => (dispatch) => {
+const handleFetchIllustrationContent = (listResult, accountData) => (dispatch) => {
   let array_awsData = _.filter(listResult, ({Key}) => {
     let _key = Key.toLowerCase();
     return _key.endsWith('.jpg') || _key.endsWith('.png');
   });
   Promise.all(_.map(array_awsData, function(awsData){
-    return StorageFactory.getS3Object(decodeURIComponent(awsData.Key), awsData.ETag);
+    return StorageFactory.getS3Object(decodeURIComponent(awsData.Key), awsData.ETag, accountData);
   })).then((response) => {
     dispatch({
       'type': ACTIONTYPE_ILLUSTRATION_SUCCESS,
@@ -65,7 +65,7 @@ const handleFetchIllustrationContent = (listResult) => (dispatch) => {
 export const headStory = (accountData) => (dispatch) => {
   let key = 'facebook-' + accountData.id ;
   key += '/index.json';
-  StorageFactory.headS3Object(key).then((awsData)=>{
+  StorageFactory.headS3Object(key, accountData).then((awsData)=>{
     dispatch({
       'type': ACTIONTYPE_STORY_READY
     });

@@ -7,8 +7,9 @@ let DBFactory = {};
 let StorageFactory = {};
 
 let InitAWS = null;
+let isAWSInit = false;
 
-const myAppRoleArn = 'arn:aws:iam::540052993261:role/jjformosatest';
+const myAppRoleArn = 'arn:aws:iam::540052993261:role/facebookowner';
 
 const makeAWSApiSetting = (a_accessToken) =>(
   {
@@ -47,8 +48,23 @@ const _module = (function(){
   myAppDB, myAppS3;
 
   InitAWS = function (a_Account) {
+    if(isAWSInit) return;
+    isAWSInit = true;
     myAppDB = new AWS.DynamoDB(makeAWSApiSetting(a_Account.accessToken));
     myAppS3 = new AWS.S3(makeAWSApiSetting2(a_Account.accessToken));
+  //   AWS.config.region = 'us-east-1'; // 區域
+  //   AWS.config.credentials = new AWS.CognitoIdentityCredentials({
+  //       IdentityPoolId: 'us-east-1:020a3843-d4f8-4c36-a941-46b5a67447d6',
+  //       Logins: {
+  //         'graph.facebook.com': a_Account.accessToken,
+  //       }
+  //   });
+  //   AWS.config.credentials.refresh(function (err) {
+  //     if (err) return console.log("Error", err);
+  //     console.log("Cognito Identity Id", AWS.config.credentials.identityId);
+  // });
+  //   myAppDB = new AWS.DynamoDB();
+  //   myAppS3 = new AWS.S3();
   }
 
   const initMyAWSApi = function() {
@@ -122,6 +138,9 @@ const _module = (function(){
   }
 
   const createAccountData = function (a_Account) {
+    if(!myAppDB) {
+      myAppDB = new AWS.DynamoDB(makeAWSApiSetting(a_Account.accessToken));
+    }
     return new Promise((resolve, reject)=>{
       if(!myAppDB) {
         reject(false, 'not init aws db');
@@ -146,7 +165,10 @@ const _module = (function(){
     });
   }
 
-  const setAccountNick = function (a_data) {
+  const setAccountNick = function (a_data, a_Account) {
+    if(!myAppDB) {
+      myAppDB = new AWS.DynamoDB(makeAWSApiSetting(a_Account.accessToken));
+    }
     return new Promise((resolve, reject) => {
       if(!myAppDB) {
         reject(false, 'not init aws db');
@@ -175,10 +197,13 @@ const _module = (function(){
     });
   }
 
-  const getS3Object = function (a_key, a_eTag = null) {
+  const getS3Object = function (a_key, a_eTag = null, a_Account = null) {
+    if(!myAppS3) {
+      myAppS3 = new AWS.DynamoDB(makeAWSApiSetting2(a_Account.accessToken));
+    }
     return new Promise((resovle, reject) => {
       if(myAppS3) {
-        let param = {'Bucket': 'jjformosatest', 'Key': a_key};
+        let param = {'Bucket': 'jjformosa-forlove10grams', 'Key': a_key};
         if(a_eTag) {
           _.set(param, 'IfMatch', a_eTag);
         }
@@ -195,10 +220,13 @@ const _module = (function(){
     });
   }
 
-  const headS3Object = function (a_key) {
+  const headS3Object = function (a_key, a_Account) {
+    if(!myAppS3) {
+      myAppS3 = new AWS.DynamoDB(makeAWSApiSetting2(a_Account.accessToken));
+    }
     return new Promise((resovle, reject) => {
       if(myAppS3) {
-        let param = {'Bucket': 'jjformosatest', 'Key': a_key};
+        let param = {'Bucket': 'jjformosa-forlove10grams', 'Key': a_key};
         myAppS3.headObject(param, (err, data) => {
           if(err) {
             reject(err);
@@ -212,11 +240,14 @@ const _module = (function(){
     });
   }
 
-  const listFilesUnderFolder = function(a_path) {
+  const listFilesUnderFolder = function(a_path, a_Account) {
+    if(!myAppS3) {
+      myAppS3 = new AWS.DynamoDB(makeAWSApiSetting2(a_Account.accessToken));
+    }
     return new Promise((resovle, reject) => {
       if(myAppS3) {
         myAppS3.listObjectsV2({
-          'Bucket': 'jjformosatest',
+          'Bucket': 'jjformosa-forlove10grams',
           'Prefix': a_path + '/',
           'EncodingType': 'url'
         }, (err, data) => {
@@ -244,12 +275,14 @@ const _module = (function(){
     });
   }
   const putExtendParams = ['ContentType'];
-  const putS3File = function putS3File(a_Key, a_Data, {...props}) {
+  const putS3File = function putS3File(a_Key, a_Data, a_Account, {...props}) {
+    if(!myAppS3) {
+      myAppS3 = new AWS.DynamoDB(makeAWSApiSetting2(a_Account.accessToken));
+    }
     let param = {
-      'Bucket': 'jjformosatest',
+      'Bucket': 'jjformosa-forlove10grams',
       'Key': a_Key,
-      'Body': a_Data,
-      'ACL': 'authenticated-read',
+      'Body': a_Data
     };
     _.forEach(props, (_v, _k)=>{
       if(_.has(putExtendParams, _k)) {

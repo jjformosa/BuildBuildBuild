@@ -31,8 +31,8 @@ class MemoryBookPageContent extends Component{
   render() {
   return (
   <div className={'myContent'}>
-    <p className={'myContent-inner'} onScroll={this.onscroll}>
-      {this.props.content}
+    <p className={'myContent-inner'} onScroll={(evt)=>{this.onscroll(evt)}}
+      dangerouslySetInnerHTML={{ __html: this.props.content }}>
     </p>
     <MemoryBookPageContentBlur className={this.state.topBlurClassList}></MemoryBookPageContentBlur>
     <MemoryBookPageContentBlur className={this.state.bottomBlurClassList}></MemoryBookPageContentBlur>

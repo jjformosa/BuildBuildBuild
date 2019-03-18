@@ -1,0 +1,56 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+      {
+          "Sid": "VisualEditor0",
+          "Effect": "Allow",
+          "Action": [
+              "dynamodb:PutItem",
+              "dynamodb:GetItem",
+              "dynamodb:Scan",
+              "dynamodb:Query",
+              "dynamodb:UpdateItem"
+          ],
+          "Resource": "arn:aws:dynamodb:us-east-1:540052993261:table/myAccount",
+          "Condition": {
+              "ForAllValues:StringEquals": {
+                  "dynamodb:LeadingKeys": "${graph.facebook.com:id}"
+              }
+          }
+      },
+      {
+          "Sid": "VisualEditor1",
+          "Effect": "Allow",
+          "Action": "s3:ListBucket",
+          "Resource": "arn:aws:s3:::jjformosatest",
+          "Condition": {
+              "StringLike": {
+                  "s3:prefix": "facebook-${graph.facebook.com:id}/*"
+              }
+          }
+      },
+      {
+          "Sid": "VisualEditor2",
+          "Effect": "Allow",
+          "Action": [
+              "s3:ListAllMyBuckets",
+              "s3:HeadBucket"
+          ],
+          "Resource": "*"
+      },
+      {
+          "Sid": "VisualEditor3",
+          "Effect": "Allow",
+          "Action": "s3:*",
+          "Resource": [
+              "arn:aws:s3:::jjformosatest",
+              "arn:aws:s3:::/jjformosatest/facebook-${graph.facebook.com:id}/*"
+          ],
+          "Condition": {
+              "StringLike": {
+                  "s3:prefix": "facebook-${graph.facebook.com:id}/*"
+              }
+          }
+      }
+  ]
+}

@@ -9,27 +9,28 @@ import {
 
 export const getMyAccountData = (account) => (dispatch) => {
   InitAWS(account);
-  DBFactory.getMyAccountData(account).then((accountData)=>{
-    if(!accountData) {
-      dispatch(createAccountData(account));
-    } else {
-      dispatch(headAccountStoryAfterGetMyAccountData(accountData));
-    }
-  }, (err)=>{
-    dispatch({
-      'type': ACTIONTYPE_ACCOUNT_LOGINREJECT,
-      'err': err,
-    });
-    dispatch({
-      'type': ACTIONTYPE_WAITING_END,
-      'command': 'getMyAccountData'
-    });
-  });
+  setTimeout(function(){
+    DBFactory.getMyAccountData(account).then((accountData)=>{
+      if(!accountData) {
+        dispatch(createAccountData(account));
+      } else {
+        dispatch(headAccountStoryAfterGetMyAccountData(accountData));
+      }
+    }, (err)=>{
+      dispatch({
+        'type': ACTIONTYPE_ACCOUNT_LOGINREJECT,
+        'err': err,
+      });
+      dispatch({
+        'type': ACTIONTYPE_WAITING_END,
+        'command': 'getMyAccountData'
+      });
+    });}, 1000);
 };
 
 const headAccountStoryAfterGetMyAccountData = (accountData) => (dispatch) => {
-  let path = accountData.id + '/index.json';
-  StorageFactory.headS3Object(path).then(
+  let path = 'facebook-' + accountData.id + '/index.json';
+  StorageFactory.headS3Object(path, accountData).then(
     () => {
       _.set(accountData, 'storyReady', true);
     }, 
@@ -61,8 +62,8 @@ const createAccountData = (accout) => (dispatch) => {
 }
 
 const createAccountRoot = (account)=> (dispatch) => {  
-  let indexFileKey = 'facebook-' + account.id + '/index.json';
-  StorageFactory.putS3File(indexFileKey, JSON.stringify({'contents': []})).then(()=>{
+  let indexFileKey = 'facebook-' + account.id +'/visite.json';
+  StorageFactory.putS3File(indexFileKey, JSON.stringify({'contents': []}), account).then(()=>{
     dispatch(getMyAccountData(account));
   }).catch(err=>{
     dispatch({
@@ -73,10 +74,10 @@ const createAccountRoot = (account)=> (dispatch) => {
 }
 
 export const setMyAccountNick = (accountData) =>(dispatch)  =>  {
-  DBFactory.setAccountNick(accountData).then((response)=>{
+  DBFactory.setAccountNick(accountData, accountData).then((response)=>{
     dispatch({
       'type':ACTIONTYPE_ACCOUNT_CHANGENICKNAME,
-      'accountData': response,
+      accountData,
     })
   }, (err)=>{
     console.log(err);

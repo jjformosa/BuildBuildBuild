@@ -68,7 +68,7 @@ class MyApp extends Component{
   }
   render() {
     return (
-      <div>        
+      <div>
         <div id={'myApp'} className={InitClassName_MyApp.join(' ')}>
           <Route path='/:page/:uid' component={this.getChild()}/>
           <Waiting isDisplay={this.isWaiting()}></Waiting>

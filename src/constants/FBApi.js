@@ -20,7 +20,9 @@ const MyFBLoginApp = (function () {
     },
     getProfile = function getProfile () {
         return new Promise((resolve)=>{
-            FB.api('\me', (response)=>{
+            FB.api('\me', {
+                'fields': 'id,name',
+            }, (response)=>{
                 resolve(response);
             });
         });
@@ -34,19 +36,18 @@ const MyFBLoginApp = (function () {
                 } else {
                     reject(response);
                 }
-            });
+            },{scope: 'id,name'});
         })
     },
     chkAuth = function () {
         return new Promise((resolve, reject)=> {
-            FB.getLoginStatus((response)=>{
-                let loginStatus = response.status;
-                if(TYPEOF_LOGINSTATUS.AUTH === loginStatus) {
+            if(typeof FB === 'undefined') {
+                reject("FB not init!!");
+            } else {
+                FB.getLoginStatus((response)=>{
                     resolve(response);
-                } else {
-                    reject(response);
-                }
-            });
+                });                
+            }
         })
     }    
 

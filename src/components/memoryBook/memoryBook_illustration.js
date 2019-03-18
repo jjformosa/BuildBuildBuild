@@ -146,18 +146,12 @@ class MyImg extends Component {
         'classList': ['myImg', 'animated'],
         'animaName': null
       })  
+    } else if (this.state.classList.length > 4) {
+      this.setState({
+        'classList': ['myImg', 'animated'],
+        'animaName': null
+      });
     } else {
-      // if('fadeOutLeft' === _animaName) {
-      //   this.setState({
-      //     'classList': ['myImg', 'animated', 'fadeInRight'],
-      //     'animaName': 'fadeInRight'
-      //   })
-      // } else if('fadeOutRight' === _animaName) {
-      //   this.setState({
-      //     'classList': ['myImg', 'animated', 'fadeInLeft'],
-      //     'animaName': 'fadeInLeft'
-      //   })
-      // }
       if('fadeOutLeft' === _animaName || 'fadeOutRight' === _animaName) {
         this.props.handleImgChanged();
       }
@@ -205,7 +199,7 @@ class MyIllustration extends Component {
     this.setState({
       'classList': _classList,
       'illustrations': _illustrations,
-      'curIndex': -1,
+      'curIndex': 0,
       'nextIndex': 0,
       'isAutoPlay': true
     });
@@ -223,6 +217,9 @@ class MyIllustration extends Component {
       let timer = setInterval(()=>{
         if(the.state.isAutoPlay && 1 < the.state.illustrations.length) {
           let next = the.state.curIndex + 1;
+          if(next === the.state.nextIndex) {
+            next +=1;
+          }
           if(next >= the.state.illustrations.length) {
             next = 0;
           }
@@ -249,17 +246,27 @@ class MyIllustration extends Component {
   backward() {
     if(!this.state.isAutoPlay) {
       let _next = Math.max(this.state.curIndex -1, 0);
-      this.setState({
-        'nextIndex': _next,
-      });
+      if(_next === this.state.nextIndex) {
+        //有bug
+        this.forward();
+      } else {
+        this.setState({
+          'nextIndex': _next,
+        });
+      }
     }
   }
   forward() {
     if(!this.state.isAutoPlay) {
       let _next = Math.min(this.state.curIndex + 1, this.state.illustrations.length -1);
+      if(_next === this.state.nextIndex) {
+        //有bug
+        this.backward();
+      } else {
       this.setState({
-        'nextIndex': _next,
-      });
+          'nextIndex': _next,
+        });
+      }
     }
   }
   getImgParams() {
@@ -267,9 +274,7 @@ class MyIllustration extends Component {
     if(this.state.illustrations && 0 < this.state.illustrations.length) {
       _src = this.state.illustrations[this.state.nextIndex];
     }
-    if(-1 === this.state.curIndex) {
-    }
-    else if(this.state.nextIndex > this.state.curIndex) {
+    if(this.state.nextIndex > this.state.curIndex) {
       _direction = 'forward';
     } else if(this.state.nextIndex < this.state.curIndex) {
       _direction = 'backward';
@@ -335,10 +340,12 @@ class MyIllustration extends Component {
   }
 }
 
-const MyCoverIllustration = ({illustrations}) => (
-<div className={'myIllustartion'}>
+const MyCoverIllustration = ({illustrations}) => { 
+  let className = ['myIllustartion'];
+  if(!illustrations || illustrations.length === 0) className.push('hide');
+return <div className={className.join(' ')}>
   <img className={'myImg'} src={illustrations} alt=''></img>
-</div>);
+</div>};
 
 export default MyIllustration;
 export {MyCoverIllustration};

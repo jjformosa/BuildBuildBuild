@@ -8,7 +8,7 @@ export const updateStoryContents = (accountData, a_id, newContents, illustration
   let indexFileKey = 'facebook-' + accountData.id + '/index.json',
   // let indexFileKey = 'facebook-2434715163221202/index_2.josn',
     jsonContent = {'contents': newContents};
-  StorageFactory.putS3File(indexFileKey, JSON.stringify(jsonContent)).then((awsData)=>{
+  StorageFactory.putS3File(indexFileKey, JSON.stringify(jsonContent), accountData).then((awsData)=>{
     if(isNullOrUndefined(illustrations)) {
       dispatch(onUpdateStorySuccess(accountData, a_id, newContents));
     } else {
@@ -26,7 +26,7 @@ export const updateStoryIllustrations = (accountData, a_id, newContents, illustr
     let _path = root + '/' + illustration.filename;
     return StorageFactory.putS3File(_path, illustration.body, {
       'ContentType': illustration.contenttype
-    });
+    }, accountData);
   }));
   _all.then(array_AWSDatas=>{
     dispatch(onUpdateStorySuccess(accountData, a_id, newContents, illustrations));

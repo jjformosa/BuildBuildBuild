@@ -63,7 +63,8 @@ const accountReducer = handleActions({
         let nextState = _.cloneDeep(state),
             nextpathname = '/LandingPage';
         if(_.has(state, 'accountData')) {
-            nextpathname = '/WelcomePage/' + accountData.id;
+            console.log(accountData);
+            nextpathname = '/WelcomePage/' + accountData.uid;
         }
         _.assign(nextState, accountData, {
             'nextpathname': nextpathname,
@@ -99,6 +100,8 @@ const storyReducer = handleActions({
     [ACTIONTYPE_FLIPBOOK_SUCCESS]: function(state, {type, response}) {
         let nextState = _.cloneDeep(state);
         _.set(nextState, 'chps', response.contents);
+        _.set(nextState, 'ytplaylist', response.ytplaylist);
+        _.set(nextState, 'ytplayindex', response.ytplayindex);
         return nextState;
     },
     [ACTIONTYPE_ILLUSTRATION_SUCCESS]: function(state, {type, response}) {
@@ -123,17 +126,17 @@ const storyReducer = handleActions({
 }, {
     'chps': [],
     'illustrations': [],
+    'ytplaylist': null,
+    'ytplayindex': null
 });
 
 const dataReducer = handleActions({
     [ACTIONTYPE_WAITING_START]: (state, command) => {
-        console.log(command);
         let nextState = _.cloneDeep(state);
         _.set(nextState, 'waiting', true);
         return nextState;
     },
     [ACTIONTYPE_WAITING_END] : (state, command) => {
-        console.log(command);
         let nextState = _.cloneDeep(state);
         _.set(nextState, 'waiting', false);
         return nextState;
