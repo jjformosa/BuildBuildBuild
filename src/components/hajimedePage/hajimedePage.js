@@ -123,7 +123,7 @@ import { faChevronCircleRight } from '@fortawesome/free-solid-svg-icons';
         );
       } else {
         return (<label className={this.getClassName()} style={this.getStyle()} 
-        onAnimationEnd={(evt)=>{this.onAnimationEnd(evt)}}>如果你/妳願意，歡迎留個小名讓我們更親近：
+        onAnimationEnd={(evt)=>{this.onAnimationEnd(evt)}}>如果你/妳願意，歡迎留個暱稱讓我們更親近：
             <input style={this.getStyle2()} onChange={this.props.onNickChanged} value={this.state.accountData.nick}>              
             </input>
         </label>

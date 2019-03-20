@@ -366,8 +366,8 @@ class AttentionGo extends AnimaItem {
 
 const Jumbotron = (props) => (
   <div className={'jumbotron'}>
-    這裡有個小小的交換禮物活動，請您詳閱<Attention>注意內容</Attention>再決定是否繼續喔！也歡迎您看看關於本站的<a href="https://wqz7ucm2bk.execute-api.us-east-1.amazonaws.com/1/privacypage" rel="noopener noreferrer" target="_blank">隱私權政策。提醒您，最佳瀏覽裝置是
-    <Attention>解析度1024*768以上，具備照相功能的電腦螢幕</Attention>喔！</a>
+    這裡有個小小的交換禮物活動，請您詳閱<Attention>注意內容</Attention>再決定是否繼續喔！也歡迎您看看關於本站的<a href="https://wqz7ucm2bk.execute-api.us-east-1.amazonaws.com/1/privacypage" rel="noopener noreferrer" target="_blank">隱私權政策</a>。提醒您，最佳瀏覽裝置是
+    <Attention>解析度1024*768以上，具備照相功能的電腦螢幕</Attention>，如果你/妳是第一次使用，可以參考<a href="https://youtu.be/ggrYu_nOI0M" rel="noopener noreferrer" target="_blank">VCR</a>。
     <LandingHr></LandingHr>
     {props.children}
   </div>

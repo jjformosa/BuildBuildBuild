@@ -57,9 +57,8 @@
   position: absolute;
   height: 100%;
   width: 100%;
-  background-color: snow;
   line-height: 1.6;
-  letter-spacing: .4rem;
+  letter-spacing: .25rem;
   font-size: 1.5rem;
 }
 /*文字內容*/
@@ -93,12 +92,12 @@
 .myContent .myContent-blur.top{
   left: 0;
   top: 0;
-  background-image: linear-gradient(to bottom, snow, transparent);
+  background-image: linear-gradient(to bottom, #e4e1ee, transparent);
 }
 .myContent .myContent-blur.bottom{
   left: 0;
   bottom: 0;
-  background-image: linear-gradient(to bottom, transparent, snow);
+  background-image: linear-gradient(to bottom, transparent, #e4e1ee);
 }
 .myContent .behide {
   text-align: center;
@@ -252,7 +251,7 @@
   transform-style: preserve-3d;
   backface-visibility: hidden;
   overflow: hidden;
-  background-color: dimgray;
+  background-color: #c4c1ce;
 }
 
 .memoryBookCoverPage .back {

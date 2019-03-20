@@ -22,6 +22,7 @@ import {
 
 const accountReducer = handleActions({
     [ACTIONTYPE_ACCOUNT_LOGINSUCCESS]: (state, accountData) => {
+        console.log(accountData);
         let nextState = _.cloneDeep(state);
         _.set(nextState, 'step', 'webcam');
         _.assign(nextState, accountData);
@@ -63,8 +64,7 @@ const accountReducer = handleActions({
         let nextState = _.cloneDeep(state),
             nextpathname = '/LandingPage';
         if(_.has(state, 'accountData')) {
-            console.log(accountData);
-            nextpathname = '/WelcomePage/' + accountData.uid;
+            nextpathname = '/WelcomePage/' + _.get(state, ['accountData', 'uid']);
         }
         _.assign(nextState, accountData, {
             'nextpathname': nextpathname,

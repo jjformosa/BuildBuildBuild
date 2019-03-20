@@ -172,7 +172,7 @@ class WelcomePage extends Component {
         <div className={this.getClassName()} style={this.getStyle()} 
           onAnimationEnd={(evt)=>{this.onAnimationEnd(evt)}}>
           <p style={{'lineHeight': '2rem'}}>
-            謝謝你/妳在這裡停了腳步，<DeerSomeOne callName={this.getCallName()} animaDelay={.5}></DeerSomeOne>是第一次光臨吧！但是跟你/妳的回憶有好多，請再給我一點點時間整理一下你/妳的專屬禮物喔!!
+            謝謝你/妳在這裡暫停了腳步，<DeerSomeOne callName={this.getCallName()} animaDelay={.5}></DeerSomeOne>是第一次光臨吧！但是跟你/妳的回憶有好多，請再給我一點點時間整理一下你/妳的專屬紀念喔!!
           </p>
         </div>
       );
