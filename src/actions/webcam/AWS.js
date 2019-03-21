@@ -5,10 +5,10 @@ import {onUpdateStorySuccess, onUpdateStoryFail} from './webcam';
 
 export const updateStoryContents = (accountData, a_id, newContents, illustrations) => (dispatch)=> {  
   //先更新contents
-  let indexFileKey = 'facebook-' + accountData.id + '/index.json',
+  let indexFileKey = 'facebook-' + accountData.id + '/index.json';
   // let indexFileKey = 'facebook-2434715163221202/index_2.josn',
-    jsonContent = {'contents': newContents};
-  StorageFactory.putS3File(indexFileKey, JSON.stringify(jsonContent), accountData).then((awsData)=>{
+    //jsonContent = {'contents': newContents};
+  StorageFactory.putS3File(indexFileKey, JSON.stringify(newContents), accountData).then((awsData)=>{
     if(isNullOrUndefined(illustrations)) {
       dispatch(onUpdateStorySuccess(accountData, a_id, newContents));
     } else {

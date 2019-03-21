@@ -6,7 +6,7 @@ import {ACTIONTYPE_FLIPBOOK_SUCCESS, ACTIONTYPE_FLIPBOOK_REJECT,
 import {EncodeByteArrayToDataUrl} from '../../constants/utility';
 
 export const fetchStoryContent = (accountData, path) => (dispatch) => {
-  let key = 'facebook-' + accountData.id ;
+  let key = accountData ? 'facebook-10217759818094409': "" ;
   if(path) key += path.join('/');
   key += '/index.json';
   StorageFactory.getS3Object(key, null, accountData).then((awsData)=>{
@@ -27,10 +27,11 @@ export const fetchStoryContent = (accountData, path) => (dispatch) => {
 }
 
 export const fetchIllustrationContent = (storyId, accountData, illustrationId) => (dispatch) => {
-  let path = (storyId === accountData.id) ? 'facebook-' + storyId +'/Albums/' + illustrationId :
+  let path = (storyId === accountData.id) ? 'facebook-10217759818094409/Albums/' + illustrationId :
     'facebook-' + storyId + '/Share/Albums/' + illustrationId ;
+  if("share" === storyId) path = ("share/Albums/" + illustrationId);
   StorageFactory.listFilesUnderFolder(path, accountData).then((array_awsData)=>{
-    dispatch(handleFetchIllustrationContent(array_awsData, accountData));
+    dispatch(handleFetchIllustrationContent(array_awsData, accountData, illustrationId));
   }, (err) => {
     dispatch({
       'type': ACTIONTYPE_ILLUSTRATION_REJECT,
@@ -39,7 +40,7 @@ export const fetchIllustrationContent = (storyId, accountData, illustrationId) =
   });
 }
 
-const handleFetchIllustrationContent = (listResult, accountData) => (dispatch) => {
+const handleFetchIllustrationContent = (listResult, accountData, illustrationId) => (dispatch) => {
   let array_awsData = _.filter(listResult, ({Key}) => {
     let _key = Key.toLowerCase();
     return _key.endsWith('.jpg') || _key.endsWith('.png');
@@ -53,6 +54,7 @@ const handleFetchIllustrationContent = (listResult, accountData) => (dispatch) =
         let contentType = awsData.ContentType;
         return 'data:'+ contentType +';base64,' + EncodeByteArrayToDataUrl(awsData.Body);
       }),
+      illustrationId
     });
   }, (err) =>{
     dispatch({

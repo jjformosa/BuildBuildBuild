@@ -4,6 +4,7 @@ import {connect} from 'react-redux';
 import React, { Component } from 'react';
 import Youtube from 'react-youtube';
 import './ytPlayer.css';
+import { isNullOrUndefined } from 'util';
 
 class MyYouTubePlayer extends Component {
   componentWillReceiveProps(props) {
@@ -12,7 +13,7 @@ class MyYouTubePlayer extends Component {
       curplayindex = this.curplayindex;
     if(_.has(props, 'ytplaylist')) {
       let playlist = _.get(props, 'ytplaylist');
-      if(playlist !== this.props.ytplaylist) {
+      if(!isNullOrUndefined(playlist) && playlist !== this.props.ytplaylist) {
         this._player.loadPlaylist({
           'list': playlist,
           'listType': 'playlist',

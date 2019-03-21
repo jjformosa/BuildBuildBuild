@@ -4,6 +4,7 @@ import _ from 'lodash';
 import MemoryBook from '../../components/memoryBook/memoryBook';
 import {fetchStory, fetchIllustration} from '../../actions/memoryBook/memoryBook';
 import { ACTIONTYPE_JUMPTOPAGE } from '../../constants/actionTypes';
+import { isNumber } from 'util';
 
 const initState = {
   'accountData': {
@@ -18,11 +19,13 @@ export default withRouter(connect(
   (state) => {
     let nextState = _.cloneDeep(initState);
     let accountData = state.accountReducer.accountData;
-      _.set(nextState, 'accountData', _.cloneDeep(accountData));
+    _.set(nextState, 'accountData', _.cloneDeep(accountData));
     let chps = state.storyReducer.chps;
-      _.set(nextState, 'chps', _.cloneDeep(chps));
+    _.set(nextState, 'chps', _.cloneDeep(chps));
     let illustrations = state.storyReducer.illustrations;
-      _.set(nextState, 'illustrations', illustrations);
+    _.set(nextState, 'illustrations', illustrations);
+    let illustrationId = state.storyReducer.thisIllustrationId;
+    _.set(nextState, 'thisIllustrationId', illustrationId);
     if(state.storyReducer.page) _.set(nextState, 'page', state.storyReducer.page);
     else if(accountData.storyPage) _.set(nextState, 'page', accountData.storyPage);
     return nextState;

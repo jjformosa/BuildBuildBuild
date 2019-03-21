@@ -34,19 +34,21 @@ class MemoryBook extends Component {
     this.props.fetchIllustration(this.getStoryId(), this.props.accountData, this.getPageNum());
   }
   componentWillReceiveProps(nextProps) {
+    let toNum = this.getPageNum(this.props.history.location.pathname);
     if(!this.isFlip) {
         let nextState = {};
         _.forEach(nextProps, (value, key)=>{
           if('chps' === key) {
             _.set(nextState, key, _.cloneDeep(value));
           } else if('illustrations' === key) {
-            _.set(nextState, key, _.cloneDeep(value));
+            if(_.has(nextProps, 'thisIllustrationId') && toNum === _.get(nextProps, 'thisIllustrationId')) {
+              _.set(nextState, key, _.cloneDeep(value));
+            }
           }
         });
         this.setState({...nextState});
       } else {      
         this.isFlip = false;
-        let toNum = this.getPageNum(this.props.history.location.pathname);
         //翻頁了
         this.props.fetchIllustration(this.getStoryId(), this.props.accountData, toNum);
       }

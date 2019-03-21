@@ -213,7 +213,14 @@ class MyWebCamPage extends Component {
       contentId = this.props.contentId,
       newContent = _.set(this.props.chps, contentId,  _.get(this, 'leaveMsg')),      
       illustrations = _.cloneDeep(this.state.photos);
-    this.props.handleUpdateStory(evt, accountData, contentId, newContent, illustrations);
+    let ytplayindex = _.cloneDeep(this.props.ytplayindex);
+    ytplayindex.push(-1);
+    this.props.handleUpdateStory(evt, accountData, contentId, 
+      {
+      'contents': newContent,
+      'ytplaylist': this.props.ytplaylist,
+      'ytplayindex': ytplayindex
+    }, illustrations);
   }
   getClassName()  {
     return this.state.classList.join(' ');

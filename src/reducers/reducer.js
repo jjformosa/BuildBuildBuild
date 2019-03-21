@@ -104,9 +104,10 @@ const storyReducer = handleActions({
         _.set(nextState, 'ytplayindex', response.ytplayindex);
         return nextState;
     },
-    [ACTIONTYPE_ILLUSTRATION_SUCCESS]: function(state, {type, response}) {
+    [ACTIONTYPE_ILLUSTRATION_SUCCESS]: function(state, {type, response, illustrationId}) {
         let nextState = _.cloneDeep(state);
         _.set(nextState, 'illustrations', response);
+        _.set(nextState, 'thisIllustrationId', illustrationId);
         return nextState;
     },
     [ACTIONTYPE_ILLUSTRATION_REJECT]: function(state, {type, response}) {
@@ -116,7 +117,11 @@ const storyReducer = handleActions({
     },
     [ACTIONTYPE_UPDATECONTENTS_SUCCESS]: function(state, {type, contentid, newcontents, newillustrations}) {
         let nextState = _.cloneDeep(state);
-        let newStory = {'chps': newcontents, 'illustrations': newillustrations};
+        let newStory = {'chps': newcontents.contents, 
+            'illustrations': newillustrations, 
+            'ytplaylist': _.clone(newcontents, 'ytplaylist'),
+            'ytplayindex': _.cloneDeep(newcontents, 'ytplayindex')
+        };
         _.merge(nextState, newStory);
         return nextState;        
     }, 

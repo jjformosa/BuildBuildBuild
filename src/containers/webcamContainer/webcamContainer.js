@@ -13,10 +13,12 @@ export default connect((state)=>{
   let chps = state.storyReducer.chps;
   _.set(nextState, 'contentId', chps.length -1);
   _.set(nextState, 'chps', _.cloneDeep(chps));
+  _.set(nextState, 'ytplaylist', state.storyReducer.ytplaylist);
+  _.set(nextState, 'ytplayindex', _.cloneDeep(state.storyReducer.ytplayindex));
   return nextState;
 },  (dispatch)=>({
   'handleUpdateStory': function(evt, accountData, a_id, a_newContents, a_illustrations) {
-    if('/WebCamPage' !== _.last(a_newContents)) a_newContents.push('/WebCamPage');
+    if('/WebCamPage' !== _.last(a_newContents.contents)) a_newContents.contents.push('/WebCamPage');
     dispatch({
       'type': ACTIONTYPE_WAITING_START,
       'command': 'handleUpdateStory'

@@ -8,7 +8,10 @@ import WelcomePage from '../../containers/welcomeContainer/welcomeContainer';
 import HaJiMeDePage from '../../containers/hajimedeContainer/hajimedeContainer';
 import MemoryBook from '../../containers/memoryBookContainer/memoryBookContainer';
 import MyWebCamPage from '../../containers/webcamContainer/webcamContainer';
+import {MyMaintainning} from '../maintain/maintainning';
 import { isNullOrUndefined } from 'util';
+
+const isMaintainning = false;
 
 const InitClassName_MyApp = ['flexbox','inline',
   'direct-col','justifyContent-center','alignItem-center','alignContent-center'];
@@ -50,6 +53,7 @@ class MyApp extends Component{
   getChild() {
     // let nodes = this.props.location.pathname.split('/');
     // let page = nodes[1];
+    if(isMaintainning) return MyMaintainning;
     let page = this.props.match.params.page;
     if('WelcomePage' === page) {
       return WelcomePage;
