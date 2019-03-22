@@ -6,7 +6,7 @@ import {ACTIONTYPE_FLIPBOOK_SUCCESS, ACTIONTYPE_FLIPBOOK_REJECT,
 import {EncodeByteArrayToDataUrl} from '../../constants/utility';
 
 export const fetchStoryContent = (accountData, path) => (dispatch) => {
-  let key = accountData ? 'facebook-10217759818094409': "" ;
+  let key = accountData ? 'facebook-' + accountData.uid: "" ;
   if(path) key += path.join('/');
   key += '/index.json';
   StorageFactory.getS3Object(key, null, accountData).then((awsData)=>{
@@ -27,9 +27,9 @@ export const fetchStoryContent = (accountData, path) => (dispatch) => {
 }
 
 export const fetchIllustrationContent = (storyId, accountData, illustrationId) => (dispatch) => {
-  let path = (storyId === accountData.id) ? 'facebook-10217759818094409/Albums/' + illustrationId :
+  let path = (storyId === accountData.id) ? 'facebook-'+ accountData.uid +'/Albums/' + illustrationId :
     'facebook-' + storyId + '/Share/Albums/' + illustrationId ;
-  if("share" === storyId) path = ("share/Albums/" + illustrationId);
+  if("share" === storyId.toLowerCase()) path = ("share/Albums/" + illustrationId);
   StorageFactory.listFilesUnderFolder(path, accountData).then((array_awsData)=>{
     dispatch(handleFetchIllustrationContent(array_awsData, accountData, illustrationId));
   }, (err) => {

@@ -9,7 +9,7 @@ export const fetchStory = (storyId, accountData) => (dispatch) => {
   if(storyId === accountData.id) {
     dispatch(fetchStoryContent(accountData));
   } else {
-    if("share" === storyId) {
+    if("share" === storyId.toLowerCase()) {
       dispatch(fetchStoryContent(null, ['share']));
     } else {
       dispatch(fetchStoryContent(accountData, ['share']));

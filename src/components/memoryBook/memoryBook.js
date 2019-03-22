@@ -104,7 +104,9 @@ class MemoryBook extends Component {
         'illustrations': [],
         'nextPage': -1,
       }); 
-      this.props.history.push('/MemoryBook/'+ _.get(this.props, 'accountData.id') +'/' + toNum);
+      let folder = this.props.location.pathname.split('/')[2];
+      if("share" !== folder.toLowerCase()) folder = _.get(this.props, 'accountData.id');
+      this.props.history.push('/MemoryBook/'+ folder +'/' + toNum);
     }, 1600);
   }
   getClassName() {

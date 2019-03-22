@@ -93,6 +93,28 @@ class BtnBook extends Component {
   }
 }
 
+class BtnToShare extends Component {
+  getStyle() {
+      return {
+        'position': 'relative',
+        'display': 'inline-block',
+        'fontSize': '1.2rem',
+        'cursor': 'pointer',
+        'lineHeight': '1.5rem',
+        'color': 'rgb(255, 68, 170)',
+        'textDecoration': 'underline'
+      }
+    }
+  onClick(evt) {
+    this.props.onBtnToShareClick(evt);
+    evt.preventDefault();
+    evt.stopPropagation();
+  }
+  render() {
+    return(<b style={this.getStyle()} onClick={(evt)=>this.onClick(evt)}>To EveryOne版本</b>);
+  }
+}
+
 class WelcomePage extends Component {
   constructor(props){
     super(props);  
@@ -114,7 +136,10 @@ class WelcomePage extends Component {
     }
   }
   onBtnNextClick (evt) { 
-    this.props.startMemo(evt, this.props.accountData)
+    this.props.startMemo(evt, this.props.accountData);
+  }
+  onBtnToShareClick (evt) {
+    this.props.startShare(evt, this.props.accountData);
   }
   getClassName() {
     return this.state.classList.join(' ');
@@ -163,7 +188,8 @@ class WelcomePage extends Component {
             <BtnBook icon={faBook} onBtnBookClick={(evt)=>{this.onBtnNextClick(evt)}} >            
             </BtnBook>
           了！但是，到了這一步還要厚著臉皮的請你/妳再
-          花點時間幫個忙── 就一路翻到最後一頁吧 ──
+          花點時間幫個忙── 就一路翻到最後一頁吧 ──<br />
+          或是你/妳可以先逛逛<BtnToShare onBtnToShareClick={(evt)=>{this.onBtnToShareClick(evt)}}></BtnToShare>。
           </p>
         </div>
       );
@@ -172,7 +198,8 @@ class WelcomePage extends Component {
         <div className={this.getClassName()} style={this.getStyle()} 
           onAnimationEnd={(evt)=>{this.onAnimationEnd(evt)}}>
           <p style={{'lineHeight': '2rem'}}>
-            謝謝你/妳在這裡暫停了腳步，<DeerSomeOne callName={this.getCallName()} animaDelay={.5}></DeerSomeOne>是第一次光臨吧！但是跟你/妳的回憶有好多，請再給我一點點時間整理一下你/妳的專屬紀念喔!!
+            謝謝你/妳在這裡暫停了腳步，<DeerSomeOne callName={this.getCallName()} animaDelay={.5}></DeerSomeOne>是第一次光臨吧！但是跟你/妳的回憶有好多，請再給我一點點時間整理一下你/妳的專屬紀念喔!!<br />
+            或是你/妳可以先逛逛<BtnToShare onBtnToShareClick={(evt)=>{this.onBtnToShareClick(evt)}}></BtnToShare>。
           </p>
         </div>
       );

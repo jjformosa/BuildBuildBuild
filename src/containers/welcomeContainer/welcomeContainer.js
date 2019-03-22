@@ -13,4 +13,10 @@ export default connect((state)=>({
       'pathname': '/MemoryBook/' + accountData.id + '/0',
     });
   },
+  'startShare': function(evt, accountData) {
+    dispatch({
+      'type': ACTIONTYPE_JUMPTOPAGE,
+      'pathname': '/MemoryBook/share/0',
+    });
+  },
 }))(WelcomePage);
