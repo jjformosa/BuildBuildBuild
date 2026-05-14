@@ -1,10 +1,10 @@
 ## 1. Phase 1 — 基礎骨架
 
-- [ ] 1.1 `create-next-app` 建立專案（TypeScript、Tailwind CSS、App Router）
-- [ ] 1.2 安裝並設定 shadcn/ui（暖色系 CSS variables：`--background: #FAF7F2`、`--foreground: #2C1810`）
-- [ ] 1.3 設定 Docker Compose（MongoDB 7 local）並確認連線
-- [ ] 1.4 建立 `lib/mongoose.ts`：MongoDB 連線 singleton，支援 `MONGODB_URI` 環境變數
-- [ ] 1.5 定義 Mongoose schemas：`User`、`Account`（NextAuth 欄位 + `role: 'admin' | 'reader'`）
+- [x] 1.1 `create-next-app` 建立專案（TypeScript、Tailwind CSS、App Router）
+- [x] 1.2 安裝並設定 shadcn/ui（暖色系 CSS variables：`--background: #FAF7F2`、`--foreground: #2C1810`）
+- [x] 1.3 設定 Docker Compose（MongoDB 7 local）並確認連線（改用 MongoDB Atlas + X.509，連線已確認）
+- [x] 1.4 建立 `lib/mongoose.ts`：MongoDB 連線 singleton，支援 `MONGODB_URI` 環境變數
+- [x] 1.5 定義 Mongoose schemas：`User`、`Account`（NextAuth 欄位 + `role: 'admin' | 'reader'`；email optional + sparse unique index；cert 抽離至 `lib/cert.ts`；新增 `lib/mongodb-client.ts` 供 NextAuth Adapter 使用）
 - [ ] 1.6 安裝 NextAuth.js v5 並設定 `auth.ts`（Google Provider、MongoDB Adapter）
 - [ ] 1.7 建立 `app/api/auth/[...nextauth]/route.ts` 處理 OAuth 回調
 - [ ] 1.8 實作 session callback：將 `user.role` 注入 `session.user`

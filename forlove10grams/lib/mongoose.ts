@@ -1,42 +1,28 @@
-import mongoose, { type Mongoose } from 'mongoose'
-import fs from 'fs'
-import path from 'path'
-import os from 'os'
+import mongoose from 'mongoose'
+import { mongodbCertPath } from './cert'
 
-const MONGODB_URI = process.env.MONGODB_URI
-const MONGODB_CERT_BASE64 = process.env.MONGODB_CERT_BASE64
-
-if (!MONGODB_URI) throw new Error('MONGODB_URI is not defined')
-if (!MONGODB_CERT_BASE64) throw new Error('MONGODB_CERT_BASE64 is not defined')
+const MONGODB_URI = process.env.MONGODB_URI!
 
 declare global {
   // eslint-disable-next-line no-var
-  var _mongooseCache: { conn: Mongoose | null; promise: Promise<Mongoose> | null }
+  var _mongoose: { conn: typeof mongoose | null; promise: Promise<typeof mongoose> | null }
 }
 
-const cached = global._mongooseCache ?? { conn: null, promise: null }
-global._mongooseCache = cached
+const cached = global._mongoose ?? (global._mongoose = { conn: null, promise: null })
 
-function getCertPath(): string {
-  const certPath = path.join(os.tmpdir(), 'mongodb-forlove-cert.pem')
-  if (!fs.existsSync(certPath)) {
-    const certContent = Buffer.from(MONGODB_CERT_BASE64!, 'base64').toString('utf-8')
-    fs.writeFileSync(certPath, certContent, { mode: 0o600 })
-  }
-  return certPath
-}
-
-export async function connectDB(): Promise<Mongoose> {
+export async function dbConnect(): Promise<typeof mongoose> {
   if (cached.conn) return cached.conn
-
   if (!cached.promise) {
-    cached.promise = mongoose.connect(MONGODB_URI!, {
-      tlsCertificateKeyFile: getCertPath(),
-      authMechanism: 'MONGODB-X509',
-      authSource: '$external',
-    })
+    const opts: mongoose.ConnectOptions = { bufferCommands: false }
+    const certPath = mongodbCertPath()
+    if (certPath) opts.tlsCertificateKeyFile = certPath
+    cached.promise = mongoose.connect(MONGODB_URI, opts)
   }
-
-  cached.conn = await cached.promise
+  try {
+    cached.conn = await cached.promise
+  } catch (e) {
+    cached.promise = null
+    throw e
+  }
   return cached.conn
 }
