@@ -14,8 +14,8 @@
 
 ## 4. Auth 整合更新（已整合進 forlove10grams-rewrite 1.8、1.10）
 
-- [ ] 4.1 `auth.ts` session callback：注入 `customer` role（→ 實作時見 forlove10grams-rewrite task 1.8）
-- [ ] 4.2 Middleware：`/dashboard`、`/books/*/edit` 驗 `admin`；`/read/[bookId]` 由 route 層驗（→ 實作時見 forlove10grams-rewrite task 1.10）
+- [x] 4.1 `auth.ts` session callback：注入 `customer` role（→ 實作時見 forlove10grams-rewrite task 1.8）
+- [x] 4.2 Middleware：`/dashboard`、`/books/*/edit` 驗 `admin`；`/read/[bookId]` 由 route 層驗（→ 實作時見 forlove10grams-rewrite task 1.10）
 
 ## 5. 邀請 Editor API（已整合進 forlove10grams-rewrite 1.11、1.12）
 
