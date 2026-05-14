@@ -36,6 +36,7 @@ const PatchBookBody = z.object({
   title: z.string().min(1).optional(),
   description: z.string().optional(),
   coverImage: z.string().optional(),
+  pageOrder: z.array(z.string()).optional(),
 })
 
 export async function PATCH(
