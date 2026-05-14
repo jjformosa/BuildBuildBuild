@@ -39,8 +39,8 @@
 - [x] 3.6 實作 `GET /api/progress?bookId=`：查詢已讀 pageId 清單
 - [x] 3.7 實作 `POST /api/progress`：upsert 已讀記錄（驗證身份 + book 存取權）
 - [x] 3.8 實作 Intersection Observer hook（`useReadProgress`）：進入視野觸發已讀，樂觀更新 + API 失敗回滾
-- [ ] 3.9 加入 LINE Login Provider（NextAuth v5 自訂 provider），設定 LINE Developers callback URL
-- [ ] 3.10 登入頁新增 LINE Login 按鈕
+- [x] 3.9 加入 LINE Login Provider（NextAuth v5 自訂 provider），設定 LINE Developers callback URL
+- [x] 3.10 登入頁新增 LINE Login 按鈕
 
 ## 4. Phase 3 — 媒體展示元件
 
