@@ -6,7 +6,8 @@
       "Bash(mkdir -p /mnt/l/projects/BuildBuildBuild/openspec/changes/forlove10grams-rewrite/specs/book-management)",
       "Bash(mkdir -p /mnt/l/projects/BuildBuildBuild/openspec/changes/forlove10grams-rewrite/specs/page-editor)",
       "Bash(mkdir -p /mnt/l/projects/BuildBuildBuild/openspec/changes/forlove10grams-rewrite/specs/media-upload)",
-      "Bash(mkdir -p /mnt/l/projects/BuildBuildBuild/openspec/changes/forlove10grams-rewrite/specs/reader-view)"
+      "Bash(mkdir -p /mnt/l/projects/BuildBuildBuild/openspec/changes/forlove10grams-rewrite/specs/reader-view)",
+      "Bash(npx shadcn@latest init --help)"
     ]
   }
 }
