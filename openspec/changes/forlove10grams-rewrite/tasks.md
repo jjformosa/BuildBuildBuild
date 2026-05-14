@@ -31,9 +31,9 @@
 
 ## 3. Phase 3 — 閱讀體驗
 
-- [ ] 3.1 定義 Mongoose schema：`ReadProgress`（compound unique index: userId + bookId + pageId）
-- [ ] 3.2 實作 `GET /api/share/[token]`：驗證 token，回傳 bookId
-- [ ] 3.3 建立 `/share/[token]` route handler：驗證 token 後 redirect 至 `/read/[bookId]`（未登入先存 token 再跳 `/login`）
+- [x] 3.1 定義 Mongoose schema：`ReadProgress`（compound unique index: userId + bookId + pageId）
+- [x] 3.2 實作 `GET /api/share/[token]`：驗證 token，回傳 bookId
+- [x] 3.3 建立 `/share/[token]` route handler：驗證 token 後 redirect 至 `/read/[bookId]`（未登入先存 token 再跳 `/login`）
 - [ ] 3.4 建立 `/read/[bookId]` 頁面：Film Diary 視覺佈局（暖白底色、深褐文字）
 - [ ] 3.5 實作 TOC 元件：桌機左側固定欄 + 手機底部 bottom sheet
 - [ ] 3.6 實作 `GET /api/progress?bookId=`：查詢已讀 pageId 清單

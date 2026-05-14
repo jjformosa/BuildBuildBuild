@@ -1,6 +1,13 @@
 import { signIn } from '@/auth'
 
-export default function LoginPage() {
+export default async function LoginPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ callbackUrl?: string }>
+}) {
+  const { callbackUrl } = await searchParams
+  const redirectTo = callbackUrl?.startsWith('/') ? callbackUrl : '/dashboard'
+
   return (
     <main className="min-h-screen flex items-center justify-center bg-background">
       <div className="flex flex-col items-center gap-8 px-6">
@@ -16,7 +23,7 @@ export default function LoginPage() {
         <form
           action={async () => {
             'use server'
-            await signIn('google', { redirectTo: '/dashboard' })
+            await signIn('google', { redirectTo })
           }}
         >
           <button
