@@ -10,4 +10,10 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   pages: {
     signIn: '/login',
   },
+  callbacks: {
+    session({ session, user }) {
+      session.user.role = user.role ?? 'customer'
+      return session
+    },
+  },
 })
