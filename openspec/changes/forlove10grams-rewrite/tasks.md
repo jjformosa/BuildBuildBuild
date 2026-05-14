@@ -10,8 +10,8 @@
 - [x] 1.8 實作 session callback：將 `user.role`（admin | customer）注入 `session.user`（⚠ 同步完成 book-member-roles 4.1）
 - [x] 1.9 建立 `/login` 頁面（Google 登入按鈕）
 - [x] 1.10 建立 middleware：未登入跳轉 `/login`，customer 存取 admin 路由回傳 403（⚠ 同步完成 book-member-roles 4.2）
-- [ ] 1.11 實作 `POST /api/books/[bookId]/invite`：admin 邀請 customer 為 editor（book-member-roles 5.1）
-- [ ] 1.12 新增「邀請編輯者」UI 入口（Book 編輯器頂部，admin 專屬）（book-member-roles 5.2）
+- [x] 1.11 實作 `POST /api/books/[bookId]/invite`：admin 邀請 customer 為 editor（book-member-roles 5.1）
+- [x] 1.12 新增「邀請編輯者」UI 入口（Book 編輯器頂部，admin 專屬）（book-member-roles 5.2）
 
 ## 2. Phase 2 — 內容管理
 
