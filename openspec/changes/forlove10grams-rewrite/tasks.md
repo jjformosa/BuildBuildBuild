@@ -6,7 +6,7 @@
 - [x] 1.4 建立 `lib/mongoose.ts`：MongoDB 連線 singleton，支援 `MONGODB_URI` 環境變數
 - [x] 1.5 定義 Mongoose schemas：`User`、`Account`（NextAuth 欄位 + `role: 'admin' | 'customer'`；email optional + sparse unique index；cert 抽離至 `lib/cert.ts`；新增 `lib/mongodb-client.ts` 供 NextAuth Adapter 使用）
 - [x] 1.6 安裝 NextAuth.js v5 並設定 `auth.ts`（Google Provider、MongoDB Adapter）
-- [ ] 1.7 建立 `app/api/auth/[...nextauth]/route.ts` 處理 OAuth 回調
+- [x] 1.7 建立 `app/api/auth/[...nextauth]/route.ts` 處理 OAuth 回調
 - [ ] 1.8 實作 session callback：將 `user.role`（admin | customer）注入 `session.user`（⚠ 同步完成 book-member-roles 4.1）
 - [ ] 1.9 建立 `/login` 頁面（Google 登入按鈕）
 - [ ] 1.10 建立 middleware：未登入跳轉 `/login`，customer 存取 admin 路由回傳 403（⚠ 同步完成 book-member-roles 4.2）
