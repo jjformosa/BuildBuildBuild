@@ -15,19 +15,19 @@
 
 ## 2. Phase 2 — 內容管理
 
-- [ ] 2.1 定義 Mongoose schemas：`Book`（含 `editorId`，已建）、`Page`、`Share`
-- [ ] 2.2 建立 `/dashboard` 頁面（Server Component）：查詢並列出當前 admin 的 books
-- [ ] 2.3 實作 `POST /api/books`：建立 book（驗證 admin role、Zod schema 驗證）
-- [ ] 2.4 實作 `GET /api/books/[bookId]`、`PATCH /api/books/[bookId]`、`DELETE /api/books/[bookId]`（含擁有者驗證）
-- [ ] 2.5 建立 `/books/[bookId]/edit` 頁面：左側 page 列表 + 右側 page 編輯器骨架
-- [ ] 2.6 實作 `POST /api/books/[bookId]/pages`：新增 page（選擇 carousel/video 類型）
-- [ ] 2.7 實作 `PATCH /api/books/[bookId]/pages/[pageId]`、`DELETE /api/books/[bookId]/pages/[pageId]`
-- [ ] 2.8 實作拖曳排序（dnd-kit）：更新 `books.pageOrder`
-- [ ] 2.9 Markdown 編輯器（react-md-editor 或 @uiw/react-md-editor）：輸入 + 即時預覽
-- [ ] 2.10 實作 `POST /api/upload/presign`：Server 端簽發 S3 Presigned PUT URL（驗證 admin + book 擁有權）
-- [ ] 2.11 實作 Client 端上傳元件：進度條 + 直接 PUT 至 S3 + 完成後呼叫 Server Action 儲存 URL
-- [ ] 2.12 實作 `POST /api/books/[bookId]/share`：產生 share token，寫入 `shares` collection
-- [ ] 2.13 新增「發布 & 複製連結」UI（Book 編輯器頂部）
+- [x] 2.1 定義 Mongoose schemas：`Book`（含 `editorId`，已建）、`Page`、`Share`
+- [x] 2.2 建立 `/dashboard` 頁面（Server Component）：查詢並列出當前 admin 的 books
+- [x] 2.3 實作 `POST /api/books`：建立 book（驗證 admin role、Zod schema 驗證）
+- [x] 2.4 實作 `GET /api/books/[bookId]`、`PATCH /api/books/[bookId]`、`DELETE /api/books/[bookId]`（含擁有者驗證）
+- [x] 2.5 建立 `/books/[bookId]/edit` 頁面：左側 page 列表 + 右側 page 編輯器骨架
+- [x] 2.6 實作 `POST /api/books/[bookId]/pages`：新增 page（選擇 carousel/video 類型）
+- [x] 2.7 實作 `PATCH /api/books/[bookId]/pages/[pageId]`、`DELETE /api/books/[bookId]/pages/[pageId]`
+- [x] 2.8 實作拖曳排序（dnd-kit）：更新 `books.pageOrder`
+- [x] 2.9 Markdown 編輯器（react-md-editor 或 @uiw/react-md-editor）：輸入 + 即時預覽
+- [x] 2.10 實作 `POST /api/upload/presign`：Server 端簽發 S3 Presigned PUT URL（驗證 admin + book 擁有權）
+- [x] 2.11 實作 Client 端上傳元件：進度條 + 直接 PUT 至 S3 + 完成後呼叫 Server Action 儲存 URL
+- [x] 2.12 實作 `POST /api/books/[bookId]/share`：產生 share token，寫入 `shares` collection
+- [x] 2.13 新增「發布 & 複製連結」UI（Book 編輯器頂部）
 
 ## 3. Phase 3 — 閱讀體驗
 
