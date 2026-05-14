@@ -19,5 +19,5 @@
 
 ## 5. 邀請 Editor API（已整合進 forlove10grams-rewrite 1.11、1.12）
 
-- [ ] 5.1 實作 `POST /api/books/[bookId]/invite`（→ 實作時見 forlove10grams-rewrite task 1.11）
-- [ ] 5.2 新增「邀請編輯者」UI 入口（→ 實作時見 forlove10grams-rewrite task 1.12）
+- [x] 5.1 實作 `POST /api/books/[bookId]/invite`（→ 實作時見 forlove10grams-rewrite task 1.11）
+- [x] 5.2 新增「邀請編輯者」UI 入口（→ 實作時見 forlove10grams-rewrite task 1.12）
