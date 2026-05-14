@@ -1,11 +1,12 @@
 'use client'
 
-import { useState } from 'react'
+import { useMemo } from 'react'
 import dynamic from 'next/dynamic'
 import remarkGfm from 'remark-gfm'
 import { Toc, type TocPage } from '@/components/toc'
 import { Carousel } from '@/components/carousel'
 import { VideoPlayer } from '@/components/video-player'
+import { useReadProgress } from '@/hooks/use-read-progress'
 
 const ReactMarkdown = dynamic(() => import('react-markdown'), {
   ssr: false,
@@ -26,7 +27,8 @@ type Props = {
 }
 
 export function ReadPageClient({ bookId, bookTitle, pages }: Props) {
-  const [readPageIds, setReadPageIds] = useState<string[]>([])
+  const pageIds = useMemo(() => pages.map((p) => p._id), [pages])
+  const readPageIds = useReadProgress(bookId, pageIds)
 
   const tocPages: TocPage[] = pages.map((p, i) => ({
     _id: p._id,

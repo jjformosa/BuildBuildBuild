@@ -36,9 +36,9 @@
 - [x] 3.3 建立 `/share/[token]` route handler：驗證 token 後 redirect 至 `/read/[bookId]`（未登入先存 token 再跳 `/login`）
 - [x] 3.4 建立 `/read/[bookId]` 頁面：Film Diary 視覺佈局（暖白底色、深褐文字）
 - [x] 3.5 實作 TOC 元件：桌機左側固定欄 + 手機底部 bottom sheet
-- [ ] 3.6 實作 `GET /api/progress?bookId=`：查詢已讀 pageId 清單
-- [ ] 3.7 實作 `POST /api/progress`：upsert 已讀記錄（驗證身份 + book 存取權）
-- [ ] 3.8 實作 Intersection Observer hook（`useReadProgress`）：進入視野觸發已讀，樂觀更新 + API 失敗回滾
+- [x] 3.6 實作 `GET /api/progress?bookId=`：查詢已讀 pageId 清單
+- [x] 3.7 實作 `POST /api/progress`：upsert 已讀記錄（驗證身份 + book 存取權）
+- [x] 3.8 實作 Intersection Observer hook（`useReadProgress`）：進入視野觸發已讀，樂觀更新 + API 失敗回滾
 - [ ] 3.9 加入 LINE Login Provider（NextAuth v5 自訂 provider），設定 LINE Developers callback URL
 - [ ] 3.10 登入頁新增 LINE Login 按鈕
 
