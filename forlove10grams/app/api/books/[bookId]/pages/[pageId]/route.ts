@@ -1,0 +1,80 @@
+import type { NextRequest } from 'next/server'
+import { z } from 'zod'
+import { auth } from '@/auth'
+import { dbConnect } from '@/lib/mongoose'
+import Book from '@/lib/models/book'
+import Page from '@/lib/models/page'
+import { canEditBook } from '@/lib/access'
+
+const PatchPageBody = z.object({
+  content: z.string().optional(),
+  mediaUrls: z.array(z.string()).optional(),
+})
+
+export async function PATCH(
+  req: NextRequest,
+  ctx: RouteContext<'/api/books/[bookId]/pages/[pageId]'>
+) {
+  const session = await auth()
+  if (!session?.user) {
+    return Response.json({ error: 'Unauthorized' }, { status: 401 })
+  }
+
+  const { bookId, pageId } = await ctx.params
+  const body = await req.json()
+  const parsed = PatchPageBody.safeParse(body)
+  if (!parsed.success) {
+    return Response.json({ error: parsed.error.issues }, { status: 400 })
+  }
+
+  await dbConnect()
+  const book = await Book.findById(bookId)
+  if (!book) {
+    return Response.json({ error: 'Not found' }, { status: 404 })
+  }
+  if (!canEditBook(session.user.id!, book)) {
+    return Response.json({ error: 'Forbidden' }, { status: 403 })
+  }
+
+  const page = await Page.findOne({ _id: pageId, bookId: book._id })
+  if (!page) {
+    return Response.json({ error: 'Not found' }, { status: 404 })
+  }
+
+  Object.assign(page, parsed.data)
+  await page.save()
+
+  return Response.json(page)
+}
+
+export async function DELETE(
+  _req: NextRequest,
+  ctx: RouteContext<'/api/books/[bookId]/pages/[pageId]'>
+) {
+  const session = await auth()
+  if (!session?.user) {
+    return Response.json({ error: 'Unauthorized' }, { status: 401 })
+  }
+
+  const { bookId, pageId } = await ctx.params
+
+  await dbConnect()
+  const book = await Book.findById(bookId)
+  if (!book) {
+    return Response.json({ error: 'Not found' }, { status: 404 })
+  }
+  if (!canEditBook(session.user.id!, book)) {
+    return Response.json({ error: 'Forbidden' }, { status: 403 })
+  }
+
+  const page = await Page.findOne({ _id: pageId, bookId: book._id })
+  if (!page) {
+    return Response.json({ error: 'Not found' }, { status: 404 })
+  }
+
+  book.pageOrder = book.pageOrder.filter((id) => id.toString() !== pageId)
+  await book.save()
+  await page.deleteOne()
+
+  return Response.json({ ok: true })
+}
