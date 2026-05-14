@@ -34,8 +34,8 @@
 - [x] 3.1 定義 Mongoose schema：`ReadProgress`（compound unique index: userId + bookId + pageId）
 - [x] 3.2 實作 `GET /api/share/[token]`：驗證 token，回傳 bookId
 - [x] 3.3 建立 `/share/[token]` route handler：驗證 token 後 redirect 至 `/read/[bookId]`（未登入先存 token 再跳 `/login`）
-- [ ] 3.4 建立 `/read/[bookId]` 頁面：Film Diary 視覺佈局（暖白底色、深褐文字）
-- [ ] 3.5 實作 TOC 元件：桌機左側固定欄 + 手機底部 bottom sheet
+- [x] 3.4 建立 `/read/[bookId]` 頁面：Film Diary 視覺佈局（暖白底色、深褐文字）
+- [x] 3.5 實作 TOC 元件：桌機左側固定欄 + 手機底部 bottom sheet
 - [ ] 3.6 實作 `GET /api/progress?bookId=`：查詢已讀 pageId 清單
 - [ ] 3.7 實作 `POST /api/progress`：upsert 已讀記錄（驗證身份 + book 存取權）
 - [ ] 3.8 實作 Intersection Observer hook（`useReadProgress`）：進入視野觸發已讀，樂觀更新 + API 失敗回滾
@@ -44,10 +44,10 @@
 
 ## 4. Phase 3 — 媒體展示元件
 
-- [ ] 4.1 實作 Carousel 元件：4:3 容器、`object-fit: contain`、Polaroid 邊框、圓點指示器、手機滑動 / 桌機箭頭
-- [ ] 4.2 實作 Video 元件：16:9 容器、HTML5 video、Intersection Observer 自動暫停
-- [ ] 4.3 實作 Lightbox 元件：深色遮罩、原始比例圖片、左右切換、ESC / 點擊遮罩 / 下滑關閉
-- [ ] 4.4 實作媒體 skeleton 佔位元素（載入中）與錯誤佔位圖
+- [x] 4.1 實作 Carousel 元件：4:3 容器、`object-fit: contain`、Polaroid 邊框、圓點指示器、手機滑動 / 桌機箭頭
+- [x] 4.2 實作 Video 元件：16:9 容器、HTML5 video、Intersection Observer 自動暫停
+- [x] 4.3 實作 Lightbox 元件：深色遮罩、原始比例圖片、左右切換、ESC / 點擊遮罩 / 下滑關閉
+- [x] 4.4 實作媒體 skeleton 佔位元素（載入中）與錯誤佔位圖
 
 ## 5. Phase 4 — 精修與部署
 
