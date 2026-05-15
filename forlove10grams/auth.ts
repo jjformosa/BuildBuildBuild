@@ -9,8 +9,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   providers: [
     Google,
     Line({
-      clientId: process.env.LINE_CLIENT_ID!,
-      clientSecret: process.env.LINE_CLIENT_SECRET!,
+      clientId: process.env.LINE_LOGIN_CHANNEL_ID!,
+      clientSecret: process.env.LINE_LOGIN_CLIENT_SECRET!,
     }),
   ],
   session: { strategy: 'database' },

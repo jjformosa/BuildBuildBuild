@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import useEmblaCarousel from 'embla-carousel-react'
 import Lightbox from 'yet-another-react-lightbox'
-import 'yet-another-react-lightbox/dist/styles.css'
+import 'yet-another-react-lightbox/styles.css'
 import type { EmblaCarouselType } from 'embla-carousel'
 
 type Props = { urls: string[] }

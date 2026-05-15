@@ -16,7 +16,7 @@ const s3 = new S3Client({
 
 const BUCKET = process.env.S3_BUCKET_NAME!
 const REGION = process.env.AWS_REGION!
-const CLOUDFRONT_DOMAIN = process.env.CLOUDFRONT_DOMAIN
+const CLOUDFRONT_URL = process.env.CLOUDFRONT_URL?.replace(/\/$/, '')
 
 const PresignBody = z.object({
   bookId: z.string(),
@@ -80,8 +80,8 @@ export async function POST(req: NextRequest) {
     ContentType: contentType,
   })
   const presignedUrl = await getSignedUrl(s3, command, { expiresIn: 900 })
-  const s3Url = CLOUDFRONT_DOMAIN
-    ? `https://${CLOUDFRONT_DOMAIN}/${s3Key}`
+  const s3Url = CLOUDFRONT_URL
+    ? `${CLOUDFRONT_URL}/${s3Key}`
     : `https://${BUCKET}.s3.${REGION}.amazonaws.com/${s3Key}`
 
   return Response.json({ presignedUrl, s3Key, s3Url })
