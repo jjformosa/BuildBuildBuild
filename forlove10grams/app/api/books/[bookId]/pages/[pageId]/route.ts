@@ -30,7 +30,7 @@ export async function PATCH(
   await dbConnect()
   const book = await Book.findById(bookId)
   if (!book) {
-    return Response.json({ error: 'Not found' }, { status: 404 })
+    return Response.json({ error: 'Book not found', bookId }, { status: 404 })
   }
   if (!canEditBook(session.user.id!, book)) {
     return Response.json({ error: 'Forbidden' }, { status: 403 })
@@ -38,7 +38,13 @@ export async function PATCH(
 
   const page = await Page.findOne({ _id: pageId, bookId: book._id })
   if (!page) {
-    return Response.json({ error: 'Not found' }, { status: 404 })
+    const pageExists = await Page.findById(pageId)
+    return Response.json({
+      error: 'Page not found in this book',
+      pageId,
+      bookId: book._id.toString(),
+      pageExistsElsewhere: pageExists ? pageExists.bookId.toString() : null,
+    }, { status: 404 })
   }
 
   Object.assign(page, parsed.data)
