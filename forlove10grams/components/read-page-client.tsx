@@ -120,7 +120,7 @@ export function ReadPageClient({ bookId, bookTitle, initialPages, totalCount }: 
                 {index < pages.length - 1 && (
                   <div
                     aria-hidden
-                    className="flex items-center justify-center py-6 text-sm tracking-[0.4em] text-[#2C1810]/30 select-none"
+                    className="flex items-center justify-center py-6 text-sm tracking-[0.4em] text-[#A0826D] select-none"
                   >
                     · · ·
                   </div>
