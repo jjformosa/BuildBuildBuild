@@ -42,7 +42,7 @@ export function ReadPageClient({ bookId, bookTitle, pages }: Props) {
     <div className="flex h-screen bg-[#FAF7F2]">
       <Toc pages={tocPages} readPageIds={readPageIds} />
 
-      <main className="flex-1 overflow-y-auto">
+      <main id="read-scroll-container" className="flex-1 overflow-y-auto">
         <div className="mx-auto max-w-2xl px-4 py-8 sm:py-10">
           <header className="mb-10 sm:mb-12 text-center">
             <h1 className="text-xl sm:text-2xl font-semibold tracking-tight text-[#2C1810]">

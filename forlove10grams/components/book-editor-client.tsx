@@ -171,12 +171,12 @@ export function BookEditorClient({
     if (saveTimerRef.current) clearTimeout(saveTimerRef.current)
     saveTimerRef.current = setTimeout(async () => {
       setSaveState('saving')
-      await fetch(`/api/books/${bookId}/pages/${currentId}`, {
+      const res = await fetch(`/api/books/${bookId}/pages/${currentId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ content }),
       })
-      setSaveState('saved')
+      setSaveState(res.ok ? 'saved' : 'unsaved')
       saveTimerRef.current = null
     }, 800)
   }

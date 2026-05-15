@@ -58,4 +58,6 @@
 - [ ] 5.5 設定 Google Cloud Console OAuth callback URL：`https://film-diary.tasipanmwws.name/api/auth/callback/google`
 - [ ] 5.6 設定 LINE Developers callback URL：`https://film-diary.tasipanmwws.name/api/auth/callback/line`
 - [x] 5.7 建立 `.env.local.example` 列出所有必要環境變數（不含實際值）
+- [x] 5.8a bugfix：editor 自動存檔加入 `res.ok` 檢查，HTTP 錯誤時改回「未儲存」而非誤顯「已儲存」
+- [x] 5.8b bugfix：TOC 導覽改用 `container.scrollBy()` 直接捲動 `#read-scroll-container`，解決 `scrollIntoView` 在 `overflow-y:auto` 容器內失效的問題
 - [ ] 5.8 完整 E2E 測試：Admin 建立 book → 上傳媒體 → 發布 → 讀者透過 share link 閱讀 → 已讀追蹤

@@ -19,7 +19,15 @@ export function Toc({ pages, readPageIds }: Props) {
   const readSet = new Set(readPageIds)
 
   function scrollTo(pageId: string) {
-    document.getElementById(pageId)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    const el = document.getElementById(pageId)
+    if (!el) return
+    const container = document.getElementById('read-scroll-container')
+    if (container) {
+      const delta = el.getBoundingClientRect().top - container.getBoundingClientRect().top - 32
+      container.scrollBy({ top: delta, behavior: 'smooth' })
+    } else {
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }
     setMobileOpen(false)
   }
 
