@@ -13,12 +13,14 @@ function isAdminPath(pathname: string) {
 
 export default auth(function proxy(req: NextAuthRequest) {
   const { pathname } = req.nextUrl
-
   if (PUBLIC_PREFIXES.some((p) => pathname.startsWith(p))) {
     return NextResponse.next()
   }
 
   if (!req.auth) {
+    if (pathname.startsWith('/api/')) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
     return NextResponse.redirect(new URL('/login', req.nextUrl))
   }
 
