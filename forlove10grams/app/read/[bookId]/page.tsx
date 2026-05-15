@@ -26,12 +26,16 @@ export default async function ReadBookPage({
   if (!canAccess) redirect('/dashboard')
 
   const pageIds = book.pageOrder.map((id) => id.toString())
-  const rawPages = await Page.find({ bookId: book._id })
+  const totalCount = pageIds.length
+  const firstBatchIds = pageIds.slice(0, 5)
+  const rawPages = firstBatchIds.length > 0
+    ? await Page.find({ _id: { $in: firstBatchIds } }).lean()
+    : []
   rawPages.sort(
-    (a, b) => pageIds.indexOf(a._id.toString()) - pageIds.indexOf(b._id.toString())
+    (a, b) => firstBatchIds.indexOf(a._id.toString()) - firstBatchIds.indexOf(b._id.toString())
   )
 
-  const pages: ReadPageData[] = rawPages.map((p) => ({
+  const initialPages: ReadPageData[] = rawPages.map((p) => ({
     _id: p._id.toString(),
     type: p.type,
     content: p.content ?? '',
@@ -39,6 +43,11 @@ export default async function ReadBookPage({
   }))
 
   return (
-    <ReadPageClient bookId={bookId} bookTitle={book.title} pages={pages} />
+    <ReadPageClient
+      bookId={bookId}
+      bookTitle={book.title}
+      initialPages={initialPages}
+      totalCount={totalCount}
+    />
   )
 }

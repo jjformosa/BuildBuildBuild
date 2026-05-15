@@ -12,14 +12,37 @@ export type TocPage = {
 type Props = {
   pages: TocPage[]
   readPageIds: string[]
+  activePageId?: string | null
+  onJumpTo?: (pageId: string) => Promise<void>
 }
 
-export function Toc({ pages, readPageIds }: Props) {
+export function Toc({ pages, readPageIds, activePageId, onJumpTo }: Props) {
   const [mobileOpen, setMobileOpen] = useState(false)
+  const [jumpingTo, setJumpingTo] = useState<string | null>(null)
   const readSet = new Set(readPageIds)
 
-  function scrollTo(pageId: string) {
+  async function scrollTo(pageId: string) {
     const el = document.getElementById(pageId)
+    if (!el && onJumpTo) {
+      // Page not yet loaded — trigger jump-load then scroll
+      setJumpingTo(pageId)
+      try {
+        await onJumpTo(pageId)
+      } finally {
+        setJumpingTo(null)
+      }
+      // After loading, element should exist
+      const loaded = document.getElementById(pageId)
+      if (loaded) {
+        const container = document.getElementById('read-scroll-container')
+        if (container) {
+          const delta = loaded.getBoundingClientRect().top - container.getBoundingClientRect().top - 32
+          container.scrollBy({ top: delta, behavior: 'smooth' })
+        }
+      }
+      setMobileOpen(false)
+      return
+    }
     if (!el) return
     const container = document.getElementById('read-scroll-container')
     if (container) {
@@ -31,38 +54,63 @@ export function Toc({ pages, readPageIds }: Props) {
     setMobileOpen(false)
   }
 
-  const pageList = (
-    <ul className="space-y-0.5">
-      {pages.map((page) => {
-        const isRead = readSet.has(page._id)
-        const firstLine = page.content.trim().split('\n')[0].replace(/^#+\s*/, '').slice(0, 38)
-        const label = firstLine || `第 ${page.index + 1} 頁`
-        return (
-          <li key={page._id}>
-            <button
-              onClick={() => scrollTo(page._id)}
-              className="group w-full rounded-md px-3 py-2 text-left transition-colors hover:bg-[#2C1810]/5"
-            >
-              <div className="flex items-center gap-2.5">
-                <span
-                  className={`flex h-4 w-4 flex-none items-center justify-center rounded-full border text-[9px] transition-colors ${
-                    isRead
-                      ? 'border-[#2C1810]/50 bg-[#2C1810]/50 text-white'
-                      : 'border-[#2C1810]/20 text-[#2C1810]/30'
-                  }`}
-                >
-                  {isRead ? '✓' : page.index + 1}
-                </span>
-                <span className="truncate text-xs text-[#2C1810]/55 group-hover:text-[#2C1810]/80">
-                  {label}
-                </span>
-              </div>
-            </button>
-          </li>
-        )
-      })}
-    </ul>
-  )
+  function pageIcon(page: TocPage, isRead: boolean, isActive: boolean, isJumping: boolean, forDesktop: boolean) {
+    if (isJumping) return <span className="text-[#2C1810]/40 text-[10px] animate-spin">◌</span>
+    if (forDesktop && isActive) {
+      return (
+        <span className="text-[#2C1810] text-[10px] font-bold">►</span>
+      )
+    }
+    return (
+      <span
+        className={`flex h-4 w-4 flex-none items-center justify-center rounded-full border text-[9px] transition-colors ${
+          isRead
+            ? 'border-[#2C1810]/50 bg-[#2C1810]/50 text-white'
+            : 'border-[#2C1810]/20 text-[#2C1810]/30'
+        }`}
+      >
+        {isRead ? '✓' : page.index + 1}
+      </span>
+    )
+  }
+
+  function buildPageList(forDesktop: boolean) {
+    return (
+      <ul className="space-y-0.5">
+        {pages.map((page) => {
+          const isRead = readSet.has(page._id)
+          const isActive = forDesktop && activePageId === page._id
+          const isJumping = jumpingTo === page._id
+          const firstLine = page.content.trim().split('\n')[0].replace(/^#+\s*/, '').slice(0, 38)
+          const label = firstLine || `第 ${page.index + 1} 頁`
+          return (
+            <li key={page._id}>
+              <button
+                onClick={() => scrollTo(page._id)}
+                disabled={isJumping}
+                className={`group w-full rounded-md px-3 py-2 text-left transition-colors hover:bg-[#2C1810]/5 ${
+                  isActive ? 'bg-[#2C1810]/5' : ''
+                }`}
+              >
+                <div className="flex items-center gap-2.5">
+                  {pageIcon(page, isRead, isActive, isJumping, forDesktop)}
+                  <span
+                    className={`truncate text-xs transition-colors ${
+                      isActive
+                        ? 'text-[#2C1810]/90 font-medium'
+                        : 'text-[#2C1810]/55 group-hover:text-[#2C1810]/80'
+                    }`}
+                  >
+                    {label}
+                  </span>
+                </div>
+              </button>
+            </li>
+          )
+        })}
+      </ul>
+    )
+  }
 
   return (
     <>
@@ -76,7 +124,7 @@ export function Toc({ pages, readPageIds }: Props) {
             {readPageIds.length}/{pages.length}
           </span>
         </div>
-        <div className="flex-1 overflow-y-auto py-2 px-1">{pageList}</div>
+        <div className="flex-1 overflow-y-auto py-2 px-1">{buildPageList(true)}</div>
       </aside>
 
       {/* Mobile: floating button + bottom-sheet */}
@@ -104,7 +152,7 @@ export function Toc({ pages, readPageIds }: Props) {
                   </span>
                 </div>
               </div>
-              <div className="p-4">{pageList}</div>
+              <div className="p-4">{buildPageList(false)}</div>
             </div>
           </>
         )}

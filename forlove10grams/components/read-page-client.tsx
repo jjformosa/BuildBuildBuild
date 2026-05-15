@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo } from 'react'
+import { useMemo, useRef, useCallback } from 'react'
 import dynamic from 'next/dynamic'
 import remarkGfm from 'remark-gfm'
 import { motion } from 'framer-motion'
@@ -8,6 +8,8 @@ import { Toc, type TocPage } from '@/components/toc'
 import { Carousel } from '@/components/carousel'
 import { VideoPlayer } from '@/components/video-player'
 import { useReadProgress } from '@/hooks/use-read-progress'
+import { useInfiniteScroll } from '@/hooks/use-infinite-scroll'
+import { useActivePage } from '@/hooks/use-active-page'
 
 const ReactMarkdown = dynamic(() => import('react-markdown'), {
   ssr: false,
@@ -24,12 +26,45 @@ export type ReadPageData = {
 type Props = {
   bookId: string
   bookTitle: string
-  pages: ReadPageData[]
+  initialPages: ReadPageData[]
+  totalCount: number
 }
 
-export function ReadPageClient({ bookId, bookTitle, pages }: Props) {
+export function ReadPageClient({ bookId, bookTitle, initialPages, totalCount }: Props) {
+  const scrollContainerRef = useRef<HTMLElement>(null)
+
+  const fetchMore = useCallback(
+    async (cursor: string): Promise<ReadPageData[]> => {
+      const params = new URLSearchParams({ limit: '5' })
+      if (cursor) params.set('after', cursor)
+      const res = await fetch(`/api/books/${bookId}/pages?${params}`)
+      if (!res.ok) return []
+      return res.json()
+    },
+    [bookId]
+  )
+
+  const getCursor = useCallback((page: ReadPageData) => page._id, [])
+
+  const { items: pages, sentinelRef, hasMore, jumpTo } = useInfiniteScroll<ReadPageData>({
+    initialItems: initialPages,
+    fetchMore,
+    getCursor,
+    initialHasMore: initialPages.length < totalCount,
+  })
+
   const pageIds = useMemo(() => pages.map((p) => p._id), [pages])
   const readPageIds = useReadProgress(bookId, pageIds)
+  const activePageId = useActivePage(scrollContainerRef, pageIds)
+
+  const loadedIdSet = useMemo(() => new Set(pageIds), [pageIds])
+
+  const handleJumpTo = useCallback(
+    async (pageId: string) => {
+      await jumpTo(pageId, (id) => loadedIdSet.has(id))
+    },
+    [jumpTo, loadedIdSet]
+  )
 
   const tocPages: TocPage[] = pages.map((p, i) => ({
     _id: p._id,
@@ -40,9 +75,14 @@ export function ReadPageClient({ bookId, bookTitle, pages }: Props) {
 
   return (
     <div className="flex h-screen bg-[#FAF7F2]">
-      <Toc pages={tocPages} readPageIds={readPageIds} />
+      <Toc
+        pages={tocPages}
+        readPageIds={readPageIds}
+        activePageId={activePageId}
+        onJumpTo={handleJumpTo}
+      />
 
-      <main id="read-scroll-container" className="flex-1 overflow-y-auto">
+      <main ref={scrollContainerRef} id="read-scroll-container" className="flex-1 overflow-y-auto">
         <div className="mx-auto max-w-2xl px-4 py-8 sm:py-10">
           <header className="mb-10 sm:mb-12 text-center">
             <h1 className="text-xl sm:text-2xl font-semibold tracking-tight text-[#2C1810]">
@@ -50,34 +90,48 @@ export function ReadPageClient({ bookId, bookTitle, pages }: Props) {
             </h1>
           </header>
 
-          <div className="space-y-20">
-            {pages.map((page) => (
-              <motion.article
-                key={page._id}
-                id={page._id}
-                className="scroll-mt-8"
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, ease: 'easeOut' }}
-                viewport={{ once: true, amount: 0.1 }}
-              >
-                {page.mediaUrls.length > 0 &&
-                  (page.type === 'carousel' ? (
-                    <Carousel urls={page.mediaUrls} />
-                  ) : (
-                    <VideoPlayer url={page.mediaUrls[0]} />
-                  ))}
+          <div>
+            {pages.map((page, index) => (
+              <div key={page._id}>
+                <motion.article
+                  id={page._id}
+                  className="scroll-mt-8 min-h-[65vh] sm:min-h-[75vh] py-12 sm:py-16"
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, ease: 'easeOut' }}
+                  viewport={{ root: scrollContainerRef, once: true, amount: 0.1 }}
+                >
+                  {page.mediaUrls.length > 0 &&
+                    (page.type === 'carousel' ? (
+                      <Carousel urls={page.mediaUrls} />
+                    ) : (
+                      <VideoPlayer url={page.mediaUrls[0]} />
+                    ))}
 
-                {page.content && (
-                  <div className="mt-6 text-sm leading-relaxed text-[#2C1810]/80 [&_blockquote]:border-l-2 [&_blockquote]:border-[#2C1810]/20 [&_blockquote]:pl-3 [&_blockquote]:italic [&_h1]:mb-1 [&_h1]:text-xl [&_h1]:font-semibold [&_h1]:text-[#2C1810] [&_h2]:mb-1 [&_h2]:text-lg [&_h2]:font-semibold [&_h3]:font-medium [&_ol]:mt-2 [&_ol]:list-decimal [&_ol]:pl-5 [&_p]:mt-3 [&_strong]:font-semibold [&_ul]:mt-2 [&_ul]:list-disc [&_ul]:pl-5">
-                    <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                      {page.content}
-                    </ReactMarkdown>
+                  {page.content && (
+                    <div className="mt-6 text-sm leading-relaxed text-[#2C1810]/80 [&_blockquote]:border-l-2 [&_blockquote]:border-[#2C1810]/20 [&_blockquote]:pl-3 [&_blockquote]:italic [&_h1]:mb-1 [&_h1]:text-xl [&_h1]:font-semibold [&_h1]:text-[#2C1810] [&_h2]:mb-1 [&_h2]:text-lg [&_h2]:font-semibold [&_h3]:font-medium [&_ol]:mt-2 [&_ol]:list-decimal [&_ol]:pl-5 [&_p]:mt-3 [&_strong]:font-semibold [&_ul]:mt-2 [&_ul]:list-disc [&_ul]:pl-5">
+                      <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                        {page.content}
+                      </ReactMarkdown>
+                    </div>
+                  )}
+                </motion.article>
+
+                {index < pages.length - 1 && (
+                  <div
+                    aria-hidden
+                    className="flex items-center justify-center py-6 text-sm tracking-[0.4em] text-[#2C1810]/30 select-none"
+                  >
+                    · · ·
                   </div>
                 )}
-              </motion.article>
+              </div>
             ))}
           </div>
+
+          {hasMore && (
+            <div ref={sentinelRef} className="h-20" aria-hidden />
+          )}
         </div>
       </main>
     </div>
