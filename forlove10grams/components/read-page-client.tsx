@@ -118,11 +118,10 @@ export function ReadPageClient({ bookId, bookTitle, initialPages, totalCount }: 
                 </motion.article>
 
                 {index < pages.length - 1 && (
-                  <div
-                    aria-hidden
-                    className="flex items-center justify-center py-6 text-sm tracking-[0.4em] text-[#A0826D] select-none"
-                  >
-                    · · ·
+                  <div aria-hidden className="flex items-center justify-center gap-2 py-8">
+                    <span className="block h-1 w-1 rounded-full bg-[#A0826D]/50" />
+                    <span className="block h-1 w-1 rounded-full bg-[#A0826D]/50" />
+                    <span className="block h-1 w-1 rounded-full bg-[#A0826D]/50" />
                   </div>
                 )}
               </div>
