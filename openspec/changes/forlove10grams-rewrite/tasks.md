@@ -51,11 +51,11 @@
 
 ## 5. Phase 4 — 精修與部署
 
-- [ ] 5.1 RWD 調整：手機（375px）、平板（768px）、桌機（1024px+）三個 breakpoint 完整測試
-- [ ] 5.2 加入 Framer Motion：每個 Page 元件的 scroll-triggered 淡入動畫（y: 20→0, opacity: 0→1）
+- [x] 5.1 RWD 調整：手機（375px）、平板（768px）、桌機（1024px+）三個 breakpoint 完整測試
+- [x] 5.2 加入 Framer Motion：每個 Page 元件的 scroll-triggered 淡入動畫（y: 20→0, opacity: 0→1）
 - [ ] 5.3 設定 AWS CloudFront distribution，媒體 URL 改用 CloudFront domain
-- [ ] 5.4 設定 AWS Amplify：連接 GitHub repo，設定所有環境變數，確認 Next.js SSR 部署
+- [ ] 5.4 設定 Vercel：連接 GitHub repo，設定所有環境變數，確認 Next.js SSR 部署
 - [ ] 5.5 設定 Google Cloud Console OAuth callback URL（production domain）
 - [ ] 5.6 設定 LINE Developers callback URL（production domain）
-- [ ] 5.7 建立 `.env.local.example` 列出所有必要環境變數（不含實際值）
+- [x] 5.7 建立 `.env.local.example` 列出所有必要環境變數（不含實際值）
 - [ ] 5.8 完整 E2E 測試：Admin 建立 book → 上傳媒體 → 發布 → 讀者透過 share link 閱讀 → 已讀追蹤

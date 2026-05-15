@@ -38,17 +38,17 @@ export default async function EditBookPage({
 
   return (
     <main className="flex h-screen flex-col bg-[#FAF7F2]">
-      <header className="flex flex-none items-center justify-between border-b border-[#2C1810]/10 px-6 py-4">
-        <div className="flex items-center gap-3">
+      <header className="flex flex-none items-center justify-between border-b border-[#2C1810]/10 px-4 sm:px-6 py-3 sm:py-4">
+        <div className="flex min-w-0 items-center gap-2 sm:gap-3">
           <Link
             href="/dashboard"
-            className="text-sm text-[#2C1810]/50 transition-colors hover:text-[#2C1810]"
+            className="flex-none text-sm text-[#2C1810]/50 transition-colors hover:text-[#2C1810]"
           >
             ← 返回
           </Link>
-          <h1 className="text-lg font-semibold text-[#2C1810]">{book.title}</h1>
+          <h1 className="truncate text-base sm:text-lg font-semibold text-[#2C1810]">{book.title}</h1>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-none items-center gap-1 sm:gap-2">
           {isOwner && <ShareButton bookId={bookId} />}
           <InviteEditorButton bookId={bookId} />
         </div>

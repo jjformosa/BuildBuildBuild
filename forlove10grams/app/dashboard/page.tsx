@@ -13,10 +13,10 @@ export default async function DashboardPage() {
 
   return (
     <main className="min-h-screen bg-[#FAF7F2]">
-      <header className="flex items-center justify-between border-b border-[#2C1810]/10 px-6 py-4">
+      <header className="flex items-center justify-between border-b border-[#2C1810]/10 px-4 sm:px-6 py-4">
         <h1 className="text-lg font-semibold text-[#2C1810]">For Love 10 Grams</h1>
-        <div className="flex items-center gap-4">
-          <span className="text-sm text-[#2C1810]/60">{session?.user?.email}</span>
+        <div className="flex items-center gap-2 sm:gap-4">
+          <span className="hidden sm:inline text-sm text-[#2C1810]/60">{session?.user?.email}</span>
           <form
             action={async () => {
               'use server'
@@ -33,9 +33,9 @@ export default async function DashboardPage() {
         </div>
       </header>
 
-      <div className="mx-auto max-w-3xl px-6 py-10">
-        <div className="mb-8 flex items-center justify-between">
-          <h2 className="text-2xl font-semibold text-[#2C1810]">我的記憶書</h2>
+      <div className="mx-auto max-w-3xl px-4 sm:px-6 py-8 sm:py-10">
+        <div className="mb-6 sm:mb-8 flex items-center justify-between">
+          <h2 className="text-xl sm:text-2xl font-semibold text-[#2C1810]">我的記憶書</h2>
           <CreateBookButton />
         </div>
 

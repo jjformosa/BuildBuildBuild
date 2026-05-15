@@ -3,6 +3,7 @@
 import { useMemo } from 'react'
 import dynamic from 'next/dynamic'
 import remarkGfm from 'remark-gfm'
+import { motion } from 'framer-motion'
 import { Toc, type TocPage } from '@/components/toc'
 import { Carousel } from '@/components/carousel'
 import { VideoPlayer } from '@/components/video-player'
@@ -42,16 +43,24 @@ export function ReadPageClient({ bookId, bookTitle, pages }: Props) {
       <Toc pages={tocPages} readPageIds={readPageIds} />
 
       <main className="flex-1 overflow-y-auto">
-        <div className="mx-auto max-w-2xl px-4 py-10">
-          <header className="mb-12 text-center">
-            <h1 className="text-2xl font-semibold tracking-tight text-[#2C1810]">
+        <div className="mx-auto max-w-2xl px-4 py-8 sm:py-10">
+          <header className="mb-10 sm:mb-12 text-center">
+            <h1 className="text-xl sm:text-2xl font-semibold tracking-tight text-[#2C1810]">
               {bookTitle}
             </h1>
           </header>
 
           <div className="space-y-20">
             {pages.map((page) => (
-              <article key={page._id} id={page._id} className="scroll-mt-8">
+              <motion.article
+                key={page._id}
+                id={page._id}
+                className="scroll-mt-8"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, ease: 'easeOut' }}
+                viewport={{ once: true, amount: 0.1 }}
+              >
                 {page.mediaUrls.length > 0 &&
                   (page.type === 'carousel' ? (
                     <Carousel urls={page.mediaUrls} />
@@ -66,7 +75,7 @@ export function ReadPageClient({ bookId, bookTitle, pages }: Props) {
                     </ReactMarkdown>
                   </div>
                 )}
-              </article>
+              </motion.article>
             ))}
           </div>
         </div>

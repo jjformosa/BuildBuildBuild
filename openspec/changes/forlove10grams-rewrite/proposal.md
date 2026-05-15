@@ -33,5 +33,5 @@
 
 - **新增依賴**：`next@15`, `next-auth@5`, `mongoose`, `zod`, `@aws-sdk/s3-request-presigner`, `framer-motion`, `shadcn/ui`, `tailwindcss`
 - **需設定第三方服務**：Google Cloud Console OAuth、LINE Developers Login Channel、MongoDB Atlas cluster、AWS S3 bucket + IAM user + CloudFront
-- **部署平台**：AWS Amplify（支援 Next.js SSR）
+- **部署平台**：Vercel（Next.js 官方平台）
 - **環境變數**：`MONGODB_URI`, `NEXTAUTH_SECRET`, `GOOGLE_CLIENT_ID/SECRET`, `LINE_CLIENT_ID/SECRET`, `AWS_*`, `AWS_S3_BUCKET`

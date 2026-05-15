@@ -221,8 +221,8 @@ export function BookEditorClient({
 
   return (
     <div className="flex flex-1 overflow-hidden">
-      {/* Sidebar */}
-      <aside className="flex w-52 flex-none flex-col overflow-y-auto border-r border-[#2C1810]/10">
+      {/* Sidebar — desktop only */}
+      <aside className="hidden md:flex w-52 flex-none flex-col overflow-y-auto border-r border-[#2C1810]/10">
         <div className="flex-none border-b border-[#2C1810]/10 px-4 py-3">
           <span className="text-xs font-medium uppercase tracking-wide text-[#2C1810]/50">
             頁面 {pages.length > 0 && `(${pages.length})`}
@@ -275,6 +275,35 @@ export function BookEditorClient({
 
       {/* Editor area */}
       <section className="flex flex-1 flex-col overflow-hidden">
+        {/* Mobile page selector — horizontal scrollable strip, hidden on desktop */}
+        <div className="flex md:hidden flex-none items-center overflow-x-auto border-b border-[#2C1810]/10 gap-1 px-2 py-1.5">
+          {pages.map((page, i) => (
+            <button
+              key={page._id}
+              onClick={() => selectPage(page._id)}
+              className={`flex-none rounded px-2.5 py-1 text-xs whitespace-nowrap transition-colors ${
+                selectedId === page._id
+                  ? 'bg-[#2C1810]/10 text-[#2C1810]'
+                  : 'text-[#2C1810]/50 hover:bg-[#2C1810]/5'
+              }`}
+            >
+              {i + 1}. {page.type === 'carousel' ? '輪播' : '影片'}
+            </button>
+          ))}
+          <div className="flex flex-none gap-1 ml-auto pl-1">
+            {(['carousel', 'video'] as const).map((type) => (
+              <button
+                key={type}
+                onClick={() => handleAddPage(type)}
+                disabled={addingType !== null}
+                className="flex-none rounded border border-[#2C1810]/20 px-2 py-1 text-xs whitespace-nowrap text-[#2C1810]/60 hover:bg-[#2C1810]/5 disabled:opacity-40 transition-colors"
+              >
+                {addingType === type ? '…' : type === 'carousel' ? '+ 輪播' : '+ 影片'}
+              </button>
+            ))}
+          </div>
+        </div>
+
         {selectedPage ? (
           <>
             <div className="flex-none border-b border-[#2C1810]/10 px-6 py-3 flex items-center justify-between">
