@@ -190,7 +190,10 @@ export function BookEditorClient({
     }
   }
 
+  const PAGE_LIMIT = 30
+
   async function handleAddPage(type: 'carousel' | 'video') {
+    if (pages.length >= PAGE_LIMIT) return
     setAddingType(type)
     try {
       const res = await fetch(`/api/books/${bookId}/pages`, {
@@ -258,18 +261,24 @@ export function BookEditorClient({
         )}
 
         <div className="mt-auto border-t border-[#2C1810]/10 p-3">
-          <div className="flex gap-2">
-            {(['carousel', 'video'] as const).map((type) => (
-              <button
-                key={type}
-                onClick={() => handleAddPage(type)}
-                disabled={addingType !== null}
-                className="flex-1 rounded-md border border-[#2C1810]/20 py-1.5 text-xs text-[#2C1810] hover:bg-[#2C1810]/5 disabled:opacity-40 transition-colors"
-              >
-                {addingType === type ? '新增中…' : type === 'carousel' ? '+ 輪播' : '+ 影片'}
-              </button>
-            ))}
-          </div>
+          {pages.length >= PAGE_LIMIT ? (
+            <p className="text-center text-xs text-[#2C1810]/50 py-1">
+              已達頁數上限（{PAGE_LIMIT} 頁）
+            </p>
+          ) : (
+            <div className="flex gap-2">
+              {(['carousel', 'video'] as const).map((type) => (
+                <button
+                  key={type}
+                  onClick={() => handleAddPage(type)}
+                  disabled={addingType !== null}
+                  className="flex-1 rounded-md border border-[#2C1810]/20 py-1.5 text-xs text-[#2C1810] hover:bg-[#2C1810]/5 disabled:opacity-40 transition-colors"
+                >
+                  {addingType === type ? '新增中…' : type === 'carousel' ? '+ 輪播' : '+ 影片'}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
       </aside>
 
@@ -291,16 +300,20 @@ export function BookEditorClient({
             </button>
           ))}
           <div className="flex flex-none gap-1 ml-auto pl-1">
-            {(['carousel', 'video'] as const).map((type) => (
-              <button
-                key={type}
-                onClick={() => handleAddPage(type)}
-                disabled={addingType !== null}
-                className="flex-none rounded border border-[#2C1810]/20 px-2 py-1 text-xs whitespace-nowrap text-[#2C1810]/60 hover:bg-[#2C1810]/5 disabled:opacity-40 transition-colors"
-              >
-                {addingType === type ? '…' : type === 'carousel' ? '+ 輪播' : '+ 影片'}
-              </button>
-            ))}
+            {pages.length >= PAGE_LIMIT ? (
+              <span className="text-xs text-[#2C1810]/40 px-2 py-1">已達上限</span>
+            ) : (
+              (['carousel', 'video'] as const).map((type) => (
+                <button
+                  key={type}
+                  onClick={() => handleAddPage(type)}
+                  disabled={addingType !== null}
+                  className="flex-none rounded border border-[#2C1810]/20 px-2 py-1 text-xs whitespace-nowrap text-[#2C1810]/60 hover:bg-[#2C1810]/5 disabled:opacity-40 transition-colors"
+                >
+                  {addingType === type ? '…' : type === 'carousel' ? '+ 輪播' : '+ 影片'}
+                </button>
+              ))
+            )}
           </div>
         </div>
 

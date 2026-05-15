@@ -15,10 +15,13 @@ export function MediaUploader({ bookId, pageId, fileType, mediaUrls, onUrlsChang
   const [progress, setProgress] = useState<number | null>(null)
   const [error, setError] = useState<string | null>(null)
 
+  const IMAGE_LIMIT = 15
   const accept = fileType === 'video' ? 'video/mp4,video/quicktime' : 'image/jpeg,image/png,image/webp'
   const multiple = fileType === 'carousel'
+  const atImageLimit = fileType === 'carousel' && mediaUrls.length >= IMAGE_LIMIT
 
   async function uploadFile(file: File) {
+    if (atImageLimit) return
     setError(null)
     setProgress(0)
 
@@ -117,21 +120,27 @@ export function MediaUploader({ bookId, pageId, fileType, mediaUrls, onUrlsChang
       {/* Upload button */}
       {(fileType === 'carousel' || mediaUrls.length === 0) && (
         <div>
-          <input
-            ref={inputRef}
-            type="file"
-            accept={accept}
-            multiple={multiple}
-            className="hidden"
-            onChange={(e) => e.target.files && handleFiles(e.target.files)}
-          />
-          <button
-            onClick={() => inputRef.current?.click()}
-            disabled={progress !== null}
-            className="rounded-md border border-[#2C1810]/20 px-3 py-1.5 text-xs text-[#2C1810] hover:bg-[#2C1810]/5 disabled:opacity-40 transition-colors"
-          >
-            {progress !== null ? `上傳中 ${progress}%` : fileType === 'carousel' ? '+ 新增圖片' : '+ 上傳影片'}
-          </button>
+          {atImageLimit ? (
+            <p className="text-xs text-[#2C1810]/50">已達圖片上限（{IMAGE_LIMIT} 張）</p>
+          ) : (
+            <>
+              <input
+                ref={inputRef}
+                type="file"
+                accept={accept}
+                multiple={multiple}
+                className="hidden"
+                onChange={(e) => e.target.files && handleFiles(e.target.files)}
+              />
+              <button
+                onClick={() => inputRef.current?.click()}
+                disabled={progress !== null}
+                className="rounded-md border border-[#2C1810]/20 px-3 py-1.5 text-xs text-[#2C1810] hover:bg-[#2C1810]/5 disabled:opacity-40 transition-colors"
+              >
+                {progress !== null ? `上傳中 ${progress}%` : fileType === 'carousel' ? '+ 新增圖片' : '+ 上傳影片'}
+              </button>
+            </>
+          )}
 
           {/* Progress bar */}
           {progress !== null && (
