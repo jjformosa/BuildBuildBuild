@@ -1,8 +1,35 @@
 import type { NextRequest } from 'next/server'
 import { z } from 'zod'
+import mongoose from 'mongoose'
 import { auth } from '@/auth'
 import { dbConnect } from '@/lib/mongoose'
 import Book from '@/lib/models/book'
+
+export async function GET(req: NextRequest) {
+  const session = await auth()
+  if (!session?.user?.id) return Response.json({ error: 'Unauthorized' }, { status: 401 })
+
+  const { searchParams } = new URL(req.url)
+  const after = searchParams.get('after')
+  const limit = Math.min(Number(searchParams.get('limit') ?? '10'), 50)
+
+  await dbConnect()
+
+  const query: Record<string, unknown> = { createdBy: session.user.id }
+  if (after) {
+    query._id = { $lt: new mongoose.Types.ObjectId(after) }
+  }
+
+  const books = await Book.find(query).sort({ _id: -1 }).limit(limit).lean()
+
+  return Response.json(
+    books.map((b) => ({
+      _id: b._id.toString(),
+      title: b.title,
+      description: b.description ?? null,
+    }))
+  )
+}
 
 const CreateBookBody = z.object({
   title: z.string().min(1),
