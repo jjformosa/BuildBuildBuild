@@ -69,7 +69,7 @@ export async function DELETE(
   if (!book) {
     return Response.json({ error: 'Not found' }, { status: 404 })
   }
-  if (!canEditBook(session.user.id!, book, session.user.role ?? undefined)) {
+  if (!canEditBook(session.user.id!, book)) {
     return Response.json({ error: 'Forbidden' }, { status: 403 })
   }
 

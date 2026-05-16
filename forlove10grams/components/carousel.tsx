@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import useEmblaCarousel from 'embla-carousel-react'
 import Lightbox from 'yet-another-react-lightbox'
 import 'yet-another-react-lightbox/styles.css'
@@ -113,6 +113,16 @@ export function Carousel({ urls }: Props) {
 
 function ImgSlide({ src, onClick }: { src: string; onClick: () => void }) {
   const [status, setStatus] = useState<'loading' | 'loaded' | 'error'>('loading')
+  const imgRef = useRef<HTMLImageElement>(null)
+
+  useEffect(() => {
+    const img = imgRef.current
+    if (!img) return
+    if (img.complete) {
+      setStatus(img.naturalWidth === 0 ? 'error' : 'loaded')
+    }
+  }, [])
+
   return (
     <>
       {status === 'loading' && (
@@ -124,6 +134,7 @@ function ImgSlide({ src, onClick }: { src: string; onClick: () => void }) {
         </div>
       ) : (
         <img
+          ref={imgRef}
           src={src}
           alt=""
           onLoad={() => setStatus('loaded')}
