@@ -32,7 +32,7 @@ export async function PATCH(
   if (!book) {
     return Response.json({ error: 'Book not found', bookId }, { status: 404 })
   }
-  if (!canEditBook(session.user.id!, book)) {
+  if (!canEditBook(session.user.id!, book, session.user.role ?? undefined)) {
     return Response.json({ error: 'Forbidden' }, { status: 403 })
   }
 

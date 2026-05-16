@@ -3,6 +3,7 @@ import { auth } from '@/auth'
 import { dbConnect } from '@/lib/mongoose'
 import Book from '@/lib/models/book'
 import Page from '@/lib/models/page'
+import User from '@/lib/models/user'
 import { canEditBook } from '@/lib/access'
 import { ReadPageClient, type ReadPageData } from '@/components/read-page-client'
 
@@ -24,6 +25,10 @@ export default async function ReadBookPage({
   // Owners/editors always have access; any logged-in user can read published books
   const canAccess = canEditBook(userId, book) || book.published
   if (!canAccess) redirect('/dashboard')
+
+  const viewer = await User.findById(userId).lean()
+  const viewerNickname = viewer?.nickname ?? null
+  const viewerMyNickname = viewer?.myNickname ?? null
 
   const pageIds = book.pageOrder.map((id) => id.toString())
   const totalCount = pageIds.length
@@ -48,6 +53,8 @@ export default async function ReadBookPage({
       bookTitle={book.title}
       initialPages={initialPages}
       totalCount={totalCount}
+      viewerNickname={viewerNickname}
+      viewerMyNickname={viewerMyNickname}
     />
   )
 }

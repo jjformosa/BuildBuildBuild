@@ -1,7 +1,8 @@
 import Share from './models/share'
 import type { IBook } from './models/book'
 
-export function canEditBook(userId: string, book: IBook): boolean {
+export function canEditBook(userId: string, book: IBook, role?: string): boolean {
+  if (role === 'admin') return true
   return (
     book.createdBy.toString() === userId ||
     book.editorId?.toString() === userId

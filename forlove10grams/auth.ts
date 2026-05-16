@@ -20,6 +20,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   callbacks: {
     session({ session, user }) {
       session.user.role = user.role ?? 'customer'
+      session.user.nicknameIsSet = user.nickname !== null && user.nickname !== undefined
       return session
     },
   },

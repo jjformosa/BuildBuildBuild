@@ -10,6 +10,7 @@ import { VideoPlayer } from '@/components/video-player'
 import { useReadProgress } from '@/hooks/use-read-progress'
 import { useInfiniteScroll } from '@/hooks/use-infinite-scroll'
 import { useActivePage } from '@/hooks/use-active-page'
+import { resolveSlots } from '@/lib/resolve-slots'
 
 const ReactMarkdown = dynamic(() => import('react-markdown'), {
   ssr: false,
@@ -28,9 +29,11 @@ type Props = {
   bookTitle: string
   initialPages: ReadPageData[]
   totalCount: number
+  viewerNickname: string | null
+  viewerMyNickname: string | null
 }
 
-export function ReadPageClient({ bookId, bookTitle, initialPages, totalCount }: Props) {
+export function ReadPageClient({ bookId, bookTitle, initialPages, totalCount, viewerNickname, viewerMyNickname }: Props) {
   const scrollContainerRef = useRef<HTMLElement>(null)
 
   const fetchMore = useCallback(
@@ -69,7 +72,7 @@ export function ReadPageClient({ bookId, bookTitle, initialPages, totalCount }: 
   const tocPages: TocPage[] = pages.map((p, i) => ({
     _id: p._id,
     type: p.type,
-    content: p.content,
+    content: resolveSlots(p.content, viewerNickname, viewerMyNickname),
     index: i,
   }))
 
@@ -111,7 +114,7 @@ export function ReadPageClient({ bookId, bookTitle, initialPages, totalCount }: 
                   {page.content && (
                     <div className="mt-6 text-sm leading-relaxed text-[#2C1810]/80 [&_blockquote]:border-l-2 [&_blockquote]:border-[#2C1810]/20 [&_blockquote]:pl-3 [&_blockquote]:italic [&_h1]:mb-1 [&_h1]:text-xl [&_h1]:font-semibold [&_h1]:text-[#2C1810] [&_h2]:mb-1 [&_h2]:text-lg [&_h2]:font-semibold [&_h3]:font-medium [&_ol]:mt-2 [&_ol]:list-decimal [&_ol]:pl-5 [&_p]:mt-3 [&_strong]:font-semibold [&_ul]:mt-2 [&_ul]:list-disc [&_ul]:pl-5">
                       <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                        {page.content}
+                        {resolveSlots(page.content, viewerNickname, viewerMyNickname)}
                       </ReactMarkdown>
                     </div>
                   )}
