@@ -5,6 +5,7 @@ import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
 import { auth } from '@/auth'
 import { dbConnect } from '@/lib/mongoose'
 import Book from '@/lib/models/book'
+import { canEditBook } from '@/lib/access'
 
 const s3 = new S3Client({
   region: process.env.AWS_REGION!,
@@ -43,10 +44,6 @@ export async function POST(req: NextRequest) {
   if (!session?.user) {
     return Response.json({ error: 'Unauthorized' }, { status: 401 })
   }
-  if (session.user.role !== 'admin') {
-    return Response.json({ error: 'Forbidden' }, { status: 403 })
-  }
-
   const body = await req.json()
   const parsed = PresignBody.safeParse(body)
   if (!parsed.success) {
@@ -60,7 +57,7 @@ export async function POST(req: NextRequest) {
   if (!book) {
     return Response.json({ error: 'Not found' }, { status: 404 })
   }
-  if (book.createdBy.toString() !== session.user.id) {
+  if (!canEditBook(session.user.id!, book, session.user.role ?? undefined)) {
     return Response.json({ error: 'Forbidden' }, { status: 403 })
   }
 
