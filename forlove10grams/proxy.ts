@@ -4,13 +4,6 @@ import type { NextAuthRequest } from 'next-auth'
 
 const PUBLIC_PREFIXES = ['/login', '/api/auth', '/share']
 
-function isAdminPath(pathname: string) {
-  return (
-    pathname.startsWith('/dashboard') ||
-    /^\/books\/[^/]+\/edit/.test(pathname)
-  )
-}
-
 export default auth(function proxy(req: NextAuthRequest) {
   const { pathname } = req.nextUrl
   if (PUBLIC_PREFIXES.some((p) => pathname.startsWith(p))) {
@@ -22,10 +15,6 @@ export default auth(function proxy(req: NextAuthRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
     return NextResponse.redirect(new URL('/login', req.nextUrl))
-  }
-
-  if (isAdminPath(pathname) && req.auth.user?.role !== 'admin') {
-    return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
   }
 
   return NextResponse.next()
