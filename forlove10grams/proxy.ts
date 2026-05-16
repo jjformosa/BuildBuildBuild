@@ -2,7 +2,7 @@ import { auth } from '@/auth'
 import { NextResponse } from 'next/server'
 import type { NextAuthRequest } from 'next-auth'
 
-const PUBLIC_PREFIXES = ['/login', '/api/auth', '/share', '/hajimede']
+const PUBLIC_PREFIXES = ['/login', '/api/auth', '/share', '/hajimede', '/privacy']
 
 export default auth(function proxy(req: NextAuthRequest) {
   const { pathname } = req.nextUrl
@@ -14,8 +14,17 @@ export default auth(function proxy(req: NextAuthRequest) {
     if (pathname.startsWith('/api/')) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
-    return NextResponse.redirect(new URL('/login', req.nextUrl))
+    const loginUrl = new URL('/login', req.nextUrl)
+    loginUrl.searchParams.set('callbackUrl', pathname + req.nextUrl.search)
+    return NextResponse.redirect(loginUrl)
   }
+
+  // 不用這段程式碼，nickname的檢查只需要在login callback發生時才檢查，避免打擾不想設定nickname的使用者
+  // if (!req.auth.user?.nicknameIsSet && !pathname.startsWith('/api/')) {
+  //   const hajimedeUrl = new URL('/hajimede', req.nextUrl)
+  //   hajimedeUrl.searchParams.set('callbackUrl', pathname + req.nextUrl.search)
+  //   return NextResponse.redirect(hajimedeUrl)
+  // }
 
   return NextResponse.next()
 })
