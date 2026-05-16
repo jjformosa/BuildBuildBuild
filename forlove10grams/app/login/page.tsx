@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import { LoginSection } from '@/components/login-section'
 
 export default async function LoginPage({
@@ -21,6 +22,13 @@ export default async function LoginPage({
         </div>
 
         <LoginSection redirectTo={redirectTo} />
+
+        <Link
+          href="/privacy"
+          className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+        >
+          隱私權政策
+        </Link>
       </div>
     </main>
   )
