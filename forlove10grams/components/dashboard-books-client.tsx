@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { useCallback } from 'react'
 import { useInfiniteScroll } from '@/hooks/use-infinite-scroll'
+import { PencilIcon } from '@/components/icons/pencil'
 
 export type DashboardBook = {
   _id: string
@@ -58,7 +59,9 @@ export function DashboardBooksClient({ initialBooks, initialHasMore }: Props) {
                   </p>
                 )}
               </div>
-              <span className="ml-4 text-xs text-[#2C1810]/30">編輯 →</span>
+              <span className="ml-4 text-[#2C1810]/30">
+                <PencilIcon />
+              </span>
             </Link>
           </li>
         ))}

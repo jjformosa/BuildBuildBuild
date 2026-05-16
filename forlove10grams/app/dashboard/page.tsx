@@ -6,11 +6,43 @@ import Book from '@/lib/models/book'
 import ReadProgress from '@/lib/models/read-progress'
 import { CreateBookButton } from '@/components/create-book-button'
 import { DashboardBooksClient, type DashboardBook } from '@/components/dashboard-books-client'
+import { PencilIcon } from '@/components/icons/pencil'
+import { CheckCircleIcon } from '@/components/icons/check-circle'
+import { CircleIcon } from '@/components/icons/circle'
 
 const INITIAL_LIMIT = 10
 
 function toBook(b: { _id: mongoose.Types.ObjectId; title: string; description?: string }): DashboardBook {
   return { _id: b._id.toString(), title: b.title, description: b.description ?? null }
+}
+
+type SharedBookItem = {
+  book: DashboardBook
+  href: string
+  badge: React.ReactNode
+}
+
+function SharedBookList({ items }: { items: SharedBookItem[] }) {
+  return (
+    <ul className="space-y-3">
+      {items.map(({ book, href, badge }) => (
+        <li key={book._id}>
+          <Link
+            href={href}
+            className="flex items-center justify-between rounded-xl border border-[#2C1810]/10 bg-white px-5 py-4 transition-all hover:border-[#2C1810]/25 hover:shadow-sm"
+          >
+            <div>
+              <p className="font-medium text-[#2C1810]">{book.title}</p>
+              {book.description && (
+                <p className="mt-0.5 line-clamp-1 text-sm text-[#2C1810]/50">{book.description}</p>
+              )}
+            </div>
+            <span className="ml-4 text-[#2C1810]/30">{badge}</span>
+          </Link>
+        </li>
+      ))}
+    </ul>
+  )
 }
 
 export default async function DashboardPage() {
@@ -21,13 +53,21 @@ export default async function DashboardPage() {
 
   await dbConnect()
 
-  const [ownerBooksRaw, editorBooksRaw, progressBookIds] = await Promise.all([
+  const [ownerBooksRaw, editorBooksRaw, progressAgg] = await Promise.all([
     isAdmin
       ? Book.find({ createdBy: uid }).sort({ _id: -1 }).limit(INITIAL_LIMIT).lean()
       : [],
     Book.find({ editorId: uid }).sort({ _id: -1 }).lean(),
-    ReadProgress.distinct('bookId', { userId: uid }),
+    ReadProgress.aggregate<{ _id: mongoose.Types.ObjectId; count: number }>([
+      { $match: { userId: uid } },
+      { $group: { _id: '$bookId', count: { $sum: 1 } } },
+    ]),
   ])
+
+  const readCountMap = new Map<string, number>(
+    progressAgg.map((r) => [r._id.toString(), r.count])
+  )
+  const progressBookIds = progressAgg.map((r) => r._id)
 
   const readerBooksRaw = progressBookIds.length
     ? await Book.find({
@@ -38,13 +78,27 @@ export default async function DashboardPage() {
     : []
 
   const ownerBooks = ownerBooksRaw.map(toBook)
-  const editorBooks = editorBooksRaw.map(toBook)
-  const readerBooks = readerBooksRaw.map(toBook)
+
+  const sharedItems: SharedBookItem[] = [
+    ...editorBooksRaw.map((b) => ({
+      book: toBook(b),
+      href: `/books/${b._id.toString()}/edit`,
+      badge: <PencilIcon />,
+    })),
+    ...readerBooksRaw.map((b) => {
+      const readCount = readCountMap.get(b._id.toString()) ?? 0
+      const isFullyRead = readCount >= b.pageOrder.length
+      return {
+        book: toBook(b),
+        href: `/read/${b._id.toString()}`,
+        badge: isFullyRead ? <CheckCircleIcon /> : <CircleIcon />,
+      }
+    }),
+  ]
 
   const totalOwnerCount = isAdmin ? await Book.countDocuments({ createdBy: uid }) : 0
   const initialHasMore = ownerBooks.length < totalOwnerCount
-
-  const hasAnyBook = isAdmin || ownerBooks.length > 0 || editorBooks.length > 0 || readerBooks.length > 0
+  const hasAnyBook = isAdmin || sharedItems.length > 0
 
   return (
     <main className="min-h-screen bg-[#FAF7F2]">
@@ -70,7 +124,7 @@ export default async function DashboardPage() {
 
       <div className="mx-auto max-w-3xl px-4 sm:px-6 py-8 sm:py-10 space-y-10">
 
-        {/* 我的記憶書（admin 才有） */}
+        {/* 我的記憶書（admin） */}
         {isAdmin && (
           <section>
             <div className="mb-6 flex items-center justify-between">
@@ -84,57 +138,13 @@ export default async function DashboardPage() {
           </section>
         )}
 
-        {/* 我編輯的書 */}
-        {editorBooks.length > 0 && (
+        {/* 分享給我的書（editor + reader，無標題） */}
+        {sharedItems.length > 0 && (
           <section>
-            <h2 className="mb-6 text-xl sm:text-2xl font-semibold text-[#2C1810]">我編輯的書</h2>
-            <ul className="space-y-3">
-              {editorBooks.map((book) => (
-                <li key={book._id}>
-                  <Link
-                    href={`/books/${book._id}/edit`}
-                    className="flex items-center justify-between rounded-xl border border-[#2C1810]/10 bg-white px-5 py-4 transition-all hover:border-[#2C1810]/25 hover:shadow-sm"
-                  >
-                    <div>
-                      <p className="font-medium text-[#2C1810]">{book.title}</p>
-                      {book.description && (
-                        <p className="mt-0.5 line-clamp-1 text-sm text-[#2C1810]/50">
-                          {book.description}
-                        </p>
-                      )}
-                    </div>
-                    <span className="ml-4 text-xs text-[#2C1810]/30">編輯 →</span>
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </section>
-        )}
-
-        {/* 我讀過的書 */}
-        {readerBooks.length > 0 && (
-          <section>
-            <h2 className="mb-6 text-xl sm:text-2xl font-semibold text-[#2C1810]">我讀過的書</h2>
-            <ul className="space-y-3">
-              {readerBooks.map((book) => (
-                <li key={book._id}>
-                  <Link
-                    href={`/read/${book._id}`}
-                    className="flex items-center justify-between rounded-xl border border-[#2C1810]/10 bg-white px-5 py-4 transition-all hover:border-[#2C1810]/25 hover:shadow-sm"
-                  >
-                    <div>
-                      <p className="font-medium text-[#2C1810]">{book.title}</p>
-                      {book.description && (
-                        <p className="mt-0.5 line-clamp-1 text-sm text-[#2C1810]/50">
-                          {book.description}
-                        </p>
-                      )}
-                    </div>
-                    <span className="ml-4 text-xs text-[#2C1810]/30">閱讀 →</span>
-                  </Link>
-                </li>
-              ))}
-            </ul>
+            {!isAdmin && (
+              <h2 className="mb-6 text-xl sm:text-2xl font-semibold text-[#2C1810]">記憶書</h2>
+            )}
+            <SharedBookList items={sharedItems} />
           </section>
         )}
 
