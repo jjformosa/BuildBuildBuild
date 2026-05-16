@@ -128,7 +128,7 @@ export default async function DashboardPage() {
         {isAdmin && (
           <section>
             <div className="mb-6 flex items-center justify-between">
-              <h2 className="text-xl sm:text-2xl font-semibold text-[#2C1810]">我的記憶書</h2>
+              <h2 className="text-xl sm:text-2xl font-semibold text-[#2C1810]">謝謝你，幫我記住</h2>
               <CreateBookButton />
             </div>
             <DashboardBooksClient
@@ -142,7 +142,7 @@ export default async function DashboardPage() {
         {sharedItems.length > 0 && (
           <section>
             {!isAdmin && (
-              <h2 className="mb-6 text-xl sm:text-2xl font-semibold text-[#2C1810]">記憶書</h2>
+              <h2 className="mb-6 text-xl sm:text-2xl font-semibold text-[#2C1810]">謝謝你，分享給我</h2>
             )}
             <SharedBookList items={sharedItems} />
           </section>
