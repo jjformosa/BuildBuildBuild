@@ -1,12 +1,12 @@
 ## 1. Data Model
 
-- [ ] 1.1 `lib/models/user.ts`：`IUser` 新增 `nickname: string | null` 與 `myNickname: string | null`，schema 預設均為 `null`
-- [ ] 1.2 `types/next-auth.d.ts`：`User` interface 新增 `nickname?: string | null`；`Session.user` 新增 `nicknameIsSet: boolean`
-- [ ] 1.3 `auth.ts` session callback：加入 `session.user.nicknameIsSet = user.nickname !== null && user.nickname !== undefined`
+- [x] 1.1 `lib/models/user.ts`：`IUser` 新增 `nickname: string | null` 與 `myNickname: string | null`，schema 預設均為 `null`
+- [x] 1.2 `types/next-auth.d.ts`：`User` interface 新增 `nickname?: string | null`；`Session.user` 新增 `nicknameIsSet: boolean`
+- [x] 1.3 `auth.ts` session callback：加入 `session.user.nicknameIsSet = user.nickname !== null && user.nickname !== undefined`
 
 ## 2. API
 
-- [ ] 2.1 建立 `app/api/user/nickname/route.ts`：`PATCH` endpoint，讀取 body `{ nickname: string }`，更新當前 session user 的 `User.nickname`，回傳 200
+- [x] 2.1 建立 `app/api/user/nickname/route.ts`：`PATCH` endpoint，讀取 body `{ nickname: string }`，更新當前 session user 的 `User.nickname`，回傳 200
 
 ## 3. Middleware
 

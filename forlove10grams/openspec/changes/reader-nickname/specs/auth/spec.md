@@ -17,7 +17,7 @@
 #### Scenario: 新使用者首次登入
 
 - **WHEN** Google 帳號從未在系統登入過
-- **THEN** 系統在 MongoDB `users` collection 建立新 User 文件，`role` 預設為 `reader`，`nickname` 預設為 `null`
+- **THEN** 系統在 MongoDB `users` collection 建立新 User 文件，`role` 預設為 `customer`，`nickname` 預設為 `null`
 
 #### Scenario: 返回使用者再次登入
 
@@ -31,7 +31,7 @@
 #### Scenario: LINE 登入成功（已設過暱稱）
 
 - **WHEN** `nickname` 不為 `null` 的使用者完成 LINE 授權
-- **THEN** 系統使用 LINE 帳號的 email 建立/匹配 User，redirect 至原始目標頁
+- **THEN** 系統使用 LINE 帳號的 email 建立/匹配 User（`role: 'customer'`），redirect 至原始目標頁
 
 #### Scenario: LINE 登入成功（從未設過暱稱）
 

@@ -7,6 +7,8 @@ export interface IUser extends Document {
   image?: string
   role: 'admin' | 'customer'
   tenantId?: string
+  nickname: string | null
+  myNickname: string | null
 }
 
 const UserSchema = new Schema<IUser>(
@@ -17,6 +19,8 @@ const UserSchema = new Schema<IUser>(
     image: String,
     role: { type: String, enum: ['admin', 'customer'], default: 'customer' },
     tenantId: String,
+    nickname: { type: String, default: null },
+    myNickname: { type: String, default: null },
   },
   { timestamps: true }
 )
