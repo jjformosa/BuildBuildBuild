@@ -55,8 +55,8 @@
 - [x] 5.2 加入 Framer Motion：每個 Page 元件的 scroll-triggered 淡入動畫（y: 20→0, opacity: 0→1）
 - [x] 5.3 設定 AWS CloudFront distribution，媒體 URL 改用 CloudFront domain
 - [ ] 5.4 設定 Vercel：連接 GitHub repo，設定所有環境變數，確認 Next.js SSR 部署
-- [ ] 5.5 設定 Google Cloud Console OAuth callback URL：`https://film-diary.tasipanmwws.name/api/auth/callback/google`
-- [ ] 5.6 設定 LINE Developers callback URL：`https://film-diary.tasipanmwws.name/api/auth/callback/line`
+- [ ] 5.5 設定 Google Cloud Console OAuth callback URL：`https://film-diary.tsaipanmwws.name/api/auth/callback/google`
+- [ ] 5.6 設定 LINE Developers callback URL：`https://film-diary.tsaipanmwws.name/api/auth/callback/line`
 - [x] 5.7 建立 `.env.local.example` 列出所有必要環境變數（不含實際值）
 - [x] 5.8a bugfix：editor 自動存檔加入 `res.ok` 檢查，HTTP 錯誤時改回「未儲存」而非誤顯「已儲存」
 - [x] 5.8b bugfix：TOC 導覽改用 `container.scrollBy()` 直接捲動 `#read-scroll-container`，解決 `scrollIntoView` 在 `overflow-y:auto` 容器內失效的問題
