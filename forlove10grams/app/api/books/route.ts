@@ -16,12 +16,18 @@ export async function GET(req: NextRequest) {
 
   await dbConnect()
 
+  const q = searchParams.get('q')?.trim() ?? ''
+
   const query: Record<string, unknown> = { createdBy: session.user.id }
   if (after) {
     query._id = { $lt: new mongoose.Types.ObjectId(after) }
   }
   if (status === 'published') query.published = true
   if (status === 'unpublished') query.published = { $ne: true }
+  if (q) {
+    const escaped = q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+    query.title = { $regex: escaped, $options: 'i' }
+  }
 
   const books = await Book.find(query)
     .sort({ _id: -1 })

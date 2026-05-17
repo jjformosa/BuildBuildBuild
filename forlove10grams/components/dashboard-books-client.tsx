@@ -55,6 +55,54 @@ function BookCard({ book }: { book: DashboardBook }) {
   )
 }
 
+// Remounts via key prop when query changes — ensures useInfiniteScroll resets cleanly.
+function SearchResultsView({ query }: { query: string }) {
+  const fetchMore = useCallback(async (cursor: string): Promise<DashboardBook[]> => {
+    const params = new URLSearchParams({ q: query, limit: '10' })
+    if (cursor) params.set('after', cursor)
+    const res = await fetch(`/api/books?${params}`)
+    if (!res.ok) return []
+    return res.json()
+  }, []) // intentionally empty — component remounts on query change via key prop
+
+  const getCursor = useCallback((book: DashboardBook) => book._id, [])
+
+  const { items, sentinelRef, isLoading, hasMore } = useInfiniteScroll<DashboardBook>({
+    initialItems: [],
+    fetchMore,
+    getCursor,
+    initialHasMore: true,
+  })
+
+  // Suppress empty state while first fetch hasn't fired yet (sentinel not yet observed).
+  const stillLoading = hasMore && items.length === 0
+  const showLoading = isLoading || stillLoading
+
+  if (items.length === 0 && !showLoading) {
+    return (
+      <p className="py-20 text-center text-sm text-[#2C1810]/40">
+        找不到符合「{query}」的記憶書。
+      </p>
+    )
+  }
+
+  return (
+    <>
+      <ul className="space-y-3">
+        {items.map((book) => (
+          <li key={book._id}>
+            <BookCard book={book} />
+          </li>
+        ))}
+      </ul>
+      <div ref={sentinelRef} className="h-10" aria-hidden />
+      {showLoading && (
+        <p className="py-4 text-center text-sm text-[#2C1810]/40">載入中…</p>
+      )}
+    </>
+  )
+}
+
 // Remounts via key prop when sort/status changes — ensures useInfiniteScroll resets cleanly.
 function BookListView({
   sort,
@@ -157,7 +205,15 @@ type Props = {
 export function DashboardBooksClient({ initialBooks, initialHasMore }: Props) {
   const [sort, setSort] = useState<Sort>('newest')
   const [status, setStatus] = useState<Status>('all')
+  const [query, setQuery] = useState('')
+  const [debouncedQuery, setDebouncedQuery] = useState('')
 
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedQuery(query.trim()), 300)
+    return () => clearTimeout(timer)
+  }, [query])
+
+  const isSearching = debouncedQuery.length > 0
   const isDefault = sort === 'newest' && status === 'all'
 
   const sortLabels: Record<Sort, string> = { newest: '新→舊', oldest: '舊→新', title: 'A→Z' }
@@ -165,46 +221,73 @@ export function DashboardBooksClient({ initialBooks, initialHasMore }: Props) {
 
   return (
     <>
-      <div className="mb-4 flex flex-wrap items-center gap-2">
-        <div className="flex items-center gap-1 text-sm">
-          {(['newest', 'oldest', 'title'] as Sort[]).map((s) => (
-            <button
-              key={s}
-              onClick={() => setSort(s)}
-              className={`rounded-md px-2.5 py-1 transition-colors ${
-                sort === s
-                  ? 'bg-[#2C1810] text-white'
-                  : 'text-[#2C1810]/50 hover:text-[#2C1810]'
-              }`}
-            >
-              {sortLabels[s]}
-            </button>
-          ))}
-        </div>
-        <div className="ml-auto flex items-center gap-1 text-sm">
-          {(['all', 'published', 'unpublished'] as Status[]).map((st) => (
-            <button
-              key={st}
-              onClick={() => setStatus(st)}
-              className={`rounded-md px-2.5 py-1 transition-colors ${
-                status === st
-                  ? 'bg-[#2C1810] text-white'
-                  : 'text-[#2C1810]/50 hover:text-[#2C1810]'
-              }`}
-            >
-              {statusLabels[st]}
-            </button>
-          ))}
-        </div>
+      {/* Search input */}
+      <div className="mb-4 relative">
+        <input
+          type="text"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder="搜尋記憶書標題…"
+          className="w-full rounded-lg border border-[#2C1810]/15 bg-white px-3 py-2 pr-8 text-sm text-[#2C1810] placeholder:text-[#2C1810]/30 focus:border-[#2C1810]/30 focus:outline-none"
+        />
+        {query && (
+          <button
+            onClick={() => setQuery('')}
+            className="absolute right-2.5 top-1/2 -translate-y-1/2 text-lg leading-none text-[#2C1810]/30 hover:text-[#2C1810]/60"
+            aria-label="清除搜尋"
+          >
+            ×
+          </button>
+        )}
       </div>
 
-      <BookListView
-        key={`${sort}-${status}`}
-        sort={sort}
-        status={status}
-        initialBooks={isDefault ? initialBooks : []}
-        initialHasMore={isDefault ? initialHasMore : sort === 'newest'}
-      />
+      {/* Sort / status controls — hidden while searching */}
+      {!isSearching && (
+        <div className="mb-4 flex flex-wrap items-center gap-2">
+          <div className="flex items-center gap-1 text-sm">
+            {(['newest', 'oldest', 'title'] as Sort[]).map((s) => (
+              <button
+                key={s}
+                onClick={() => setSort(s)}
+                className={`rounded-md px-2.5 py-1 transition-colors ${
+                  sort === s
+                    ? 'bg-[#2C1810] text-white'
+                    : 'text-[#2C1810]/50 hover:text-[#2C1810]'
+                }`}
+              >
+                {sortLabels[s]}
+              </button>
+            ))}
+          </div>
+          <div className="ml-auto flex items-center gap-1 text-sm">
+            {(['all', 'published', 'unpublished'] as Status[]).map((st) => (
+              <button
+                key={st}
+                onClick={() => setStatus(st)}
+                className={`rounded-md px-2.5 py-1 transition-colors ${
+                  status === st
+                    ? 'bg-[#2C1810] text-white'
+                    : 'text-[#2C1810]/50 hover:text-[#2C1810]'
+                }`}
+              >
+                {statusLabels[st]}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {isSearching ? (
+        <SearchResultsView key={debouncedQuery} query={debouncedQuery} />
+      ) : (
+        <BookListView
+          key={`${sort}-${status}`}
+          sort={sort}
+          status={status}
+          initialBooks={isDefault ? initialBooks : []}
+          initialHasMore={isDefault ? initialHasMore : sort === 'newest'}
+        />
+      )}
     </>
   )
 }
