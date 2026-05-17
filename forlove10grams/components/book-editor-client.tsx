@@ -21,6 +21,7 @@ import {
 import { CSS } from '@dnd-kit/utilities'
 import '@uiw/react-md-editor/markdown-editor.css'
 import { MediaUploader } from '@/components/media-uploader'
+import TagInput from '@/components/tag-input'
 
 const MDEditor = dynamic(() => import('@uiw/react-md-editor'), { ssr: false })
 
@@ -100,11 +101,14 @@ function SortablePageItem({
 export function BookEditorClient({
   bookId,
   initialPages,
+  initialTags,
 }: {
   bookId: string
   initialPages: PageData[]
+  initialTags: string[]
 }) {
   const [pages, setPages] = useState<PageData[]>(initialPages)
+  const [tags, setTags] = useState<string[]>(initialTags)
   const [selectedId, setSelectedId] = useState<string | null>(
     initialPages.length > 0 ? initialPages[0]._id : null
   )
@@ -222,6 +226,28 @@ export function BookEditorClient({
     setPages((prev) => prev.map((p) => (p._id === selectedId ? { ...p, mediaUrls: urls } : p)))
   }
 
+  async function handleAddTag(tag: string) {
+    const res = await fetch(`/api/books/${bookId}/tags`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name: tag }),
+    })
+    if (res.ok) {
+      const data = await res.json()
+      setTags(data.tags)
+    }
+  }
+
+  async function handleRemoveTag(tag: string) {
+    const res = await fetch(`/api/books/${bookId}/tags/${encodeURIComponent(tag)}`, {
+      method: 'DELETE',
+    })
+    if (res.ok) {
+      const data = await res.json()
+      setTags(data.tags)
+    }
+  }
+
   return (
     <div className="flex flex-1 overflow-hidden">
       {/* Sidebar — desktop only */}
@@ -279,6 +305,10 @@ export function BookEditorClient({
               ))}
             </div>
           )}
+          <div className="mt-3 border-t border-[#2C1810]/8 pt-3">
+            <p className="mb-2 text-xs text-[#2C1810]/50">標籤</p>
+            <TagInput tags={tags} onAdd={handleAddTag} onRemove={handleRemoveTag} />
+          </div>
         </div>
       </aside>
 

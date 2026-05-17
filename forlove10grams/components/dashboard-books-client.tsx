@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { useState, useEffect, useCallback } from 'react'
 import { useInfiniteScroll } from '@/hooks/use-infinite-scroll'
 import { PencilIcon } from '@/components/icons/pencil'
+import TagInput from '@/components/tag-input'
 
 export type DashboardBook = {
   _id: string
@@ -11,52 +12,95 @@ export type DashboardBook = {
   description: string | null
   coverImage: string | null
   published: boolean
+  tags: string[]
 }
 
 type Sort = 'newest' | 'oldest' | 'title'
 type Status = 'all' | 'published' | 'unpublished'
 
-function BookCard({ book }: { book: DashboardBook }) {
+function BookCard({
+  book,
+  onTagAdded,
+}: {
+  book: DashboardBook
+  onTagAdded: (bookId: string, updatedTags: string[]) => void
+}) {
+  const [showTagInput, setShowTagInput] = useState(false)
+  const [adding, setAdding] = useState(false)
   const initial = book.title.charAt(0)
+
+  const handleAddTag = async (tag: string) => {
+    setAdding(true)
+    try {
+      const res = await fetch(`/api/books/${book._id}/tags`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: tag }),
+      })
+      if (res.ok) {
+        const data = await res.json()
+        onTagAdded(book._id, data.tags)
+      }
+    } finally {
+      setAdding(false)
+    }
+  }
+
   return (
-    <Link
-      href={`/books/${book._id}/edit`}
-      className="flex items-center gap-3 rounded-xl border border-[#2C1810]/10 bg-white px-4 py-3 transition-all hover:border-[#2C1810]/25 hover:shadow-sm"
-    >
-      <div className="shrink-0 h-14 w-14 overflow-hidden rounded-lg bg-[#2C1810]/5 flex items-center justify-center">
-        {book.coverImage ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={book.coverImage} alt="" className="h-full w-full object-cover" />
-        ) : (
-          <span className="text-xl font-semibold text-[#2C1810]/25">{initial}</span>
-        )}
+    <div className="rounded-xl border border-[#2C1810]/10 bg-white px-4 py-3 transition-all hover:border-[#2C1810]/25 hover:shadow-sm">
+      <div className="flex items-center gap-3">
+        <Link href={`/books/${book._id}/edit`} className="flex items-center gap-3 flex-1 min-w-0">
+          <div className="shrink-0 h-14 w-14 overflow-hidden rounded-lg bg-[#2C1810]/5 flex items-center justify-center">
+            {book.coverImage ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={book.coverImage} alt="" className="h-full w-full object-cover" />
+            ) : (
+              <span className="text-xl font-semibold text-[#2C1810]/25">{initial}</span>
+            )}
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="font-medium text-[#2C1810] truncate">{book.title}</p>
+            {book.description && (
+              <p className="mt-0.5 line-clamp-1 text-sm text-[#2C1810]/50">{book.description}</p>
+            )}
+          </div>
+        </Link>
+        <div className="shrink-0 flex items-center gap-2">
+          <span
+            className={`text-xs px-2 py-0.5 rounded-full ${
+              book.published
+                ? 'bg-emerald-50 text-emerald-700'
+                : 'bg-[#2C1810]/5 text-[#2C1810]/40'
+            }`}
+          >
+            {book.published ? '已分享' : '草稿'}
+          </span>
+          <button
+            type="button"
+            onClick={() => setShowTagInput((v) => !v)}
+            className="text-xs text-[#2C1810]/40 hover:text-[#2C1810]/70 transition-colors px-1"
+            title="新增標籤"
+          >
+            ＋標籤
+          </button>
+          <span className="text-[#2C1810]/30">
+            <PencilIcon />
+          </span>
+        </div>
       </div>
-      <div className="flex-1 min-w-0">
-        <p className="font-medium text-[#2C1810] truncate">{book.title}</p>
-        {book.description && (
-          <p className="mt-0.5 line-clamp-1 text-sm text-[#2C1810]/50">{book.description}</p>
-        )}
-      </div>
-      <div className="shrink-0 flex items-center gap-3">
-        <span
-          className={`text-xs px-2 py-0.5 rounded-full ${
-            book.published
-              ? 'bg-emerald-50 text-emerald-700'
-              : 'bg-[#2C1810]/5 text-[#2C1810]/40'
-          }`}
-        >
-          {book.published ? '已分享' : '草稿'}
-        </span>
-        <span className="text-[#2C1810]/30">
-          <PencilIcon />
-        </span>
-      </div>
-    </Link>
+      {showTagInput && (
+        <div className="mt-3 pt-3 border-t border-[#2C1810]/8">
+          <TagInput tags={book.tags} onAdd={handleAddTag} disabled={adding} />
+        </div>
+      )}
+    </div>
   )
 }
 
 // Remounts via key prop when query changes — ensures useInfiniteScroll resets cleanly.
 function SearchResultsView({ query }: { query: string }) {
+  const [tagOverrides, setTagOverrides] = useState<Record<string, string[]>>({})
+
   const fetchMore = useCallback(async (cursor: string): Promise<DashboardBook[]> => {
     const params = new URLSearchParams({ q: query, limit: '10' })
     if (cursor) params.set('after', cursor)
@@ -73,6 +117,10 @@ function SearchResultsView({ query }: { query: string }) {
     getCursor,
     initialHasMore: true,
   })
+
+  const handleTagAdded = useCallback((bookId: string, updatedTags: string[]) => {
+    setTagOverrides((prev) => ({ ...prev, [bookId]: updatedTags }))
+  }, [])
 
   // Suppress empty state while first fetch hasn't fired yet (sentinel not yet observed).
   const stillLoading = hasMore && items.length === 0
@@ -91,7 +139,10 @@ function SearchResultsView({ query }: { query: string }) {
       <ul className="space-y-3">
         {items.map((book) => (
           <li key={book._id}>
-            <BookCard book={book} />
+            <BookCard
+              book={{ ...book, tags: tagOverrides[book._id] ?? book.tags }}
+              onTagAdded={handleTagAdded}
+            />
           </li>
         ))}
       </ul>
@@ -116,6 +167,11 @@ function BookListView({
   initialHasMore: boolean
 }) {
   const isNewest = sort === 'newest'
+  const [tagOverrides, setTagOverrides] = useState<Record<string, string[]>>({})
+
+  const handleTagAdded = useCallback((bookId: string, updatedTags: string[]) => {
+    setTagOverrides((prev) => ({ ...prev, [bookId]: updatedTags }))
+  }, [])
 
   // For oldest/title: fetch all once and sort client-side.
   // null = use scroll items; [] = loading; [...] = fetched
@@ -183,7 +239,10 @@ function BookListView({
       <ul className="space-y-3">
         {displayBooks.map((book) => (
           <li key={book._id}>
-            <BookCard book={book} />
+            <BookCard
+              book={{ ...book, tags: tagOverrides[book._id] ?? book.tags }}
+              onTagAdded={handleTagAdded}
+            />
           </li>
         ))}
       </ul>

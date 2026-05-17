@@ -62,7 +62,7 @@ export default async function EditBookPage({
         </div>
       </header>
 
-      <BookEditorClient bookId={bookId} initialPages={pages} />
+      <BookEditorClient bookId={bookId} initialPages={pages} initialTags={book.tags ?? []} />
     </main>
   )
 }
