@@ -37,6 +37,10 @@ export default async function EditBookPage({
     mediaUrls: p.mediaUrls,
   }))
 
+  const carouselImages = rawPages
+    .filter((p) => p.type === 'carousel')
+    .flatMap((p) => p.mediaUrls)
+
   return (
     <main className="flex h-screen flex-col bg-[#FAF7F2]">
       <header className="flex flex-none items-center justify-between border-b border-[#2C1810]/10 px-4 sm:px-6 py-3 sm:py-4">
@@ -50,7 +54,9 @@ export default async function EditBookPage({
           <h1 className="truncate text-base sm:text-lg font-semibold text-[#2C1810]">{book.title}</h1>
         </div>
         <div className="flex flex-none items-center gap-1 sm:gap-2">
-          {isOwner && <CoverImageButton bookId={bookId} initialCoverImage={book.coverImage ?? null} />}
+          {isOwner && carouselImages.length > 0 && (
+            <CoverImageButton bookId={bookId} initialCoverImage={book.coverImage ?? null} availableImages={carouselImages} />
+          )}
           {isOwner && <ShareButton bookId={bookId} />}
           <InviteEditorButton bookId={bookId} />
         </div>

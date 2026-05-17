@@ -1,75 +1,35 @@
 'use client'
 
-import { useRef, useState } from 'react'
+import { useState } from 'react'
 
 type Props = {
   bookId: string
   initialCoverImage: string | null
+  availableImages: string[]
 }
 
-export function CoverImageButton({ bookId, initialCoverImage }: Props) {
-  const inputRef = useRef<HTMLInputElement>(null)
+export function CoverImageButton({ bookId, initialCoverImage, availableImages }: Props) {
   const [coverImage, setCoverImage] = useState(initialCoverImage)
-  const [progress, setProgress] = useState<number | null>(null)
-  const [error, setError] = useState<string | null>(null)
+  const [isOpen, setIsOpen] = useState(false)
+  const [isSaving, setIsSaving] = useState(false)
 
-  async function handleFile(file: File) {
-    setError(null)
-    setProgress(0)
-
-    const presignRes = await fetch('/api/upload/presign', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ bookId, fileType: 'cover', contentType: file.type }),
-    })
-    if (!presignRes.ok) {
-      setError('無法取得上傳連結')
-      setProgress(null)
-      return
-    }
-    const { presignedUrl, s3Url } = await presignRes.json()
-
-    await new Promise<void>((resolve, reject) => {
-      const xhr = new XMLHttpRequest()
-      xhr.upload.onprogress = (e) => {
-        if (e.lengthComputable) setProgress(Math.round((e.loaded / e.total) * 100))
-      }
-      xhr.onload = () => (xhr.status === 200 ? resolve() : reject(new Error(`S3 ${xhr.status}`)))
-      xhr.onerror = () => reject(new Error('網路錯誤'))
-      xhr.open('PUT', presignedUrl)
-      xhr.setRequestHeader('Content-Type', file.type)
-      xhr.send(file)
-    }).catch((err: Error) => {
-      setError(err.message)
-      setProgress(null)
-      throw err
-    })
-
+  async function selectImage(url: string) {
+    setIsSaving(true)
     await fetch(`/api/books/${bookId}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ coverImage: s3Url }),
+      body: JSON.stringify({ coverImage: url }),
     })
-    setCoverImage(s3Url)
-    setProgress(null)
+    setCoverImage(url)
+    setIsSaving(false)
+    setIsOpen(false)
   }
 
   return (
-    <div className="relative">
-      <input
-        ref={inputRef}
-        type="file"
-        accept="image/jpeg,image/png,image/webp"
-        className="hidden"
-        onChange={(e) => {
-          const file = e.target.files?.[0]
-          if (file) handleFile(file)
-          e.target.value = ''
-        }}
-      />
+    <>
       <button
-        onClick={() => inputRef.current?.click()}
-        disabled={progress !== null}
+        onClick={() => setIsOpen(true)}
+        disabled={isSaving}
         title={coverImage ? '更換封面' : '設定封面'}
         className="flex items-center gap-1.5 rounded-md border border-[#2C1810]/20 px-2.5 py-1 text-sm text-[#2C1810]/60 hover:text-[#2C1810] hover:bg-[#2C1810]/5 disabled:opacity-40 transition-colors"
       >
@@ -80,14 +40,40 @@ export function CoverImageButton({ bookId, initialCoverImage }: Props) {
           <span className="text-xs">🖼</span>
         )}
         <span className="text-xs hidden sm:inline">
-          {progress !== null ? `${progress}%` : coverImage ? '封面' : '設定封面'}
+          {coverImage ? '封面' : '設定封面'}
         </span>
       </button>
-      {error && (
-        <p className="absolute top-full left-0 mt-1 whitespace-nowrap rounded bg-red-50 px-2 py-1 text-xs text-red-500">
-          {error}
-        </p>
+
+      {isOpen && (
+        <>
+          {/* backdrop */}
+          <div
+            className="fixed inset-0 z-40"
+            onClick={() => setIsOpen(false)}
+          />
+          {/* picker panel */}
+          <div className="fixed right-4 top-16 z-50 w-72 rounded-xl border border-[#2C1810]/10 bg-white p-3 shadow-lg">
+            <p className="mb-2 text-xs font-medium text-[#2C1810]/50">選擇封面圖片</p>
+            <div className="grid grid-cols-4 gap-1.5 max-h-64 overflow-y-auto">
+              {availableImages.map((url) => (
+                <button
+                  key={url}
+                  onClick={() => selectImage(url)}
+                  disabled={isSaving}
+                  className={`relative aspect-square overflow-hidden rounded-md border-2 transition-all ${
+                    coverImage === url
+                      ? 'border-[#2C1810]'
+                      : 'border-transparent hover:border-[#2C1810]/30'
+                  }`}
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={url} alt="" className="h-full w-full object-cover" />
+                </button>
+              ))}
+            </div>
+          </div>
+        </>
       )}
-    </div>
+    </>
   )
 }
