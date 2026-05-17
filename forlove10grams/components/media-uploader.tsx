@@ -1,6 +1,7 @@
 'use client'
 
-import { useRef, useState } from 'react'
+import { useRef, useState, useEffect } from 'react'
+import Image from 'next/image'
 
 type Props = {
   bookId: string
@@ -8,17 +9,58 @@ type Props = {
   fileType: 'carousel' | 'video'
   mediaUrls: string[]
   onUrlsChange: (urls: string[]) => void
+  onTranscodingReady?: (hlsUrl: string) => void
 }
 
-export function MediaUploader({ bookId, pageId, fileType, mediaUrls, onUrlsChange }: Props) {
+export function MediaUploader({ bookId, pageId, fileType, mediaUrls, onUrlsChange, onTranscodingReady }: Props) {
   const inputRef = useRef<HTMLInputElement>(null)
+  const pollIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const [progress, setProgress] = useState<number | null>(null)
   const [error, setError] = useState<string | null>(null)
+  const [isTranscoding, setIsTranscoding] = useState(false)
 
   const IMAGE_LIMIT = 15
-  const accept = fileType === 'video' ? 'video/mp4,video/quicktime' : 'image/jpeg,image/png,image/webp'
+  const accept = fileType === 'video' ? 'video/mp4,video/quicktime,video/x-m4v' : 'image/jpeg,image/png,image/webp'
   const multiple = fileType === 'carousel'
   const atImageLimit = fileType === 'carousel' && mediaUrls.length >= IMAGE_LIMIT
+
+  function pollTranscoding() {
+    const MAX_ATTEMPTS = 200 // ~10 minutes at 3s interval
+    let attempts = 0
+    pollIntervalRef.current = setInterval(async () => {
+      attempts++
+      if (attempts > MAX_ATTEMPTS) {
+        clearInterval(pollIntervalRef.current!)
+        pollIntervalRef.current = null
+        setIsTranscoding(false)
+        setError('轉檔逾時，請重新上傳')
+        return
+      }
+      try {
+        const res = await fetch(`/api/books/${bookId}/pages/${pageId}`)
+        if (!res.ok) return
+        const data = await res.json()
+        if (data.transcodingStatus === 'ready' && data.mediaUrls?.[0]) {
+          clearInterval(pollIntervalRef.current!)
+          pollIntervalRef.current = null
+          setIsTranscoding(false)
+          onUrlsChange(data.mediaUrls)
+          onTranscodingReady?.(data.mediaUrls[0])
+        } else if (data.transcodingStatus === 'error') {
+          clearInterval(pollIntervalRef.current!)
+          pollIntervalRef.current = null
+          setIsTranscoding(false)
+          setError('影片轉檔失敗，請重新上傳')
+        }
+      } catch {
+        // network hiccup — keep polling
+      }
+    }, 3000)
+  }
+
+  useEffect(() => {
+    return () => { if (pollIntervalRef.current) clearInterval(pollIntervalRef.current) }
+  }, [])
 
   async function uploadFile(file: File) {
     if (atImageLimit) return
@@ -59,15 +101,22 @@ export function MediaUploader({ bookId, pageId, fileType, mediaUrls, onUrlsChang
       throw err
     })
 
-    // Save URL to DB
-    const newUrls = fileType === 'carousel' ? [...mediaUrls, s3Url] : [s3Url]
-    await fetch(`/api/books/${bookId}/pages/${pageId}`, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ mediaUrls: newUrls }),
-    })
-    onUrlsChange(newUrls)
-    setProgress(null)
+    if (fileType === 'video') {
+      // presign already set transcodingStatus=pending; start polling
+      setIsTranscoding(true)
+      setProgress(null)
+      pollTranscoding()
+    } else {
+      // carousel: save URL immediately
+      const newUrls = [...mediaUrls, s3Url]
+      await fetch(`/api/books/${bookId}/pages/${pageId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ mediaUrls: newUrls }),
+      })
+      onUrlsChange(newUrls)
+      setProgress(null)
+    }
   }
 
   async function handleFiles(files: FileList) {
@@ -94,10 +143,12 @@ export function MediaUploader({ bookId, pageId, fileType, mediaUrls, onUrlsChang
           {mediaUrls.map((url) => (
             <div key={url} className="relative group">
               {fileType === 'carousel' ? (
-                <img
+                <Image
                   src={url}
                   alt=""
-                  className="h-20 w-20 rounded object-cover border border-[#2C1810]/10"
+                  width={80}
+                  height={80}
+                  className="rounded object-cover border border-[#2C1810]/10"
                 />
               ) : (
                 <video
@@ -120,7 +171,12 @@ export function MediaUploader({ bookId, pageId, fileType, mediaUrls, onUrlsChang
       {/* Upload button */}
       {(fileType === 'carousel' || mediaUrls.length === 0) && (
         <div>
-          {atImageLimit ? (
+          {isTranscoding ? (
+            <div className="flex items-center gap-2 text-xs text-[#2C1810]/50">
+              <span className="h-3 w-3 rounded-full border-2 border-[#2C1810]/30 border-t-[#2C1810] animate-spin" />
+              轉檔中，請稍候…
+            </div>
+          ) : atImageLimit ? (
             <p className="text-xs text-[#2C1810]/50">已達圖片上限（{IMAGE_LIMIT} 張）</p>
           ) : (
             <>

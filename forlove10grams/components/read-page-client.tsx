@@ -22,6 +22,7 @@ export type ReadPageData = {
   type: 'carousel' | 'video'
   content: string
   mediaUrls: string[]
+  transcodingStatus?: 'pending' | 'processing' | 'ready' | 'error' | null
 }
 
 type Props = {
@@ -108,7 +109,7 @@ export function ReadPageClient({ bookId, bookTitle, initialPages, totalCount, vi
                     (page.type === 'carousel' ? (
                       <Carousel urls={page.mediaUrls} />
                     ) : (
-                      <VideoPlayer url={page.mediaUrls[0]} />
+                      <VideoPlayer url={page.mediaUrls[0]} transcodingStatus={page.transcodingStatus} />
                     ))}
 
                   {page.content && (

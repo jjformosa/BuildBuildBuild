@@ -56,6 +56,17 @@ else                           → 顯示「瀏覽器不支援」
 
 `next.config.ts` 在 build time 讀 `CLOUDFRONT_URL` 和 `S3_BUCKET_NAME`/`AWS_REGION` 來動態組 remotePatterns。兩個 pattern 都加，讓 CloudFront 和 direct S3 URL 都能通過 next/image。
 
+### D7：多租戶費用歸因策略 — 延遲實作，已知擴充路徑
+
+此版本為單租戶（個人記憶書）。未來若需多租戶計費時，最小改動如下：
+
+- **MediaConvert**：每個 job 加 `Tags: { tenantId }` → AWS Cost Allocation Tags 在 Cost Explorer 自動彙整
+- **S3**：key prefix 加 `tenants/{tenantId}/`（e.g., `tenants/{tenantId}/books/{bookId}/pages/{pageId}/...`）→ S3 Storage Lens 分析用量；需 data migration
+- **Lambda / CloudFront**：費用相對 MediaConvert 可忽略；CloudFront access log path 已隱含 prefix 可用 Athena 查詢
+- **IAM Role / Lambda function**：不需拆，permission 結構對所有租戶相同
+
+**本版本決策**：S3 key 直接從 `books/{bookId}/...` 開始（無 tenantId prefix）。MediaConvert job Tags 亦不加，避免增加複雜度。多租戶功能在需求確認前不做。
+
 ## Risks / Trade-offs
 
 - **Lambda 冷啟動延遲** → 短片（30 秒以內）MediaConvert 約 1-2 分鐘完成，冷啟動影響可忽略
@@ -77,4 +88,5 @@ Rollback：lambda function 停用 → 影片不轉檔，前端顯示「轉檔中
 
 - MediaConvert endpoint URL 需從 AWS Console 取得後填入 env
 - IAM Role ARN 需在 AWS 建立後填入
-- 是否要在上傳時同時保留舊的 `video.{ext}` key 相容性？（建議不要，新 key 較清楚）
+
+~~是否要在上傳時同時保留舊的 `video.{ext}` key 相容性？~~ → 決定不保留，新 `video-raw.{ext}` key 語意更清楚；舊影片（若有）仍存在 S3 不受影響

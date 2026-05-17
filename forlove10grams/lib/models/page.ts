@@ -1,10 +1,13 @@
 import mongoose, { Schema, type Document, type Model, type Types } from 'mongoose'
 
+export type TranscodingStatus = 'pending' | 'processing' | 'ready' | 'error'
+
 export interface IPage extends Document {
   bookId: Types.ObjectId
   type: 'carousel' | 'video'
   content?: string
   mediaUrls: string[]
+  transcodingStatus?: TranscodingStatus
 }
 
 const PageSchema = new Schema<IPage>(
@@ -13,6 +16,10 @@ const PageSchema = new Schema<IPage>(
     type: { type: String, enum: ['carousel', 'video'], required: true },
     content: String,
     mediaUrls: [{ type: String }],
+    transcodingStatus: {
+      type: String,
+      enum: ['pending', 'processing', 'ready', 'error'],
+    },
   },
   { timestamps: true }
 )
