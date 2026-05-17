@@ -54,7 +54,7 @@ export default async function EditBookPage({
           <h1 className="truncate text-base sm:text-lg font-semibold text-[#2C1810]">{book.title}</h1>
         </div>
         <div className="flex flex-none items-center gap-1 sm:gap-2">
-          {isOwner && carouselImages.length > 0 && (
+          {isOwner && (
             <CoverImageButton bookId={bookId} initialCoverImage={book.coverImage ?? null} availableImages={carouselImages} />
           )}
           {isOwner && <ShareButton bookId={bookId} />}

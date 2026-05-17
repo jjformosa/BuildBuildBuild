@@ -13,6 +13,9 @@ export function CoverImageButton({ bookId, initialCoverImage, availableImages }:
   const [isOpen, setIsOpen] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
 
+  const hasImages = availableImages.length > 0
+  const isDisabled = isSaving || !hasImages
+
   async function selectImage(url: string) {
     setIsSaving(true)
     await fetch(`/api/books/${bookId}`, {
@@ -29,18 +32,28 @@ export function CoverImageButton({ bookId, initialCoverImage, availableImages }:
     <>
       <button
         onClick={() => setIsOpen(true)}
-        disabled={isSaving}
-        title={coverImage ? '更換封面' : '設定封面'}
-        className="flex items-center gap-1.5 rounded-md border border-[#2C1810]/20 px-2.5 py-1 text-sm text-[#2C1810]/60 hover:text-[#2C1810] hover:bg-[#2C1810]/5 disabled:opacity-40 transition-colors"
+        disabled={isDisabled}
+        title={
+          !hasImages
+            ? '上傳輪播圖片後即可設定封面'
+            : coverImage
+            ? '更換封面'
+            : '設定封面'
+        }
+        className="flex items-center gap-1.5 rounded-md border border-[#2C1810]/20 px-2.5 py-1 text-sm text-[#2C1810]/60 hover:text-[#2C1810] hover:bg-[#2C1810]/5 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
       >
-        {coverImage ? (
+        {isSaving ? (
+          <span className="h-5 w-5 flex items-center justify-center">
+            <span className="h-3 w-3 rounded-full border-2 border-[#2C1810]/30 border-t-[#2C1810] animate-spin" />
+          </span>
+        ) : coverImage ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img src={coverImage} alt="" className="h-5 w-5 rounded object-cover" />
         ) : (
           <span className="text-xs">🖼</span>
         )}
         <span className="text-xs hidden sm:inline">
-          {coverImage ? '封面' : '設定封面'}
+          {isSaving ? '儲存中…' : coverImage ? '封面' : '設定封面'}
         </span>
       </button>
 
