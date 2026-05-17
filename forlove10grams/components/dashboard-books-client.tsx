@@ -106,7 +106,7 @@ function BookListView({
 
   const getCursor = useCallback((book: DashboardBook) => book._id, [])
 
-  const { items: scrollItems, sentinelRef, isLoading } = useInfiniteScroll<DashboardBook>({
+  const { items: scrollItems, sentinelRef, isLoading, hasMore } = useInfiniteScroll<DashboardBook>({
     initialItems: initialBooks,
     fetchMore,
     getCursor,
@@ -114,7 +114,11 @@ function BookListView({
   })
 
   const displayBooks = filteredBooks ?? scrollItems
-  const showLoading = isFiltering || (!filteredBooks && isLoading)
+  // When newest mode starts with empty initialBooks (e.g. filtered status), hasMore=true but
+  // the sentinel hasn't triggered yet — treat as still-loading so we don't early-return and
+  // accidentally skip rendering the sentinel that kicks off the first fetch.
+  const stillLoading = isNewest && hasMore && scrollItems.length === 0
+  const showLoading = isFiltering || (!filteredBooks && isLoading) || stillLoading
 
   if (displayBooks.length === 0 && !showLoading) {
     return (
