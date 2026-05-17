@@ -12,13 +12,14 @@ import { CircleIcon } from '@/components/icons/circle'
 
 const INITIAL_LIMIT = 10
 
-function toBook(b: { _id: mongoose.Types.ObjectId; title: string; description?: string; coverImage?: string; published?: boolean }): DashboardBook {
+function toBook(b: { _id: mongoose.Types.ObjectId; title: string; description?: string; coverImage?: string; published?: boolean; tags?: string[] }): DashboardBook {
   return {
     _id: b._id.toString(),
     title: b.title,
     description: b.description ?? null,
     coverImage: b.coverImage ?? null,
     published: b.published ?? false,
+    tags: b.tags ?? [],
   }
 }
 
