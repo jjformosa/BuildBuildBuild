@@ -60,6 +60,30 @@
 
 所有登入者（creator / editor / reader）登入後都可以在 dashboard 看到與自己有關的書，不再需要靠連結才能找到。
 
+### ~~3. Editor 角色與書籍層級存取~~（2026-05-16 完成）
+
+每位使用者（customer）可以被邀請成為特定書的 editor，擁有新增/編輯頁面與產生分享連結的權限，不影響 creator 的所有權。
+
+### ~~4. 讀者暱稱設定與個人化內容~~（2026-05-16 完成）
+
+新使用者首次登入後進入 `/hajimede`，可選擇性設定顯示名稱（nickname）。Creator 可在頁面內容中使用 `${Nickname}` / `${MyNickname}` 佔位符，讓內容在每位讀者閱讀時顯示其專屬稱呼。
+
+### ~~6. 書本標籤系統與 Modal 管理介面~~（2026-05-17 完成）
+
+Creator 和 Editor 都可以為書本加上自由文字標籤，並透過標籤搜尋書本。
+
+- **標籤庫（Tag Collection）**：記錄所有曾出現的標籤，新增時自動寫入；輸入框支援 AutoComplete 下拉
+- **搜尋升級**：`GET /api/books?q=` 從只比對標題改為同時比對標題與標籤
+- **TagManagerModal**：統一的標籤管理入口，從 Dashboard 卡片或書本編輯器側欄都可開啟；支援新增（含 AutoComplete）與刪除；等待 API 期間顯示「儲存中…」
+- **權限對等**：Owner 和 Editor 都可從兩個入口管理標籤
+
+### ~~5. 閱讀體驗改善~~（2026-05-16 完成）
+
+- 頁面間插入 `· · ·` 分隔符，強化「翻頁感」
+- 每頁最小高度 ≥75vh，製造視覺節奏
+- 頁面內容以 infinite scroll 懶載入（首批 SSR，後續 client fetch）
+- 桌機 TOC 即時高亮目前閱讀頁（active page indicator）
+
 ---
 
 ## 確認的痛點（待解）
@@ -97,4 +121,5 @@
 - Next.js（App Router）
 - MongoDB（資料儲存）
 - NextAuth v5（Google / LINE OAuth）
+- 內容個人化：`${Nickname}` / `${MyNickname}` slot，於 read page client 端替換
 - 作者的 AI 工具練習場域，使用 Claude Code 輔助開發

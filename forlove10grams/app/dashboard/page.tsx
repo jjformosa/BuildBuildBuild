@@ -12,8 +12,14 @@ import { CircleIcon } from '@/components/icons/circle'
 
 const INITIAL_LIMIT = 10
 
-function toBook(b: { _id: mongoose.Types.ObjectId; title: string; description?: string }): DashboardBook {
-  return { _id: b._id.toString(), title: b.title, description: b.description ?? null }
+function toBook(b: { _id: mongoose.Types.ObjectId; title: string; description?: string; coverImage?: string; published?: boolean }): DashboardBook {
+  return {
+    _id: b._id.toString(),
+    title: b.title,
+    description: b.description ?? null,
+    coverImage: b.coverImage ?? null,
+    published: b.published ?? false,
+  }
 }
 
 type SharedBookItem = {
@@ -142,7 +148,7 @@ export default async function DashboardPage() {
         {sharedItems.length > 0 && (
           <section>
             {!isAdmin && (
-              <h2 className="mb-6 text-xl sm:text-2xl font-semibold text-[#2C1810]">謝謝你，分享給我</h2>
+              <h2 className="mb-6 text-xl sm:text-2xl font-semibold text-[#2C1810]">謝謝你，與我回憶</h2>
             )}
             <SharedBookList items={sharedItems} />
           </section>

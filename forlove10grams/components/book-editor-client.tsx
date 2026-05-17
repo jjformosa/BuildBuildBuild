@@ -21,6 +21,7 @@ import {
 import { CSS } from '@dnd-kit/utilities'
 import '@uiw/react-md-editor/markdown-editor.css'
 import { MediaUploader } from '@/components/media-uploader'
+import TagManagerModal from '@/components/tag-manager-modal'
 
 const MDEditor = dynamic(() => import('@uiw/react-md-editor'), { ssr: false })
 
@@ -100,16 +101,20 @@ function SortablePageItem({
 export function BookEditorClient({
   bookId,
   initialPages,
+  initialTags,
 }: {
   bookId: string
   initialPages: PageData[]
+  initialTags: string[]
 }) {
   const [pages, setPages] = useState<PageData[]>(initialPages)
+  const [tags, setTags] = useState<string[]>(initialTags)
   const [selectedId, setSelectedId] = useState<string | null>(
     initialPages.length > 0 ? initialPages[0]._id : null
   )
   const [saveState, setSaveState] = useState<'saved' | 'saving' | 'unsaved'>('saved')
   const [addingType, setAddingType] = useState<'carousel' | 'video' | null>(null)
+  const [showTagModal, setShowTagModal] = useState(false)
   const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const selectedPage = pages.find((p) => p._id === selectedId) ?? null
@@ -222,6 +227,28 @@ export function BookEditorClient({
     setPages((prev) => prev.map((p) => (p._id === selectedId ? { ...p, mediaUrls: urls } : p)))
   }
 
+  async function handleAddTag(tag: string) {
+    const res = await fetch(`/api/books/${bookId}/tags`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name: tag }),
+    })
+    if (res.ok) {
+      const data = await res.json()
+      setTags(data.tags)
+    }
+  }
+
+  async function handleRemoveTag(tag: string) {
+    const res = await fetch(`/api/books/${bookId}/tags/${encodeURIComponent(tag)}`, {
+      method: 'DELETE',
+    })
+    if (res.ok) {
+      const data = await res.json()
+      setTags(data.tags)
+    }
+  }
+
   return (
     <div className="flex flex-1 overflow-hidden">
       {/* Sidebar — desktop only */}
@@ -278,6 +305,23 @@ export function BookEditorClient({
                 </button>
               ))}
             </div>
+          )}
+          <div className="mt-3 border-t border-[#2C1810]/8 pt-3">
+            <button
+              type="button"
+              onClick={() => setShowTagModal(true)}
+              className="w-full rounded-md border border-[#2C1810]/20 py-1.5 text-xs text-[#2C1810] hover:bg-[#2C1810]/5 transition-colors"
+            >
+              標籤{tags.length > 0 ? ` (${tags.length})` : ''}
+            </button>
+          </div>
+          {showTagModal && (
+            <TagManagerModal
+              tags={tags}
+              onAdd={handleAddTag}
+              onRemove={handleRemoveTag}
+              onClose={() => setShowTagModal(false)}
+            />
           )}
         </div>
       </aside>

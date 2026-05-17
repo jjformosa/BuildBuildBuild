@@ -44,7 +44,7 @@
 
 ### Requirement: Admin Dashboard 列出 Books
 
-系統 SHALL 在 dashboard 顯示當前 admin 建立的所有 books。
+系統 SHALL 在 dashboard 顯示當前 admin 建立的所有 books，支援排序與狀態篩選。
 
 #### Scenario: 顯示 Book 列表
 
@@ -55,6 +55,26 @@
 
 - **WHEN** Admin 尚未建立任何 book
 - **THEN** 頁面顯示空白狀態提示與「建立第一本記憶書」按鈕
+
+#### Scenario: API 回傳封面與狀態欄位
+
+- **WHEN** Client 呼叫 `GET /api/books`
+- **THEN** 每筆記錄 SHALL 包含 `coverImage`（string | null）、`published`（boolean）
+
+#### Scenario: API 依狀態篩選
+
+- **WHEN** Client 呼叫 `GET /api/books?status=published`
+- **THEN** 系統只回傳 `published: true` 的書本
+
+#### Scenario: API 依狀態篩選草稿
+
+- **WHEN** Client 呼叫 `GET /api/books?status=unpublished`
+- **THEN** 系統只回傳 `published` 非 `true` 的書本
+
+#### Scenario: API max limit 提升
+
+- **WHEN** Client 呼叫 `GET /api/books?limit=200`
+- **THEN** 系統最多回傳 200 筆（原上限為 50）
 
 ### Requirement: 發布 Book 與 Share Token
 
@@ -74,3 +94,22 @@
 
 - **WHEN** Admin 點擊「重新產生連結」
 - **THEN** 系統在 `shares` collection 建立新 token，舊 token 失效（不刪除，僅標記），返回新 URL
+
+### Requirement: Books API 支援關鍵字搜尋
+
+系統 SHALL 在 `GET /api/books` 新增 `q` 查詢參數，對 `title` 欄位做 case-insensitive regex 搜尋，僅搜尋當前使用者建立的書（`createdBy = userId`）。
+
+#### Scenario: 有 q 參數時回傳符合書名的書
+
+- **WHEN** 呼叫 `GET /api/books?q=潛水`
+- **THEN** 系統回傳 `title` 包含「潛水」（不分大小寫）的書，依 `_id` 降冪排列，最多 `limit` 筆
+
+#### Scenario: q 參數與 after cursor 併用
+
+- **WHEN** 呼叫 `GET /api/books?q=潛水&after=<cursor>`
+- **THEN** 系統回傳 `title` 包含「潛水」且 `_id < cursor` 的書，實現 cursor 分頁
+
+#### Scenario: q 為空字串時等同未傳入
+
+- **WHEN** 呼叫 `GET /api/books?q=`（空字串）
+- **THEN** 系統忽略 q 參數，行為與不傳 q 相同（回傳全部書）

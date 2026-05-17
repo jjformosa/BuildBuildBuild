@@ -8,6 +8,7 @@ export interface IBook extends Document {
   editorId?: Types.ObjectId
   pageOrder: Types.ObjectId[]
   published: boolean
+  tags: string[]
 }
 
 const BookSchema = new Schema<IBook>(
@@ -19,6 +20,7 @@ const BookSchema = new Schema<IBook>(
     editorId: { type: Schema.Types.ObjectId, ref: 'User' },
     pageOrder: [{ type: Schema.Types.ObjectId, ref: 'Page' }],
     published: { type: Boolean, default: false },
+    tags: { type: [String], default: [] },
   },
   { timestamps: true }
 )
