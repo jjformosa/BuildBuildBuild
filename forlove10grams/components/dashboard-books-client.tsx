@@ -199,7 +199,7 @@ export function DashboardBooksClient({ initialBooks, initialHasMore }: Props) {
         sort={sort}
         status={status}
         initialBooks={isDefault ? initialBooks : []}
-        initialHasMore={isDefault ? initialHasMore : false}
+        initialHasMore={isDefault ? initialHasMore : sort === 'newest'}
       />
     </>
   )

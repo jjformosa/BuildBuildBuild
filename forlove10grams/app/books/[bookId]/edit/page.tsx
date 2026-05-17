@@ -6,6 +6,7 @@ import Book from '@/lib/models/book'
 import Page from '@/lib/models/page'
 import { InviteEditorButton } from '@/components/invite-editor-button'
 import { ShareButton } from '@/components/share-button'
+import { CoverImageButton } from '@/components/cover-image-button'
 import { BookEditorClient, type PageData } from '@/components/book-editor-client'
 
 export default async function EditBookPage({
@@ -49,6 +50,7 @@ export default async function EditBookPage({
           <h1 className="truncate text-base sm:text-lg font-semibold text-[#2C1810]">{book.title}</h1>
         </div>
         <div className="flex flex-none items-center gap-1 sm:gap-2">
+          {isOwner && <CoverImageButton bookId={bookId} initialCoverImage={book.coverImage ?? null} />}
           {isOwner && <ShareButton bookId={bookId} />}
           <InviteEditorButton bookId={bookId} />
         </div>
