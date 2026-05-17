@@ -7,7 +7,7 @@
 #### Scenario: 輸入關鍵字顯示搜尋結果
 
 - **WHEN** 使用者在搜尋框輸入關鍵字（debounce 300ms 後）
-- **THEN** 系統呼叫 `/api/books?q=<keyword>&limit=10`，顯示符合書名的結果列表；sort/status 控制列隱藏
+- **THEN** 系統呼叫 `/api/books?q=<keyword>&limit=10`，顯示符合**書名或標籤**的結果列表；sort/status 控制列隱藏
 
 #### Scenario: 搜尋結果分頁
 

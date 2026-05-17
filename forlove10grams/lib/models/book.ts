@@ -20,7 +20,7 @@ const BookSchema = new Schema<IBook>(
     editorId: { type: Schema.Types.ObjectId, ref: 'User' },
     pageOrder: [{ type: Schema.Types.ObjectId, ref: 'Page' }],
     published: { type: Boolean, default: false },
-    tags: [{ type: String }],
+    tags: { type: [String], default: [] },
   },
   { timestamps: true }
 )

@@ -55,10 +55,11 @@ body: { name: string }
 - 將 tag 加入 Book 的 `tags[]`（已存在則忽略）
 - 若標籤庫中無此 tag，建立新記錄並記錄 `authorId`
 
-### `PATCH /api/books/[bookId]`（擴充）
+### `DELETE /api/books/[bookId]/tags/[tagName]`（新增）
 
-- 既有 endpoint，接受 `tags: string[]` 欄位
-- 編輯頁刪除 tag 時，前端 filter 後送出完整陣列
+- 驗證呼叫者有編輯權限（owner 或 editor）
+- 從 Book 的 `tags[]` 移除指定標籤；標籤庫記錄保留
+- 回傳 `{ tags: string[] }`（更新後的完整陣列）
 
 ### `GET /api/books?q=keyword`（修改）
 
@@ -91,21 +92,30 @@ interface TagInputProps {
 - 按 Enter 或點選 → 觸發 `onAdd`
 - `onRemove` 存在時，每個 tag 旁顯示 ✕ 按鈕
 
+### TagManagerModal（新共用元件）
+
+`forlove10grams/components/tag-manager-modal.tsx`
+
+- 模態對話盒，點擊背景或按 Escape 關閉
+- 顯示目前標籤（可刪除 chip）+ `TagInput` 輸入欄
+- `tags` prop 接受 `string[] | null | undefined`，內部以 `tags ?? []` null-safe 處理
+- 等待 API 期間顯示「儲存中…」訊息
+
 ### Dashboard BookCard（擴充）
 
 `forlove10grams/components/dashboard-books-client.tsx`
 
 - 每張 BookCard 加「＋ 標籤」按鈕
-- 點擊後展開 `TagInput`（不傳 `onRemove`，Dashboard 只能新增）
-- 新增後呼叫 `POST /api/books/[bookId]/tags`，局部更新 UI
+- 點擊後開啟 `TagManagerModal`（支援新增與刪除）
+- 卡片本體不顯示 tag chips
 
 ### 書籍編輯頁（擴充）
 
 `forlove10grams/components/book-editor-client.tsx`
 
-- 在書籍設定區塊（標題/描述旁）加入 Tags 區域
-- 使用 `TagInput`（傳入 `onRemove`）
-- 刪除後在前端 filter，呼叫 `PATCH /api/books/[bookId]` 送出完整 `tags` 陣列
+- 側欄底部加入「標籤 (N)」按鈕
+- 點擊開啟 `TagManagerModal`（支援新增與刪除）
+- 取代先前的 inline `TagInput`，解決 autocomplete 下拉被裁切的問題
 
 ---
 
