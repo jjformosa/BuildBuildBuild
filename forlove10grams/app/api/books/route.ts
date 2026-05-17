@@ -26,13 +26,14 @@ export async function GET(req: NextRequest) {
   if (status === 'unpublished') query.published = { $ne: true }
   if (q) {
     const escaped = q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-    query.title = { $regex: escaped, $options: 'i' }
+    const regex = { $regex: escaped, $options: 'i' }
+    query.$or = [{ title: regex }, { tags: regex }]
   }
 
   const books = await Book.find(query)
     .sort({ _id: -1 })
     .limit(limit)
-    .select('_id title description coverImage published')
+    .select('_id title description coverImage published tags')
     .lean()
 
   return Response.json(
@@ -42,6 +43,7 @@ export async function GET(req: NextRequest) {
       description: b.description ?? null,
       coverImage: b.coverImage ?? null,
       published: b.published ?? false,
+      tags: (b as { tags?: string[] }).tags ?? [],
     }))
   )
 }
