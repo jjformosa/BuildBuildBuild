@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { useState, useEffect, useCallback } from 'react'
 import { useInfiniteScroll } from '@/hooks/use-infinite-scroll'
 import { PencilIcon } from '@/components/icons/pencil'
-import TagInput from '@/components/tag-input'
+import TagManagerModal from '@/components/tag-manager-modal'
 
 export type DashboardBook = {
   _id: string
@@ -20,29 +20,33 @@ type Status = 'all' | 'published' | 'unpublished'
 
 function BookCard({
   book,
-  onTagAdded,
+  onTagsChanged,
 }: {
   book: DashboardBook
-  onTagAdded: (bookId: string, updatedTags: string[]) => void
+  onTagsChanged: (bookId: string, updatedTags: string[]) => void
 }) {
-  const [showTagInput, setShowTagInput] = useState(false)
-  const [adding, setAdding] = useState(false)
+  const [showTagModal, setShowTagModal] = useState(false)
   const initial = book.title.charAt(0)
 
   const handleAddTag = async (tag: string) => {
-    setAdding(true)
-    try {
-      const res = await fetch(`/api/books/${book._id}/tags`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: tag }),
-      })
-      if (res.ok) {
-        const data = await res.json()
-        onTagAdded(book._id, data.tags)
-      }
-    } finally {
-      setAdding(false)
+    const res = await fetch(`/api/books/${book._id}/tags`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name: tag }),
+    })
+    if (res.ok) {
+      const data = await res.json()
+      onTagsChanged(book._id, data.tags)
+    }
+  }
+
+  const handleRemoveTag = async (tag: string) => {
+    const res = await fetch(`/api/books/${book._id}/tags/${encodeURIComponent(tag)}`, {
+      method: 'DELETE',
+    })
+    if (res.ok) {
+      const data = await res.json()
+      onTagsChanged(book._id, data.tags)
     }
   }
 
@@ -77,9 +81,9 @@ function BookCard({
           </span>
           <button
             type="button"
-            onClick={() => setShowTagInput((v) => !v)}
+            onClick={() => setShowTagModal(true)}
             className="text-xs text-[#2C1810]/40 hover:text-[#2C1810]/70 transition-colors px-1"
-            title="新增標籤"
+            title="管理標籤"
           >
             ＋標籤
           </button>
@@ -88,10 +92,13 @@ function BookCard({
           </span>
         </div>
       </div>
-      {showTagInput && (
-        <div className="mt-3 pt-3 border-t border-[#2C1810]/8">
-          <TagInput tags={book.tags} onAdd={handleAddTag} disabled={adding} />
-        </div>
+      {showTagModal && (
+        <TagManagerModal
+          tags={book.tags}
+          onAdd={handleAddTag}
+          onRemove={handleRemoveTag}
+          onClose={() => setShowTagModal(false)}
+        />
       )}
     </div>
   )
@@ -118,7 +125,7 @@ function SearchResultsView({ query }: { query: string }) {
     initialHasMore: true,
   })
 
-  const handleTagAdded = useCallback((bookId: string, updatedTags: string[]) => {
+  const handleTagsChanged = useCallback((bookId: string, updatedTags: string[]) => {
     setTagOverrides((prev) => ({ ...prev, [bookId]: updatedTags }))
   }, [])
 
@@ -141,7 +148,7 @@ function SearchResultsView({ query }: { query: string }) {
           <li key={book._id}>
             <BookCard
               book={{ ...book, tags: tagOverrides[book._id] ?? book.tags }}
-              onTagAdded={handleTagAdded}
+              onTagsChanged={handleTagsChanged}
             />
           </li>
         ))}
@@ -169,7 +176,7 @@ function BookListView({
   const isNewest = sort === 'newest'
   const [tagOverrides, setTagOverrides] = useState<Record<string, string[]>>({})
 
-  const handleTagAdded = useCallback((bookId: string, updatedTags: string[]) => {
+  const handleTagsChanged = useCallback((bookId: string, updatedTags: string[]) => {
     setTagOverrides((prev) => ({ ...prev, [bookId]: updatedTags }))
   }, [])
 
@@ -241,7 +248,7 @@ function BookListView({
           <li key={book._id}>
             <BookCard
               book={{ ...book, tags: tagOverrides[book._id] ?? book.tags }}
-              onTagAdded={handleTagAdded}
+              onTagsChanged={handleTagsChanged}
             />
           </li>
         ))}

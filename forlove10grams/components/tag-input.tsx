@@ -86,40 +86,51 @@ export default function TagInput({ tags, onAdd, onRemove, disabled }: TagInputPr
           ))}
         </div>
       )}
-      <div className="relative">
-        <input
-          value={input}
-          onChange={handleInputChange}
-          onKeyDown={handleKeyDown}
-          onBlur={() => setTimeout(() => setShowDropdown(false), 150)}
-          onFocus={() => input && setShowDropdown(true)}
-          disabled={disabled}
-          placeholder="新增標籤…"
-          className="w-full rounded-lg border border-[#2C1810]/15 bg-white px-3 py-1.5 text-sm text-[#2C1810] placeholder:text-[#2C1810]/30 focus:border-[#2C1810]/35 focus:outline-none disabled:opacity-50"
-        />
-        {showDropdown && (loading || suggestions.length > 0) && (
-          <ul className="absolute z-10 mt-1 w-full rounded-lg border border-[#2C1810]/10 bg-white shadow-md overflow-hidden">
-            {loading && (
-              <li className="px-3 py-2 text-xs text-[#2C1810]/40">搜尋中…</li>
-            )}
-            {suggestions
-              .filter((s) => !tags.includes(s))
-              .map((s) => (
-                <li key={s}>
-                  <button
-                    type="button"
-                    onMouseDown={(e) => {
-                      e.preventDefault()
-                      handleAdd(s)
-                    }}
-                    className="w-full px-3 py-2 text-left text-sm text-[#2C1810]/70 hover:bg-[#2C1810]/5 transition-colors"
-                  >
-                    {s}
-                  </button>
-                </li>
-              ))}
-          </ul>
-        )}
+      <div className="flex gap-1.5">
+        <div className="relative flex-1">
+          <input
+            value={input}
+            onChange={handleInputChange}
+            onKeyDown={handleKeyDown}
+            onBlur={() => setTimeout(() => setShowDropdown(false), 150)}
+            onFocus={() => input && setShowDropdown(true)}
+            disabled={disabled}
+            placeholder="新增標籤…"
+            className="w-full rounded-lg border border-[#2C1810]/15 bg-white px-3 py-1.5 text-sm text-[#2C1810] placeholder:text-[#2C1810]/30 focus:border-[#2C1810]/35 focus:outline-none disabled:opacity-50"
+          />
+          {showDropdown && (loading || suggestions.length > 0) && (
+            <ul className="absolute z-10 mt-1 w-full rounded-lg border border-[#2C1810]/10 bg-white shadow-md overflow-hidden">
+              {loading && (
+                <li className="px-3 py-2 text-xs text-[#2C1810]/40">搜尋中…</li>
+              )}
+              {suggestions
+                .filter((s) => !tags.includes(s))
+                .map((s) => (
+                  <li key={s}>
+                    <button
+                      type="button"
+                      onMouseDown={(e) => {
+                        e.preventDefault()
+                        handleAdd(s)
+                      }}
+                      className="w-full px-3 py-2 text-left text-sm text-[#2C1810]/70 hover:bg-[#2C1810]/5 transition-colors"
+                    >
+                      {s}
+                    </button>
+                  </li>
+                ))}
+            </ul>
+          )}
+        </div>
+        <button
+          type="button"
+          onClick={() => handleAdd(input)}
+          disabled={disabled || !input.trim()}
+          className="flex-none rounded-lg border border-[#2C1810]/15 bg-white px-2.5 py-1.5 text-sm text-[#2C1810]/50 hover:text-[#2C1810] hover:border-[#2C1810]/35 disabled:opacity-30 transition-colors"
+          aria-label="新增標籤"
+        >
+          ＋
+        </button>
       </div>
     </div>
   )
