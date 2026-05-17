@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import TagInput from '@/components/tag-input'
 
 interface TagManagerModalProps {
@@ -12,6 +12,7 @@ interface TagManagerModalProps {
 
 export default function TagManagerModal({ tags, onAdd, onRemove, onClose }: TagManagerModalProps) {
   const safeTags = tags ?? []
+  const [saving, setSaving] = useState(false)
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
@@ -20,6 +21,24 @@ export default function TagManagerModal({ tags, onAdd, onRemove, onClose }: TagM
     document.addEventListener('keydown', handler)
     return () => document.removeEventListener('keydown', handler)
   }, [onClose])
+
+  const handleAdd = async (tag: string) => {
+    setSaving(true)
+    try {
+      await onAdd(tag)
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  const handleRemove = async (tag: string) => {
+    setSaving(true)
+    try {
+      await onRemove(tag)
+    } finally {
+      setSaving(false)
+    }
+  }
 
   return (
     <div
@@ -41,7 +60,11 @@ export default function TagManagerModal({ tags, onAdd, onRemove, onClose }: TagM
             ✕
           </button>
         </div>
-        <TagInput tags={safeTags} onAdd={onAdd} onRemove={onRemove} />
+        {saving ? (
+          <p className="py-4 text-center text-sm text-[#2C1810]/50">儲存中…</p>
+        ) : (
+          <TagInput tags={safeTags} onAdd={handleAdd} onRemove={handleRemove} />
+        )}
       </div>
     </div>
   )
