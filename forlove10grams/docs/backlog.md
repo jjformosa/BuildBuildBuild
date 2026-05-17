@@ -35,11 +35,9 @@
 
 **方向**：在 dashboard 的書本卡片顯示「N 人已讀完」或「已有 M 人開始閱讀」，靜態資訊，不需推播。
 
-### 書籍搜尋
+### ~~書籍搜尋~~ ✅ 已完成
 
-**問題**：書多了之後，dashboard 是平鋪列表，沒有搜尋。
-
-**方向**：依標題關鍵字搜尋，可以是 client-side filter（書少時夠用）或 MongoDB text index（書多時）。
+依標題關鍵字搜尋（server-side `$regex`），搜尋模式與排序篩選互斥，cursor 分頁 limit 10。已合併至 `refactor-2026-with-claude`。
 
 ### 撤銷 / 管理分享連結
 
@@ -73,8 +71,6 @@
 
 需要：S3 bucket hostname。
 
-### Dashboard 書本排序 / 篩選
+### ~~Dashboard 書本排序 / 篩選~~ ✅ 已完成
 
-（進行中：`feat/dashboard-cover-sort` branch）
-
-Dashboard 書本列表缺少排序（新→舊、舊→新、標題）和篩選（全部、已發布、草稿）控制，書多之後難以找到目標書。同步修正封面圖未傳遞至前端的問題。
+排序（新→舊、舊→新、A→Z）、篩選（全部、已分享、草稿）、封面圖傳遞至前端。已合併至 `refactor-2026-with-claude`。
