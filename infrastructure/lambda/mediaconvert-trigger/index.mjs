@@ -26,7 +26,7 @@ export const handler = async (event) => {
 
   // Idempotency: skip if HLS already exists
   try {
-    await s3.send(new HeadObjectCommand({ Bucket: bucket, Key: `${folder}/hls/index.m3u8` }))
+    await s3.send(new HeadObjectCommand({ Bucket: bucket, Key: `${folder}/hls/video-raw.m3u8` }))
     console.log('HLS already exists, skipping job creation')
     return
   } catch {

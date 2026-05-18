@@ -58,4 +58,4 @@
 
 - [x] 8.1 `.env.local.example` 新增：`MEDIACONVERT_WEBHOOK_SECRET`、`MEDIACONVERT_ENDPOINT`、`MEDIACONVERT_ROLE_ARN`、`NEXT_PUBLIC_APP_URL`
 - [x] 8.2 本地 `.env.local` 填入實際值後，`npm run build` 確認無 TypeScript 錯誤與 no-img-element 警告
-- [ ] 8.3 上傳 iPhone MOV 測試完整流程：S3 raw 出現 → Lambda log → MediaConvert job → HLS 出現 → webhook → 頁面播放
+- [x] 8.3 上傳 iPhone MOV 測試完整流程：S3 raw 出現 → Lambda log → MediaConvert job → HLS 出現 → webhook → 頁面播放

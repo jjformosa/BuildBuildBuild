@@ -65,11 +65,9 @@
 
 ## 技術改善（不影響功能，但值得處理）
 
-### `next/image` 的 S3 `remotePatterns` 設定
+### ~~`next/image` 的 S3 `remotePatterns` 設定~~ ✅ 已完成
 
-目前封面圖和頁面圖片使用 `<img>` 標籤，繞過了 Next.js 圖片最佳化。設定 `next.config.ts` 的 `remotePatterns` 後可以切換到 `<Image>`，取得自動 WebP 轉換和 resize。
-
-需要：S3 bucket hostname。
+`next.config.ts` 已設定 `remotePatterns`，全站 `<img>` 已替換為 `<Image>`，取得自動 WebP 轉換和 resize。已合併至 `feature-hls-ande-next-image`。
 
 ### ~~Dashboard 書本排序 / 篩選~~ ✅ 已完成
 
