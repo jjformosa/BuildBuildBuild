@@ -14,16 +14,11 @@ export const handler = async (event) => {
   const bucket = record.bucket.name
   const key = decodeURIComponent(record.object.key.replace(/\+/g, ' '))
 
-  // Only process video-raw files (S3 prefix filter is books/ only, check suffix here)
-  if (!key.includes('/video-raw.')) {
-    console.log('Skipping non-video-raw key:', key)
-    return
-  }
-
-  // Parse bookId and pageId from key: books/{bookId}/pages/{pageId}/video-raw.{ext}
+  // Only process direct video-raw uploads: books/{bookId}/pages/{pageId}/video-raw.{ext}
+  // Excludes HLS output paths like .../hls/video-raw.m3u8
   const match = key.match(/^books\/([^/]+)\/pages\/([^/]+)\/video-raw\./)
   if (!match) {
-    console.error('Unexpected key format:', key)
+    console.log('Skipping non-video-raw key:', key)
     return
   }
   const [, bookId, pageId] = match
