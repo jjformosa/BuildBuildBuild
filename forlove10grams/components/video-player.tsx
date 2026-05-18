@@ -1,8 +1,15 @@
 'use client'
 
 import { useRef, useEffect, useState } from 'react'
+import Hls from 'hls.js'
+import type { TranscodingStatus } from '@/lib/models/page'
 
-export function VideoPlayer({ url }: { url: string }) {
+type Props = {
+  url: string
+  transcodingStatus?: TranscodingStatus | null
+}
+
+export function VideoPlayer({ url, transcodingStatus }: Props) {
   const videoRef = useRef<HTMLVideoElement>(null)
   const [error, setError] = useState(false)
 
@@ -17,6 +24,62 @@ export function VideoPlayer({ url }: { url: string }) {
     observer.observe(video)
     return () => observer.disconnect()
   }, [])
+
+  // HLS or direct playback setup
+  useEffect(() => {
+    const video = videoRef.current
+    if (!video || !url) return
+
+    // Legacy videos (no transcodingStatus) use the URL directly as an MP4 src
+    if (!transcodingStatus) {
+      video.src = url
+      return
+    }
+
+    if (transcodingStatus !== 'ready') return
+
+    if (Hls.isSupported()) {
+      const hls = new Hls()
+      hls.loadSource(url)
+      hls.attachMedia(video)
+      hls.on(Hls.Events.ERROR, (_e, data) => {
+        if (data.fatal) setError(true)
+      })
+      return () => hls.destroy()
+    } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+      // Safari native HLS support
+      video.src = url
+    } else {
+      setError(true)
+    }
+  }, [url, transcodingStatus])
+
+  if (transcodingStatus === 'pending' || transcodingStatus === 'processing') {
+    return (
+      <div
+        className="relative w-full bg-[#2C1810]/5 flex items-center justify-center"
+        style={{ paddingBottom: '56.25%' }}
+      >
+        <div className="absolute inset-0 flex flex-col items-center justify-center gap-2">
+          <span className="h-6 w-6 rounded-full border-2 border-[#2C1810]/30 border-t-[#2C1810] animate-spin" />
+          <span className="text-xs text-[#2C1810]/40">轉檔中…</span>
+        </div>
+      </div>
+    )
+  }
+
+  if (transcodingStatus === 'error') {
+    return (
+      <div
+        className="relative w-full bg-[#2C1810]/5"
+        style={{ paddingBottom: '56.25%' }}
+      >
+        <div className="absolute inset-0 flex items-center justify-center">
+          <span className="text-xs text-red-400">影片轉檔失敗，請重新上傳</span>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div
@@ -42,9 +105,7 @@ export function VideoPlayer({ url }: { url: string }) {
       ) : (
         <video
           ref={videoRef}
-          src={url}
           controls
-          onError={() => setError(true)}
           className="absolute inset-0 h-full w-full object-contain"
         />
       )}

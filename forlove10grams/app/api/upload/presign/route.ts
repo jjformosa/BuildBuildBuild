@@ -5,6 +5,7 @@ import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
 import { auth } from '@/auth'
 import { dbConnect } from '@/lib/mongoose'
 import Book from '@/lib/models/book'
+import Page from '@/lib/models/page'
 import { canEditBook } from '@/lib/access'
 
 const s3 = new S3Client({
@@ -35,6 +36,7 @@ function extFromContentType(contentType: string): string {
     'image/gif': 'gif',
     'video/mp4': 'mp4',
     'video/quicktime': 'mov',
+    'video/x-m4v': 'm4v',
   }
   return map[contentType] ?? contentType.split('/')[1] ?? 'bin'
 }
@@ -66,7 +68,8 @@ export async function POST(req: NextRequest) {
   if (fileType === 'cover') {
     s3Key = `books/${bookId}/cover.${ext}`
   } else if (fileType === 'video') {
-    s3Key = `books/${bookId}/pages/${pageId}/video.${ext}`
+    if (!pageId) return Response.json({ error: 'pageId required for video' }, { status: 400 })
+    s3Key = `books/${bookId}/pages/${pageId}/video-raw.${ext}`
   } else {
     s3Key = `books/${bookId}/pages/${pageId}/carousel/image-${index}.${ext}`
   }
@@ -80,6 +83,10 @@ export async function POST(req: NextRequest) {
   const s3Url = CLOUDFRONT_URL
     ? `${CLOUDFRONT_URL}/${s3Key}`
     : `https://${BUCKET}.s3.${REGION}.amazonaws.com/${s3Key}`
+
+  if (fileType === 'video' && pageId) {
+    await Page.findByIdAndUpdate(pageId, { transcodingStatus: 'pending', mediaUrls: [] })
+  }
 
   return Response.json({ presignedUrl, s3Key, s3Url })
 }

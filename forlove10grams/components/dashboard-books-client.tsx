@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 import { useState, useEffect, useCallback } from 'react'
 import { useInfiniteScroll } from '@/hooks/use-infinite-scroll'
 import { PencilIcon } from '@/components/icons/pencil'
@@ -54,10 +55,9 @@ function BookCard({
     <div className="rounded-xl border border-[#2C1810]/10 bg-white px-4 py-3 transition-all hover:border-[#2C1810]/25 hover:shadow-sm">
       <div className="flex items-center gap-3">
         <Link href={`/books/${book._id}/edit`} className="flex items-center gap-3 flex-1 min-w-0">
-          <div className="shrink-0 h-14 w-14 overflow-hidden rounded-lg bg-[#2C1810]/5 flex items-center justify-center">
+          <div className="relative shrink-0 h-14 w-14 overflow-hidden rounded-lg bg-[#2C1810]/5 flex items-center justify-center">
             {book.coverImage ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src={book.coverImage} alt="" className="h-full w-full object-cover" />
+              <Image src={book.coverImage} alt="" fill className="object-cover" />
             ) : (
               <span className="text-xl font-semibold text-[#2C1810]/25">{initial}</span>
             )}

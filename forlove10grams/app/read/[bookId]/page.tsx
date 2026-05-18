@@ -45,6 +45,7 @@ export default async function ReadBookPage({
     type: p.type,
     content: p.content ?? '',
     mediaUrls: p.mediaUrls,
+    transcodingStatus: p.transcodingStatus ?? null,
   }))
 
   return (

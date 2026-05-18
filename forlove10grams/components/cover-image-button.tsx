@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Image from 'next/image'
 
 type Props = {
   bookId: string
@@ -47,8 +48,7 @@ export function CoverImageButton({ bookId, initialCoverImage, availableImages }:
             <span className="h-3 w-3 rounded-full border-2 border-[#2C1810]/30 border-t-[#2C1810] animate-spin" />
           </span>
         ) : coverImage ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={coverImage} alt="" className="h-5 w-5 rounded object-cover" />
+          <Image src={coverImage} alt="" width={20} height={20} className="rounded object-cover" />
         ) : (
           <span className="text-xs">🖼</span>
         )}
@@ -79,8 +79,7 @@ export function CoverImageButton({ bookId, initialCoverImage, availableImages }:
                       : 'border-transparent hover:border-[#2C1810]/30'
                   }`}
                 >
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={url} alt="" className="h-full w-full object-cover" />
+                  <Image src={url} alt="" fill className="object-cover" />
                 </button>
               ))}
             </div>

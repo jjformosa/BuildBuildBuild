@@ -40,6 +40,7 @@ export async function GET(
       type: p!.type,
       content: p!.content ?? '',
       mediaUrls: p!.mediaUrls,
+      transcodingStatus: p!.transcodingStatus ?? null,
     }))
 
   return Response.json(sorted)

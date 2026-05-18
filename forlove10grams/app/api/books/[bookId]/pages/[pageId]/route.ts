@@ -6,6 +6,34 @@ import Book from '@/lib/models/book'
 import Page from '@/lib/models/page'
 import { canEditBook } from '@/lib/access'
 
+export async function GET(
+  _req: NextRequest,
+  ctx: RouteContext<'/api/books/[bookId]/pages/[pageId]'>
+) {
+  const session = await auth()
+  if (!session?.user) {
+    return Response.json({ error: 'Unauthorized' }, { status: 401 })
+  }
+
+  const { bookId, pageId } = await ctx.params
+
+  await dbConnect()
+  const book = await Book.findById(bookId)
+  if (!book) return Response.json({ error: 'Not found' }, { status: 404 })
+  if (!canEditBook(session.user.id!, book, session.user.role ?? undefined)) {
+    return Response.json({ error: 'Forbidden' }, { status: 403 })
+  }
+
+  const page = await Page.findById(pageId)
+  if (!page) return Response.json({ error: 'Not found' }, { status: 404 })
+
+  return Response.json({
+    _id: page._id.toString(),
+    transcodingStatus: page.transcodingStatus ?? null,
+    mediaUrls: page.mediaUrls,
+  })
+}
+
 const PatchPageBody = z.object({
   content: z.string().optional(),
   mediaUrls: z.array(z.string()).optional(),

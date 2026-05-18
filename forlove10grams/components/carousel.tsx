@@ -1,6 +1,7 @@
 'use client'
 
-import { useState, useEffect, useCallback, useRef } from 'react'
+import { useState, useEffect, useCallback } from 'react'
+import Image from 'next/image'
 import useEmblaCarousel from 'embla-carousel-react'
 import Lightbox from 'yet-another-react-lightbox'
 import 'yet-another-react-lightbox/styles.css'
@@ -113,15 +114,6 @@ export function Carousel({ urls }: Props) {
 
 function ImgSlide({ src, onClick }: { src: string; onClick: () => void }) {
   const [status, setStatus] = useState<'loading' | 'loaded' | 'error'>('loading')
-  const imgRef = useRef<HTMLImageElement>(null)
-
-  useEffect(() => {
-    const img = imgRef.current
-    if (!img) return
-    if (img.complete) {
-      setStatus(img.naturalWidth === 0 ? 'error' : 'loaded')
-    }
-  }, [])
 
   return (
     <>
@@ -133,14 +125,14 @@ function ImgSlide({ src, onClick }: { src: string; onClick: () => void }) {
           <BrokenImageIcon />
         </div>
       ) : (
-        <img
-          ref={imgRef}
+        <Image
           src={src}
           alt=""
+          fill
           onLoad={() => setStatus('loaded')}
           onError={() => setStatus('error')}
           onClick={onClick}
-          className={`absolute inset-0 h-full w-full cursor-zoom-in object-contain transition-opacity duration-300 ${
+          className={`cursor-zoom-in object-contain transition-opacity duration-300 ${
             status === 'loaded' ? 'opacity-100' : 'opacity-0'
           }`}
         />
