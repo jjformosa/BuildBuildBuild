@@ -14,7 +14,7 @@ export const handler = async (event) => {
 
   const transcodingStatus = status === 'COMPLETE' ? 'ready' : 'error'
   const hlsUrl = status === 'COMPLETE'
-    ? `${CLOUDFRONT_URL}/books/${bookId}/pages/${pageId}/hls/index.m3u8`
+    ? `${CLOUDFRONT_URL}/books/${bookId}/pages/${pageId}/hls/video-raw.m3u8`
     : null
 
   console.log(`Job ${status} for book=${bookId} page=${pageId}`)
