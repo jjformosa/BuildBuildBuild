@@ -1,12 +1,24 @@
 import Share from './models/share'
+import BookReader from './models/book-reader'
+import { dbConnect } from './mongoose'
 import type { IBook } from './models/book'
 
-export function canEditBook(userId: string, book: IBook, role?: string): boolean {
-  if (role === 'admin') return true
+export function isManager(userId: string, book: IBook): boolean {
   return (
     book.createdBy.toString() === userId ||
     book.editorId?.toString() === userId
   )
+}
+
+export function canEditBook(userId: string, book: IBook, role?: string): boolean {
+  if (role === 'admin') return true
+  return isManager(userId, book)
+}
+
+export async function isBookReader(userId: string, bookId: string): Promise<boolean> {
+  await dbConnect()
+  const exists = await BookReader.exists({ bookId, userId })
+  return exists !== null
 }
 
 export async function canReadBook(
