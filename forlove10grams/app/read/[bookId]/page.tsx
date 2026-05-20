@@ -5,6 +5,7 @@ import Book from '@/lib/models/book'
 import Page from '@/lib/models/page'
 import User from '@/lib/models/user'
 import { canEditBook, isBookReader } from '@/lib/access'
+import BookLike from '@/lib/models/book-like'
 import { ReadPageClient, type ReadPageData } from '@/components/read-page-client'
 
 export default async function ReadBookPage({
@@ -33,6 +34,8 @@ export default async function ReadBookPage({
       </main>
     )
   }
+
+  const hasLiked = !!(await BookLike.exists({ bookId: book._id, userId }))
 
   const viewer = await User.findById(userId).lean()
   const viewerNickname = viewer?.nickname ?? null
@@ -64,6 +67,7 @@ export default async function ReadBookPage({
       totalCount={totalCount}
       viewerNickname={viewerNickname}
       viewerMyNickname={viewerMyNickname}
+      hasLiked={hasLiked}
     />
   )
 }
