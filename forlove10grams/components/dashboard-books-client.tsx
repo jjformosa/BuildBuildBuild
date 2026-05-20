@@ -14,6 +14,7 @@ export type DashboardBook = {
   coverImage: string | null
   published: boolean
   tags: string[]
+  likeCount: number
 }
 
 type Sort = 'newest' | 'oldest' | 'title'
@@ -70,6 +71,11 @@ function BookCard({
           </div>
         </Link>
         <div className="shrink-0 flex items-center gap-2">
+          {book.likeCount > 0 && (
+            <span className="text-xs text-[#2C1810]/40">
+              ♡ {book.likeCount}
+            </span>
+          )}
           <span
             className={`text-xs px-2 py-0.5 rounded-full ${
               book.published
