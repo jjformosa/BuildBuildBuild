@@ -9,10 +9,14 @@ import { DashboardBooksClient, type DashboardBook } from '@/components/dashboard
 import { PencilIcon } from '@/components/icons/pencil'
 import { CheckCircleIcon } from '@/components/icons/check-circle'
 import { CircleIcon } from '@/components/icons/circle'
+import { getLikeCountsByBook } from '@/lib/queries/book-like-counts'
 
 const INITIAL_LIMIT = 10
 
-function toBook(b: { _id: mongoose.Types.ObjectId; title: string; description?: string; coverImage?: string; published?: boolean; tags?: string[] }): DashboardBook {
+function toBook(
+  b: { _id: mongoose.Types.ObjectId; title: string; description?: string; coverImage?: string; published?: boolean; tags?: string[] },
+  likeCount = 0
+): DashboardBook {
   return {
     _id: b._id.toString(),
     title: b.title,
@@ -20,6 +24,7 @@ function toBook(b: { _id: mongoose.Types.ObjectId; title: string; description?: 
     coverImage: b.coverImage ?? null,
     published: b.published ?? false,
     tags: b.tags ?? [],
+    likeCount,
   }
 }
 
@@ -71,6 +76,10 @@ export default async function DashboardPage() {
     ]),
   ])
 
+  const ownerLikeCounts = isAdmin
+    ? await getLikeCountsByBook(ownerBooksRaw.map((b) => b._id as mongoose.Types.ObjectId))
+    : new Map<string, number>()
+
   const readCountMap = new Map<string, number>(
     progressAgg.map((r) => [r._id.toString(), r.count])
   )
@@ -84,7 +93,9 @@ export default async function DashboardPage() {
       }).lean()
     : []
 
-  const ownerBooks = ownerBooksRaw.map(toBook)
+  const ownerBooks = ownerBooksRaw.map((b) =>
+    toBook(b, ownerLikeCounts.get(b._id.toString()) ?? 0)
+  )
 
   const sharedItems: SharedBookItem[] = [
     ...editorBooksRaw.map((b) => ({

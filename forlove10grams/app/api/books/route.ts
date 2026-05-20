@@ -4,6 +4,7 @@ import mongoose from 'mongoose'
 import { auth } from '@/auth'
 import { dbConnect } from '@/lib/mongoose'
 import Book from '@/lib/models/book'
+import { getLikeCountsByBook } from '@/lib/queries/book-like-counts'
 
 export async function GET(req: NextRequest) {
   const session = await auth()
@@ -36,6 +37,9 @@ export async function GET(req: NextRequest) {
     .select('_id title description coverImage published tags')
     .lean()
 
+  const bookObjectIds = books.map((b) => b._id as mongoose.Types.ObjectId)
+  const likeCounts = await getLikeCountsByBook(bookObjectIds)
+
   return Response.json(
     books.map((b) => ({
       _id: b._id.toString(),
@@ -44,6 +48,7 @@ export async function GET(req: NextRequest) {
       coverImage: b.coverImage ?? null,
       published: b.published ?? false,
       tags: (b as { tags?: string[] }).tags ?? [],
+      likeCount: likeCounts.get(b._id.toString()) ?? 0,
     }))
   )
 }

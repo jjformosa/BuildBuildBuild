@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo, useRef, useCallback } from 'react'
+import { useState, useMemo, useRef, useCallback } from 'react'
 import dynamic from 'next/dynamic'
 import remarkGfm from 'remark-gfm'
 import { motion } from 'framer-motion'
@@ -32,9 +32,45 @@ type Props = {
   totalCount: number
   viewerNickname: string | null
   viewerMyNickname: string | null
+  hasLiked: boolean
 }
 
-export function ReadPageClient({ bookId, bookTitle, initialPages, totalCount, viewerNickname, viewerMyNickname }: Props) {
+function LikeButton({ bookId, initialHasLiked }: { bookId: string; initialHasLiked: boolean }) {
+  const [liked, setLiked] = useState(initialHasLiked)
+  const [pending, setPending] = useState(false)
+
+  const toggle = async () => {
+    if (pending) return
+    const next = !liked
+    setLiked(next)
+    setPending(true)
+    try {
+      const res = await fetch(`/api/books/${bookId}/like`, { method: 'POST' })
+      if (!res.ok) throw new Error('failed')
+      const data: { liked: boolean } = await res.json()
+      setLiked(data.liked)
+    } catch {
+      setLiked(!next)
+    } finally {
+      setPending(false)
+    }
+  }
+
+  return (
+    <button
+      onClick={toggle}
+      disabled={pending}
+      className="flex flex-col items-center gap-3 text-[#2C1810]/50 hover:text-[#A0826D] transition-colors disabled:opacity-40"
+    >
+      <span className="text-4xl leading-none">{liked ? '❤️' : '🤍'}</span>
+      <span className="text-xs tracking-wide">
+        {liked ? '謝謝你喜歡這本書' : '謝謝你讀完了'}
+      </span>
+    </button>
+  )
+}
+
+export function ReadPageClient({ bookId, bookTitle, initialPages, totalCount, viewerNickname, viewerMyNickname, hasLiked }: Props) {
   const scrollContainerRef = useRef<HTMLElement>(null)
 
   const fetchMore = useCallback(
@@ -134,6 +170,12 @@ export function ReadPageClient({ bookId, bookTitle, initialPages, totalCount, vi
 
           {hasMore && (
             <div ref={sentinelRef} className="h-20" aria-hidden />
+          )}
+
+          {!hasMore && pages.length > 0 && (
+            <div className="mt-16 mb-12 flex justify-center">
+              <LikeButton bookId={bookId} initialHasLiked={hasLiked} />
+            </div>
           )}
         </div>
       </main>
