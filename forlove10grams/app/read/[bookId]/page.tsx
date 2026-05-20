@@ -4,7 +4,7 @@ import { dbConnect } from '@/lib/mongoose'
 import Book from '@/lib/models/book'
 import Page from '@/lib/models/page'
 import User from '@/lib/models/user'
-import { canEditBook } from '@/lib/access'
+import { canEditBook, isBookReader } from '@/lib/access'
 import { ReadPageClient, type ReadPageData } from '@/components/read-page-client'
 
 export default async function ReadBookPage({
@@ -22,9 +22,17 @@ export default async function ReadBookPage({
   if (!book) notFound()
 
   const userId = session.user.id
-  // Owners/editors always have access; any logged-in user can read published books
-  const canAccess = canEditBook(userId, book) || book.published
-  if (!canAccess) redirect('/dashboard')
+  const canAccess =
+    canEditBook(userId, book) ||
+    book.published ||
+    (await isBookReader(userId, bookId))
+  if (!canAccess) {
+    return (
+      <main className="flex min-h-screen items-center justify-center bg-[#FAF7F2]">
+        <p className="text-sm text-[#2C1810]/60">你沒有這本書的閱讀權限</p>
+      </main>
+    )
+  }
 
   const viewer = await User.findById(userId).lean()
   const viewerNickname = viewer?.nickname ?? null

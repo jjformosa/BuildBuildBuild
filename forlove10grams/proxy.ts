@@ -2,7 +2,7 @@ import { auth } from '@/auth'
 import { NextResponse } from 'next/server'
 import type { NextAuthRequest } from 'next-auth'
 
-const PUBLIC_PREFIXES = ['/login', '/api/auth', '/share', '/hajimede', '/privacy', 'api/webhooks']
+const PUBLIC_PREFIXES = ['/login', '/api/auth', '/share', '/hajimede', '/privacy', '/api/webhooks']
 
 export default auth(function proxy(req: NextAuthRequest) {
   const { pathname } = req.nextUrl
