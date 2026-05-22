@@ -1,5 +1,7 @@
 import mongoose, { Schema, type Document, type Model, type Types } from 'mongoose'
 
+export type ShareStatus = 'private' | 'shared' | 'public'
+
 export interface IBook extends Document {
   title: string
   description?: string
@@ -7,7 +9,7 @@ export interface IBook extends Document {
   createdBy: Types.ObjectId
   editorId?: Types.ObjectId
   pageOrder: Types.ObjectId[]
-  published: boolean
+  shareStatus: ShareStatus
   tags: string[]
 }
 
@@ -19,7 +21,11 @@ const BookSchema = new Schema<IBook>(
     createdBy: { type: Schema.Types.ObjectId, ref: 'User', required: true },
     editorId: { type: Schema.Types.ObjectId, ref: 'User' },
     pageOrder: [{ type: Schema.Types.ObjectId, ref: 'Page' }],
-    published: { type: Boolean, default: false },
+    shareStatus: {
+      type: String,
+      enum: ['private', 'shared', 'public'],
+      default: 'private',
+    },
     tags: { type: [String], default: [] },
   },
   { timestamps: true }
