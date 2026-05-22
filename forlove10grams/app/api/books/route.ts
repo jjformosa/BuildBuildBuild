@@ -23,8 +23,8 @@ export async function GET(req: NextRequest) {
   if (after) {
     query._id = { $lt: new mongoose.Types.ObjectId(after) }
   }
-  if (status === 'published') query.shareStatus = 'shared'
-  if (status === 'unpublished') query.shareStatus = 'private'
+  if (status === 'published') query.shareStatus = { $in: ['shared', 'public'] }
+  if (status === 'unpublished') query.shareStatus = { $nin: ['shared', 'public'] }
   if (q) {
     const escaped = q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
     const regex = { $regex: escaped, $options: 'i' }

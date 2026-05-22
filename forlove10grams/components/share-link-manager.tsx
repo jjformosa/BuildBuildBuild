@@ -17,6 +17,7 @@ export function ShareLinkManager({ bookId }: { bookId: string }) {
   const { setLoaded, registerRefresh } = useShareStatus()
 
   const fetchShare = useCallback(async () => {
+    setError('')
     try {
       const res = await fetch(`/api/books/${bookId}/share`)
       if (!res.ok) throw new Error()

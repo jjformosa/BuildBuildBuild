@@ -15,14 +15,13 @@ export function ShareButton({ bookId }: { bookId: string }) {
       const res = await fetch(`/api/books/${bookId}/share`, { method: 'POST' })
       if (!res.ok) throw new Error()
       const { shareUrl } = await res.json()
+      refresh?.()
       await navigator.clipboard.writeText(shareUrl)
       setStatus('copied')
-      refresh?.()
-      setTimeout(() => setStatus('idle'), 2500)
     } catch {
       setStatus('error')
-      setTimeout(() => setStatus('idle'), 2500)
     }
+    setTimeout(() => setStatus('idle'), 2500)
   }
 
   const label =

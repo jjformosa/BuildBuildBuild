@@ -1,4 +1,7 @@
 // forlove10grams/scripts/migrate-published.cjs
+// DEPLOYMENT ORDER: run this script BEFORE switching traffic to code that uses shareStatus.
+// Deploying first will make all previously-published books return 403 to readers.
+// Idempotent — safe to re-run.
 const mongoose = require('mongoose')
 
 async function migrate() {
