@@ -9,7 +9,7 @@ import { canEditBook } from '@/lib/access'
 async function resolveBook(userId: string, bookId: string) {
   const book = await Book.findById(bookId)
   if (!book) return null
-  const canAccess = canEditBook(userId, book) || book.published
+  const canAccess = canEditBook(userId, book) || book.shareStatus === 'shared' || book.shareStatus === 'public'
   return canAccess ? book : null
 }
 

@@ -25,7 +25,8 @@ export async function POST(
 
   const canAccess =
     canEditBook(userId, book) ||
-    book.published ||
+    book.shareStatus === 'shared' ||
+    book.shareStatus === 'public' ||
     (await isBookReader(userId, bookId))
   if (!canAccess) {
     return Response.json({ error: 'Forbidden' }, { status: 403 })

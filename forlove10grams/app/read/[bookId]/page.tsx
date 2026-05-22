@@ -25,7 +25,8 @@ export default async function ReadBookPage({
   const userId = session.user.id
   const canAccess =
     canEditBook(userId, book) ||
-    book.published ||
+    book.shareStatus === 'shared' ||
+    book.shareStatus === 'public' ||
     (await isBookReader(userId, bookId))
   if (!canAccess) {
     return (

@@ -22,7 +22,7 @@ export async function GET(
   const book = await Book.findById(bookId)
   if (!book) return Response.json({ error: 'Not found' }, { status: 404 })
 
-  const canRead = canEditBook(session.user.id, book) || book.published
+  const canRead = canEditBook(session.user.id, book) || book.shareStatus === 'shared' || book.shareStatus === 'public'
   if (!canRead) return Response.json({ error: 'Forbidden' }, { status: 403 })
 
   const pageOrder: string[] = book.pageOrder.map((id) => id.toString())

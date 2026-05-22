@@ -20,8 +20,8 @@ export async function GET(
     return Response.json({ error: 'Invalid or expired token' }, { status: 404 })
   }
 
-  if (!book.published) {
-    return Response.json({ error: 'Book not published' }, { status: 403 })
+  if (book.shareStatus !== 'shared' && book.shareStatus !== 'public') {
+    return Response.json({ error: 'Book not shared' }, { status: 403 })
   }
 
   return Response.json({ bookId: share.bookId.toString() })
