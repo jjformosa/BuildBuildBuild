@@ -17,6 +17,12 @@
 
 ## 程式缺口（功能已設計但 UI 缺失）
 
+### 編輯者管理介面
+
+**問題**：目前只有 `InviteEditorButton`（邀請），沒有「查看目前編輯者 / 移除編輯者」的管理 UI。`book.editorId` 只存一位 editor，無法從 UI 解除或替換。
+
+**方向**：在編輯頁加入 editor 管理區塊，顯示目前 editor 名稱 + 移除按鈕，對應 `DELETE /api/books/[bookId]/editor`（待建）。
+
 ### `myNickname` 設定介面
 
 **問題**：`User.myNickname` 欄位存在，`resolveSlots` 也已處理 `${MyNickname}`，但目前沒有任何頁面讓 creator 從 UI 設定「我怎麼稱呼自己」。只能靠直接改 DB。
@@ -27,13 +33,11 @@
 
 ## 中優先（待討論中已列出）
 
-### 輕量版已讀回執
+### ~~輕量版已讀回執~~ ✅ 已完成
 
-**問題**：Creator 不知道朋友有沒有讀了自己寫的書。
+**原問題**：Creator 不知道朋友有沒有讀了自己寫的書。
 
-**資料已有**：`ReadProgress` collection 已記錄每位讀者的每頁閱讀狀況，只是沒有聚合顯示。
-
-**方向**：在 dashboard 的書本卡片顯示「N 人已讀完」或「已有 M 人開始閱讀」，靜態資訊，不需推播。
+**實際實作**：以 like 系統取代純閱讀計數。Reader 在閱讀頁末可按讚；dashboard 書本卡片顯示 `♡ N`，讓 creator 得知有人讀完並有所回應。Reader 的 shared books 清單也以 CheckCircle / Circle badge 反映自己的已讀狀態。`ReadProgress` collection 持續記錄逐頁閱讀進度供底層使用。已合併至 `refactor-2026-with-claude`。
 
 ### ~~書籍搜尋~~ ✅ 已完成
 
