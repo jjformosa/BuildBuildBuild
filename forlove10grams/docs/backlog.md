@@ -43,15 +43,21 @@
 
 依標題關鍵字搜尋（server-side `$regex`），搜尋模式與排序篩選互斥，cursor 分頁 limit 10。已合併至 `refactor-2026-with-claude`。
 
-### 撤銷 / 管理分享連結
+### ~~撤銷 / 管理分享連結~~ ✅ 已完成
 
-**問題**：目前只能「產生連結」，但無法查看有哪些連結是活的、什麼時候產生的，也無法讓特定連結失效。
+**原問題**：目前只能「產生連結」，但無法查看有哪些連結是活的、什麼時候產生的，也無法讓特定連結失效。
 
-**方向**：在編輯頁加入「目前的分享連結」列表，每條有建立時間和撤銷按鈕。`shares.active` 欄位已存在。
+**實際實作**：以 `shareStatus` enum 取代 `book.published` boolean。`ShareLinkManager` 元件在編輯頁顯示目前的分享連結（URL、建立日期、撤銷按鈕）。`ShareStatusContext` 協調 `ShareButton`（header，載入前 disabled）與 `ShareLinkManager`（底部，mount 後 lazy fetch）的狀態。新增 `GET /api/books/[bookId]/share`（查詢連結）和 `DELETE /api/books/[bookId]/share`（撤銷）。已合併至 `refactor-2026-with-claude`。
 
 ---
 
 ## 體驗改善
+
+### Dashboard 編輯者導向調整
+
+**問題**：editor 從 dashboard 點書時目前進入 edit 頁，若要讓交接信自然出現在 read 頁末尾，應改為導向 `/read/[bookId]`，讓 editor 先滑過書本內容再進入編輯。
+
+**方向**：待「把書交給她」功能上線後評估是否一起調整 dashboard 的連結目的地。
 
 ### 「把書交給她」的儀式感
 
