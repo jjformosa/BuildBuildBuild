@@ -3,7 +3,7 @@ import { z } from 'zod'
 import mongoose from 'mongoose'
 import { auth } from '@/auth'
 import { dbConnect } from '@/lib/mongoose'
-import Book from '@/lib/models/book'
+import Book, { type ShareStatus } from '@/lib/models/book'
 import { getLikeCountsByBook } from '@/lib/queries/book-like-counts'
 
 export async function GET(req: NextRequest) {
@@ -23,8 +23,8 @@ export async function GET(req: NextRequest) {
   if (after) {
     query._id = { $lt: new mongoose.Types.ObjectId(after) }
   }
-  if (status === 'published') query.published = true
-  if (status === 'unpublished') query.published = { $ne: true }
+  if (status === 'published') query.shareStatus = 'shared'
+  if (status === 'unpublished') query.shareStatus = 'private'
   if (q) {
     const escaped = q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
     const regex = { $regex: escaped, $options: 'i' }
@@ -34,7 +34,7 @@ export async function GET(req: NextRequest) {
   const books = await Book.find(query)
     .sort({ _id: -1 })
     .limit(limit)
-    .select('_id title description coverImage published tags')
+    .select('_id title description coverImage shareStatus tags')
     .lean()
 
   const bookObjectIds = books.map((b) => b._id as mongoose.Types.ObjectId)
@@ -46,7 +46,7 @@ export async function GET(req: NextRequest) {
       title: b.title,
       description: b.description ?? null,
       coverImage: b.coverImage ?? null,
-      published: b.published ?? false,
+      shareStatus: (b.shareStatus as ShareStatus) ?? 'private',
       tags: (b as { tags?: string[] }).tags ?? [],
       likeCount: likeCounts.get(b._id.toString()) ?? 0,
     }))

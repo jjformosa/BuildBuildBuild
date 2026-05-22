@@ -12,7 +12,7 @@ export type DashboardBook = {
   title: string
   description: string | null
   coverImage: string | null
-  published: boolean
+  shareStatus: 'private' | 'shared' | 'public'
   tags: string[]
   likeCount: number
 }
@@ -78,12 +78,12 @@ function BookCard({
           )}
           <span
             className={`text-xs px-2 py-0.5 rounded-full ${
-              book.published
+              book.shareStatus === 'shared'
                 ? 'bg-emerald-50 text-emerald-700'
                 : 'bg-[#2C1810]/5 text-[#2C1810]/40'
             }`}
           >
-            {book.published ? '已分享' : '草稿'}
+            {book.shareStatus === 'shared' ? '已分享' : '草稿'}
           </span>
           <button
             type="button"

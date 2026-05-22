@@ -2,7 +2,7 @@ import mongoose from 'mongoose'
 import Link from 'next/link'
 import { auth, signOut } from '@/auth'
 import { dbConnect } from '@/lib/mongoose'
-import Book from '@/lib/models/book'
+import Book, { type ShareStatus } from '@/lib/models/book'
 import ReadProgress from '@/lib/models/read-progress'
 import { CreateBookButton } from '@/components/create-book-button'
 import { DashboardBooksClient, type DashboardBook } from '@/components/dashboard-books-client'
@@ -14,7 +14,7 @@ import { getLikeCountsByBook } from '@/lib/queries/book-like-counts'
 const INITIAL_LIMIT = 10
 
 function toBook(
-  b: { _id: mongoose.Types.ObjectId; title: string; description?: string; coverImage?: string; published?: boolean; tags?: string[] },
+  b: { _id: mongoose.Types.ObjectId; title: string; description?: string; coverImage?: string; shareStatus?: string; tags?: string[] },
   likeCount = 0
 ): DashboardBook {
   return {
@@ -22,7 +22,7 @@ function toBook(
     title: b.title,
     description: b.description ?? null,
     coverImage: b.coverImage ?? null,
-    published: b.published ?? false,
+    shareStatus: (b.shareStatus as ShareStatus) ?? 'private',
     tags: b.tags ?? [],
     likeCount,
   }
