@@ -58,11 +58,17 @@ export default async function EditBookPage({
           <h1 className="truncate text-base sm:text-lg font-semibold text-[#2C1810]">{book.title}</h1>
         </div>
         <div className="flex flex-none items-center gap-1 sm:gap-2">
+          <Link
+            href={`/read/${bookId}`}
+            className="rounded-md border border-[#2C1810]/20 px-3 py-1.5 text-sm text-[#2C1810] hover:bg-[#2C1810]/5 transition-colors"
+          >
+            查看書本
+          </Link>
           {isOwner && (
             <CoverImageButton bookId={bookId} initialCoverImage={book.coverImage ?? null} availableImages={carouselImages} />
           )}
           {isOwner && <ShareButton bookId={bookId} />}
-          <InviteEditorButton bookId={bookId} />
+          {isOwner && <InviteEditorButton bookId={bookId} />}
         </div>
       </header>
 

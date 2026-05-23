@@ -15,6 +15,7 @@ export type DashboardBook = {
   shareStatus: 'private' | 'shared' | 'public'
   tags: string[]
   likeCount: number
+  editorName: string | null
 }
 
 type Sort = 'newest' | 'oldest' | 'title'
@@ -49,6 +50,24 @@ function BookCard({
     if (res.ok) {
       const data = await res.json()
       onTagsChanged(book._id, data.tags)
+    }
+  }
+
+  const [editorName, setEditorName] = useState(book.editorName)
+  const [removeLoading, setRemoveLoading] = useState(false)
+  const [removeError, setRemoveError] = useState('')
+
+  async function handleRemoveEditor() {
+    setRemoveLoading(true)
+    setRemoveError('')
+    try {
+      const res = await fetch(`/api/books/${book._id}/editor`, { method: 'DELETE' })
+      if (!res.ok) throw new Error('移除失敗')
+      setEditorName(null)
+    } catch {
+      setRemoveError('移除失敗')
+    } finally {
+      setRemoveLoading(false)
     }
   }
 
@@ -98,6 +117,21 @@ function BookCard({
           </span>
         </div>
       </div>
+      {editorName && (
+        <div className="border-t border-[#2C1810]/8 mt-2 pt-2 flex items-center justify-between">
+          <span className="text-xs text-[#2C1810]/55">✎ {editorName}（編輯中）</span>
+          <div className="flex items-center gap-2">
+            {removeError && <span className="text-xs text-red-500">{removeError}</span>}
+            <button
+              onClick={handleRemoveEditor}
+              disabled={removeLoading}
+              className="text-xs text-red-600 border border-red-300 rounded px-2 py-0.5 hover:bg-red-50 disabled:opacity-50 transition-colors"
+            >
+              {removeLoading ? '移除中…' : '移除'}
+            </button>
+          </div>
+        </div>
+      )}
       {showTagModal && (
         <TagManagerModal
           tags={book.tags}

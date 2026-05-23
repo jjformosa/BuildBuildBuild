@@ -6,6 +6,16 @@ import { dbConnect } from '@/lib/mongoose'
 import Book, { type ShareStatus } from '@/lib/models/book'
 import { getLikeCountsByBook } from '@/lib/queries/book-like-counts'
 
+type BookQueryResult = {
+  _id: mongoose.Types.ObjectId
+  title: string
+  description?: string
+  coverImage?: string
+  shareStatus?: string
+  tags?: string[]
+  editorId: { name: string } | null
+}
+
 export async function GET(req: NextRequest) {
   const session = await auth()
   if (!session?.user?.id) return Response.json({ error: 'Unauthorized' }, { status: 401 })
@@ -34,8 +44,9 @@ export async function GET(req: NextRequest) {
   const books = await Book.find(query)
     .sort({ _id: -1 })
     .limit(limit)
-    .select('_id title description coverImage shareStatus tags')
-    .lean()
+    .select('_id title description coverImage shareStatus tags editorId')
+    .populate('editorId', 'name')
+    .lean<BookQueryResult[]>()
 
   const bookObjectIds = books.map((b) => b._id as mongoose.Types.ObjectId)
   const likeCounts = await getLikeCountsByBook(bookObjectIds)
@@ -49,6 +60,7 @@ export async function GET(req: NextRequest) {
       shareStatus: (b.shareStatus as ShareStatus) ?? 'private',
       tags: (b as { tags?: string[] }).tags ?? [],
       likeCount: likeCounts.get(b._id.toString()) ?? 0,
+      editorName: b.editorId?.name ?? null,
     }))
   )
 }

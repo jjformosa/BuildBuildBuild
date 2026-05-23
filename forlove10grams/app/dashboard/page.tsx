@@ -13,10 +13,18 @@ import { getLikeCountsByBook } from '@/lib/queries/book-like-counts'
 
 const INITIAL_LIMIT = 10
 
-function toBook(
-  b: { _id: mongoose.Types.ObjectId; title: string; description?: string; coverImage?: string; shareStatus?: string; tags?: string[] },
-  likeCount = 0
-): DashboardBook {
+type OwnerBookDoc = {
+  _id: mongoose.Types.ObjectId
+  title: string
+  description?: string
+  coverImage?: string
+  shareStatus?: string
+  tags?: string[]
+  pageOrder: mongoose.Types.ObjectId[]
+  editorId?: { name: string } | null
+}
+
+function toBook(b: OwnerBookDoc, likeCount = 0): DashboardBook {
   return {
     _id: b._id.toString(),
     title: b.title,
@@ -25,6 +33,7 @@ function toBook(
     shareStatus: (b.shareStatus as ShareStatus) ?? 'private',
     tags: b.tags ?? [],
     likeCount,
+    editorName: b.editorId?.name ?? null,
   }
 }
 
@@ -67,9 +76,13 @@ export default async function DashboardPage() {
 
   const [ownerBooksRaw, editorBooksRaw, progressAgg] = await Promise.all([
     isAdmin
-      ? Book.find({ createdBy: uid }).sort({ _id: -1 }).limit(INITIAL_LIMIT).lean()
+      ? Book.find({ createdBy: uid })
+          .sort({ _id: -1 })
+          .limit(INITIAL_LIMIT)
+          .populate('editorId', 'name')
+          .lean<OwnerBookDoc[]>()
       : [],
-    Book.find({ editorId: uid }).sort({ _id: -1 }).lean(),
+    Book.find({ editorId: uid }).sort({ _id: -1 }).lean<OwnerBookDoc[]>(),
     ReadProgress.aggregate<{ _id: mongoose.Types.ObjectId; count: number }>([
       { $match: { userId: uid } },
       { $group: { _id: '$bookId', count: { $sum: 1 } } },
@@ -90,7 +103,7 @@ export default async function DashboardPage() {
         _id: { $in: progressBookIds },
         createdBy: { $ne: uid },
         editorId: { $ne: uid },
-      }).lean()
+      }).lean<OwnerBookDoc[]>()
     : []
 
   const ownerBooks = ownerBooksRaw.map((b) =>

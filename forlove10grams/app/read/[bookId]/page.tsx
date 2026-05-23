@@ -38,6 +38,14 @@ export default async function ReadBookPage({
 
   const hasLiked = !!(await BookLike.exists({ bookId: book._id, userId }))
 
+  const isEditor = book.editorId?.toString() === userId
+
+  let creatorName: string | null = null
+  if (isEditor && book.editorLetter) {
+    const creator = await User.findById(book.createdBy, 'name').lean<{ name: string }>()
+    creatorName = creator?.name ?? null
+  }
+
   const viewer = await User.findById(userId).lean()
   const viewerNickname = viewer?.nickname ?? null
   const viewerMyNickname = viewer?.myNickname ?? null
@@ -69,6 +77,9 @@ export default async function ReadBookPage({
       viewerNickname={viewerNickname}
       viewerMyNickname={viewerMyNickname}
       hasLiked={hasLiked}
+      isEditor={isEditor}
+      editorLetter={book.editorLetter ?? null}
+      creatorName={creatorName}
     />
   )
 }

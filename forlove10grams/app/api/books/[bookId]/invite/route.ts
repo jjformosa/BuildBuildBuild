@@ -6,7 +6,8 @@ import Book from '@/lib/models/book'
 import User from '@/lib/models/user'
 
 const InviteBody = z.object({
-  email: z.email(),
+  email: z.string().email(),
+  letter: z.string().min(1),
 })
 
 export async function POST(
@@ -28,7 +29,7 @@ export async function POST(
   if (!parsed.success) {
     return Response.json({ error: parsed.error.issues }, { status: 400 })
   }
-  const { email } = parsed.data
+  const { email, letter } = parsed.data
 
   await dbConnect()
 
@@ -49,6 +50,7 @@ export async function POST(
   }
 
   book.editorId = invitee._id
+  book.editorLetter = letter
   await book.save()
 
   return Response.json({ ok: true, editorId: invitee._id })

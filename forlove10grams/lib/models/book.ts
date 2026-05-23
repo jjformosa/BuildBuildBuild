@@ -8,6 +8,7 @@ export interface IBook extends Document {
   coverImage?: string
   createdBy: Types.ObjectId
   editorId?: Types.ObjectId
+  editorLetter?: string
   pageOrder: Types.ObjectId[]
   shareStatus: ShareStatus
   tags: string[]
@@ -20,6 +21,7 @@ const BookSchema = new Schema<IBook>(
     coverImage: String,
     createdBy: { type: Schema.Types.ObjectId, ref: 'User', required: true },
     editorId: { type: Schema.Types.ObjectId, ref: 'User' },
+    editorLetter: { type: String },
     pageOrder: [{ type: Schema.Types.ObjectId, ref: 'Page' }],
     shareStatus: {
       type: String,
