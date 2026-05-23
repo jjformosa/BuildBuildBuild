@@ -15,6 +15,19 @@ async function requireOwner(
   return { book, err: null }
 }
 
+async function requireManager(
+  bookId: string,
+  userId: string,
+): Promise<{ book: IBook; err: null } | { book: null; err: Response }> {
+  const book = await Book.findById(bookId)
+  if (!book) return { book: null, err: Response.json({ error: 'Not found' }, { status: 404 }) }
+  const isOwner = book.createdBy.toString() === userId
+  const isEditor = book.editorId?.toString() === userId
+  if (!isOwner && !isEditor)
+    return { book: null, err: Response.json({ error: 'Forbidden' }, { status: 403 }) }
+  return { book, err: null }
+}
+
 export async function GET(
   req: NextRequest,
   ctx: RouteContext<'/api/books/[bookId]/share'>
@@ -50,7 +63,7 @@ export async function POST(
   const { bookId } = await ctx.params
   await dbConnect()
 
-  const { book, err } = await requireOwner(bookId, session.user.id!)
+  const { book, err } = await requireManager(bookId, session.user.id!)
   if (err) return err
 
   await Share.updateMany({ bookId: book._id, active: true }, { active: false })
@@ -76,7 +89,7 @@ export async function DELETE(
   const { bookId } = await ctx.params
   await dbConnect()
 
-  const { book, err } = await requireOwner(bookId, session.user.id!)
+  const { book, err } = await requireManager(bookId, session.user.id!)
   if (err) return err
 
   await Share.updateMany({ bookId: book._id, active: true }, { active: false })
