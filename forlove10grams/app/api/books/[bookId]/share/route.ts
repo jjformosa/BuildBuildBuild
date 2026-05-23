@@ -40,6 +40,7 @@ export async function GET(
     token: share.token,
     shareUrl: `${origin}/share/${share.token}`,
     createdAt: share.createdAt,
+    expiresAt: share.expiresAt?.toISOString() ?? null,
   })
 }
 
@@ -56,17 +57,36 @@ export async function POST(
   const { book, err } = await requireManager(bookId, session.user.id!)
   if (err) return err
 
-  await Share.updateMany({ bookId: book._id, active: true }, { active: false })
-  // Two separate writes — not atomic; shareStatus and active shares may briefly diverge on crash
-
-  const token = nanoid(12)
-  await Share.create({ bookId: book._id, token, createdBy: session.user.id, active: true })
-
-  book.shareStatus = 'shared'
-  await book.save()
+  const SEVEN_DAYS_MS = 7 * 24 * 60 * 60 * 1000
+  const expiresAt = book.shareStatus === 'public'
+    ? null
+    : new Date(Date.now() + SEVEN_DAYS_MS)
 
   const origin = new URL(req.url).origin
-  return Response.json({ token, shareUrl: `${origin}/share/${token}` })
+  const existing = await Share.findOne({ bookId: book._id, active: true })
+
+  if (existing) {
+    await Share.updateOne({ _id: existing._id }, { $set: { expiresAt } })
+    return Response.json({
+      token: existing.token,
+      shareUrl: `${origin}/share/${existing.token}`,
+      expiresAt: expiresAt?.toISOString() ?? null,
+    })
+  }
+
+  const token = nanoid(12)
+  await Share.create({ bookId: book._id, token, createdBy: session.user.id, active: true, expiresAt })
+
+  if (book.shareStatus !== 'public') {
+    book.shareStatus = 'shared'
+    await book.save()
+  }
+
+  return Response.json({
+    token,
+    shareUrl: `${origin}/share/${token}`,
+    expiresAt: expiresAt?.toISOString() ?? null,
+  })
 }
 
 export async function DELETE(
