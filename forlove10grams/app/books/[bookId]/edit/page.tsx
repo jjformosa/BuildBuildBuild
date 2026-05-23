@@ -8,7 +8,6 @@ import { InviteEditorButton } from '@/components/invite-editor-button'
 import { ShareButton } from '@/components/share-button'
 import { CoverImageButton } from '@/components/cover-image-button'
 import { BookEditorClient, type PageData } from '@/components/book-editor-client'
-import { InviteLinkManager } from '@/components/invite-link-manager'
 import { ShareStatusProvider } from '@/lib/contexts/share-status-context'
 import { ShareLinkManager } from '@/components/share-link-manager'
 
@@ -67,15 +66,14 @@ export default async function EditBookPage({
           {isOwner && (
             <CoverImageButton bookId={bookId} initialCoverImage={book.coverImage ?? null} availableImages={carouselImages} />
           )}
-          {isOwner && <ShareButton bookId={bookId} />}
+          {(isOwner || isEditor) && <ShareButton bookId={bookId} />}
           {isOwner && <InviteEditorButton bookId={bookId} />}
         </div>
       </header>
 
       <BookEditorClient bookId={bookId} initialPages={pages} initialTags={book.tags ?? []} />
       <section className="flex-none border-t border-[#2C1810]/10 bg-[#FAF7F2] px-4 sm:px-6 py-4 space-y-6">
-        <InviteLinkManager bookId={bookId} />
-        {isOwner && <ShareLinkManager bookId={bookId} />}
+        {(isOwner || isEditor) && <ShareLinkManager bookId={bookId} />}
       </section>
     </main>
     </ShareStatusProvider>
