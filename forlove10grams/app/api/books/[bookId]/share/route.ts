@@ -5,16 +5,6 @@ import { dbConnect } from '@/lib/mongoose'
 import Book, { type IBook } from '@/lib/models/book'
 import Share from '@/lib/models/share'
 
-async function requireOwner(
-  bookId: string,
-  userId: string,
-): Promise<{ book: IBook; err: null } | { book: null; err: Response }> {
-  const book = await Book.findById(bookId)
-  if (!book) return { book: null, err: Response.json({ error: 'Not found' }, { status: 404 }) }
-  if (book.createdBy.toString() !== userId) return { book: null, err: Response.json({ error: 'Forbidden' }, { status: 403 }) }
-  return { book, err: null }
-}
-
 async function requireManager(
   bookId: string,
   userId: string,
@@ -38,7 +28,7 @@ export async function GET(
   const { bookId } = await ctx.params
   await dbConnect()
 
-  const { book, err } = await requireOwner(bookId, session.user.id!)
+  const { book, err } = await requireManager(bookId, session.user.id!)
   if (err) return err
 
   const share = await Share.findOne({ bookId: book._id, active: true })
