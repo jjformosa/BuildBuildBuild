@@ -3,7 +3,7 @@ import { auth } from '@/auth'
 import { dbConnect } from '@/lib/mongoose'
 import Book from '@/lib/models/book'
 import BookLike from '@/lib/models/book-like'
-import { canEditBook, isBookReader } from '@/lib/access'
+import { canEditBook } from '@/lib/access'
 
 export async function POST(
   _req: NextRequest,
@@ -26,8 +26,7 @@ export async function POST(
   const canAccess =
     canEditBook(userId, book) ||
     book.shareStatus === 'shared' ||
-    book.shareStatus === 'public' ||
-    (await isBookReader(userId, bookId))
+    book.shareStatus === 'public'
   if (!canAccess) {
     return Response.json({ error: 'Forbidden' }, { status: 403 })
   }

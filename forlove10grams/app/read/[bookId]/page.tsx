@@ -4,7 +4,7 @@ import { dbConnect } from '@/lib/mongoose'
 import Book from '@/lib/models/book'
 import Page from '@/lib/models/page'
 import User from '@/lib/models/user'
-import { canEditBook, isBookReader } from '@/lib/access'
+import { canEditBook } from '@/lib/access'
 import BookLike from '@/lib/models/book-like'
 import { ReadPageClient, type ReadPageData } from '@/components/read-page-client'
 
@@ -26,8 +26,7 @@ export default async function ReadBookPage({
   const canAccess =
     canEditBook(userId, book) ||
     book.shareStatus === 'shared' ||
-    book.shareStatus === 'public' ||
-    (await isBookReader(userId, bookId))
+    book.shareStatus === 'public'
   if (!canAccess) {
     return (
       <main className="flex min-h-screen items-center justify-center bg-[#FAF7F2]">
