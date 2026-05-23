@@ -2,6 +2,7 @@ import NextAuth from 'next-auth'
 import Google from 'next-auth/providers/google'
 import Line from 'next-auth/providers/line'
 import { MongoDBAdapter } from '@auth/mongodb-adapter'
+import { ObjectId } from 'mongodb'
 import clientPromise from './lib/mongodb-client'
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
@@ -22,6 +23,15 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       session.user.role = user.role ?? 'customer'
       session.user.nicknameIsSet = user.nickname !== null && user.nickname !== undefined
       return session
+    },
+  },
+  events: {
+    async createUser({ user }) {
+      const client = await clientPromise
+      await client
+        .db()
+        .collection('users')
+        .updateOne({ _id: new ObjectId(user.id) }, { $set: { role: 'customer' } })
     },
   },
 })
