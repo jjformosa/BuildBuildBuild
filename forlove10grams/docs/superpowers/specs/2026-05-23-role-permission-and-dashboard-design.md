@@ -219,6 +219,58 @@ const canAccess =
 
 ---
 
+## Section 5：Dashboard 搜尋共用
+
+### 目標
+
+搜尋輸入觸發時，owner books 和 editor books 同步過濾，使用相同關鍵字。Reader books（`SharedBookList`）不參與搜尋（通常只有少數幾本，且無 title/description 可搜）。
+
+### 實作方式：提升 search state 至共用 wrapper
+
+新增 `DashboardShell` client component，放在 `dashboard-books-client.tsx`：
+
+```typescript
+export function DashboardShell({
+  ownerBooks,
+  editorBooks,
+  readerBooks,
+}: {
+  ownerBooks: DashboardBook[]      // 空陣列 = 無 owner section
+  editorBooks: DashboardBook[]
+  readerBooks: SharedBook[]
+}) {
+  const [search, setSearch] = useState('')
+
+  return (
+    <>
+      {ownerBooks.length > 0 && (
+        <DashboardBooksClient books={ownerBooks} search={search} onSearchChange={setSearch} />
+      )}
+      <EditorBooksClient books={editorBooks} search={search} onSearchChange={ownerBooks.length === 0 ? setSearch : undefined} />
+      {readerBooks.length > 0 && <SharedBookList books={readerBooks} />}
+    </>
+  )
+}
+```
+
+- `DashboardBooksClient` 改為接受 `search` / `onSearchChange` props，將搜尋輸入框移至 props 控制（外部提供 state）。
+- `EditorBooksClient` 接受 `search` prop，過濾 `book.title`。若 `onSearchChange` 有傳入（owner section 不存在時），也渲染搜尋輸入。
+- 搜尋比對：`book.title.toLowerCase().includes(search.toLowerCase())`；空字串不過濾。
+- `dashboard/page.tsx` 改用 `DashboardShell` 取代直接渲染 `DashboardBooksClient` + `EditorBooksClient`。
+
+### 使用者只有 editor 角色時
+
+```
+[謝謝你，與我回憶]
+  搜尋輸入（由 EditorBooksClient 渲染）
+  editor books（過濾）
+  reader books（不過濾）
+```
+
+`ownerBooks` 傳入空陣列，`DashboardBooksClient` 不渲染，搜尋輸入由 `EditorBooksClient` 接管。
+
+---
+
 ## File Map
 
 ### 刪除（10 個檔案）
@@ -238,7 +290,7 @@ const canAccess =
 
 - `forlove10grams/app/api/books/[bookId]/share/route.ts` — requireOwner → requireManager
 - `forlove10grams/app/books/[bookId]/edit/page.tsx` — editor 看到 ShareButton + ShareLinkManager；移除 InviteLinkManager
-- `forlove10grams/components/dashboard-books-client.tsx` — BookCard 加 `role` prop，export BookCard
-- `forlove10grams/app/dashboard/page.tsx` — editor books 用 BookCard + like counts；移除 BookReader/invite 相關
+- `forlove10grams/components/dashboard-books-client.tsx` — BookCard role prop、EditorBooksClient、DashboardShell；DashboardBooksClient 改接受外部 search state
+- `forlove10grams/app/dashboard/page.tsx` — 改用 DashboardShell；editor books like counts；移除 BookReader/invite 相關
 - `forlove10grams/app/read/[bookId]/page.tsx` — 移除 isBookReader 存取判斷
 - `forlove10grams/lib/access.ts` — 移除 isBookReader 函式
