@@ -3,6 +3,7 @@ import { auth, signOut } from '@/auth'
 import { dbConnect } from '@/lib/mongoose'
 import Book, { type ShareStatus } from '@/lib/models/book'
 import ReadProgress from '@/lib/models/read-progress'
+import '@/lib/models/user'
 import { CreateBookButton } from '@/components/create-book-button'
 import {
   DashboardShell,
