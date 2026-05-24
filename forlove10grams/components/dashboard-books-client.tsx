@@ -93,7 +93,7 @@ function BookCard({
         )}
       </div>
       <div className="flex-1 min-w-0">
-        <p className="font-medium text-[#2C1810] truncate">{book.title}</p>
+        <p className="font-medium text-[#2C1810] line-clamp-2 md:line-clamp-none md:truncate">{book.title}</p>
         {book.description && (
           <p className="mt-0.5 line-clamp-1 text-sm text-[#2C1810]/50">{book.description}</p>
         )}
@@ -103,7 +103,7 @@ function BookCard({
 
   return (
     <div className="rounded-xl border border-[#2C1810]/10 bg-white px-4 py-3 transition-all hover:border-[#2C1810]/25 hover:shadow-sm">
-      <div className="flex items-center gap-3">
+      <div className="flex flex-wrap items-center gap-x-3">
         {role === 'owner' ? (
           <Link href={`/books/${book._id}/edit`} className="flex items-center gap-3 flex-1 min-w-0">
             {coverAndTitle}
@@ -113,7 +113,7 @@ function BookCard({
             {coverAndTitle}
           </div>
         )}
-        <div className="shrink-0 flex items-center gap-2">
+        <div className="w-full md:w-auto md:shrink-0 flex flex-wrap items-center gap-2 mt-3 pt-3 border-t border-[#2C1810]/8 md:mt-0 md:pt-0 md:border-t-0">
           {book.likeCount > 0 && (
             <span className="text-xs text-[#2C1810]/40">♡ {book.likeCount}</span>
           )}
@@ -140,7 +140,7 @@ function BookCard({
             </span>
           )}
           {role === 'editor' && (
-            <div className="flex gap-2 ml-4 shrink-0">
+            <div className="flex gap-2 md:ml-4">
               <Link
                 href={`/read/${book._id}`}
                 className="text-xs border border-[#2C1810]/20 rounded-md px-2.5 py-1 text-[#2C1810] hover:bg-[#2C1810]/5 transition-colors"
