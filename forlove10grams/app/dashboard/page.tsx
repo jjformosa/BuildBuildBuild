@@ -5,6 +5,7 @@ import Book, { type ShareStatus } from '@/lib/models/book'
 import ReadProgress from '@/lib/models/read-progress'
 import '@/lib/models/user'
 import Image from 'next/image'
+import logo from '@/public/logo.png'
 import { CreateBookButton } from '@/components/create-book-button'
 import {
   DashboardShell,
@@ -113,7 +114,7 @@ export default async function DashboardPage() {
   return (
     <main className="min-h-screen bg-[#FAF7F2]">
       <header className="flex items-center justify-between border-b border-[#2C1810]/10 px-4 sm:px-6 py-4">
-        <Image src="/logo.png" alt="For Love 10 Grams" width={36} height={36} />
+        <Image src={logo} alt="For Love 10 Grams" width={36} height={36} />
         <div className="flex items-center gap-2 sm:gap-4">
           <span className="hidden sm:inline text-sm text-[#2C1810]/60">{session?.user?.email}</span>
           <form
