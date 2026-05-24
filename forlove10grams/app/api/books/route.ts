@@ -3,8 +3,18 @@ import { z } from 'zod'
 import mongoose from 'mongoose'
 import { auth } from '@/auth'
 import { dbConnect } from '@/lib/mongoose'
-import Book from '@/lib/models/book'
+import Book, { type ShareStatus } from '@/lib/models/book'
 import { getLikeCountsByBook } from '@/lib/queries/book-like-counts'
+
+type BookQueryResult = {
+  _id: mongoose.Types.ObjectId
+  title: string
+  description?: string
+  coverImage?: string
+  shareStatus?: string
+  tags?: string[]
+  editorId: { name: string } | null
+}
 
 export async function GET(req: NextRequest) {
   const session = await auth()
@@ -23,8 +33,8 @@ export async function GET(req: NextRequest) {
   if (after) {
     query._id = { $lt: new mongoose.Types.ObjectId(after) }
   }
-  if (status === 'published') query.published = true
-  if (status === 'unpublished') query.published = { $ne: true }
+  if (status === 'published') query.shareStatus = { $in: ['shared', 'public'] }
+  if (status === 'unpublished') query.shareStatus = { $nin: ['shared', 'public'] }
   if (q) {
     const escaped = q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
     const regex = { $regex: escaped, $options: 'i' }
@@ -34,8 +44,9 @@ export async function GET(req: NextRequest) {
   const books = await Book.find(query)
     .sort({ _id: -1 })
     .limit(limit)
-    .select('_id title description coverImage published tags')
-    .lean()
+    .select('_id title description coverImage shareStatus tags editorId')
+    .populate('editorId', 'name')
+    .lean<BookQueryResult[]>()
 
   const bookObjectIds = books.map((b) => b._id as mongoose.Types.ObjectId)
   const likeCounts = await getLikeCountsByBook(bookObjectIds)
@@ -46,9 +57,10 @@ export async function GET(req: NextRequest) {
       title: b.title,
       description: b.description ?? null,
       coverImage: b.coverImage ?? null,
-      published: b.published ?? false,
+      shareStatus: (b.shareStatus as ShareStatus) ?? 'private',
       tags: (b as { tags?: string[] }).tags ?? [],
       likeCount: likeCounts.get(b._id.toString()) ?? 0,
+      editorName: b.editorId?.name ?? null,
     }))
   )
 }

@@ -1,10 +1,12 @@
 'use client'
 
+import React, { useState, useEffect, useCallback } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { useState, useEffect, useCallback } from 'react'
 import { useInfiniteScroll } from '@/hooks/use-infinite-scroll'
 import { PencilIcon } from '@/components/icons/pencil'
+import { CheckCircleIcon } from '@/components/icons/check-circle'
+import { CircleIcon } from '@/components/icons/circle'
 import TagManagerModal from '@/components/tag-manager-modal'
 
 export type DashboardBook = {
@@ -12,9 +14,18 @@ export type DashboardBook = {
   title: string
   description: string | null
   coverImage: string | null
-  published: boolean
+  shareStatus: 'private' | 'shared' | 'public'
   tags: string[]
   likeCount: number
+  editorName: string | null
+}
+
+export type ReaderBookItem = {
+  _id: string
+  title: string
+  description: string | null
+  href: string
+  isFullyRead: boolean
 }
 
 type Sort = 'newest' | 'oldest' | 'title'
@@ -22,9 +33,11 @@ type Status = 'all' | 'published' | 'unpublished'
 
 function BookCard({
   book,
+  role = 'owner',
   onTagsChanged,
 }: {
   book: DashboardBook
+  role?: 'owner' | 'editor'
   onTagsChanged: (bookId: string, updatedTags: string[]) => void
 }) {
   const [showTagModal, setShowTagModal] = useState(false)
@@ -52,38 +65,66 @@ function BookCard({
     }
   }
 
+  const [editorName, setEditorName] = useState(book.editorName)
+  const [removeLoading, setRemoveLoading] = useState(false)
+  const [removeError, setRemoveError] = useState('')
+
+  async function handleRemoveEditor() {
+    setRemoveLoading(true)
+    setRemoveError('')
+    try {
+      const res = await fetch(`/api/books/${book._id}/editor`, { method: 'DELETE' })
+      if (!res.ok) throw new Error('移除失敗')
+      setEditorName(null)
+    } catch {
+      setRemoveError('移除失敗')
+    } finally {
+      setRemoveLoading(false)
+    }
+  }
+
+  const coverAndTitle = (
+    <>
+      <div className="relative shrink-0 h-14 w-14 overflow-hidden rounded-lg bg-[#2C1810]/5 flex items-center justify-center">
+        {book.coverImage ? (
+          <Image src={book.coverImage} alt="" fill className="object-cover" />
+        ) : (
+          <span className="text-xl font-semibold text-[#2C1810]/25">{initial}</span>
+        )}
+      </div>
+      <div className="flex-1 min-w-0">
+        <p className="font-medium text-[#2C1810] truncate">{book.title}</p>
+        {book.description && (
+          <p className="mt-0.5 line-clamp-1 text-sm text-[#2C1810]/50">{book.description}</p>
+        )}
+      </div>
+    </>
+  )
+
   return (
     <div className="rounded-xl border border-[#2C1810]/10 bg-white px-4 py-3 transition-all hover:border-[#2C1810]/25 hover:shadow-sm">
       <div className="flex items-center gap-3">
-        <Link href={`/books/${book._id}/edit`} className="flex items-center gap-3 flex-1 min-w-0">
-          <div className="relative shrink-0 h-14 w-14 overflow-hidden rounded-lg bg-[#2C1810]/5 flex items-center justify-center">
-            {book.coverImage ? (
-              <Image src={book.coverImage} alt="" fill className="object-cover" />
-            ) : (
-              <span className="text-xl font-semibold text-[#2C1810]/25">{initial}</span>
-            )}
+        {role === 'owner' ? (
+          <Link href={`/books/${book._id}/edit`} className="flex items-center gap-3 flex-1 min-w-0">
+            {coverAndTitle}
+          </Link>
+        ) : (
+          <div className="flex items-center gap-3 flex-1 min-w-0">
+            {coverAndTitle}
           </div>
-          <div className="flex-1 min-w-0">
-            <p className="font-medium text-[#2C1810] truncate">{book.title}</p>
-            {book.description && (
-              <p className="mt-0.5 line-clamp-1 text-sm text-[#2C1810]/50">{book.description}</p>
-            )}
-          </div>
-        </Link>
+        )}
         <div className="shrink-0 flex items-center gap-2">
           {book.likeCount > 0 && (
-            <span className="text-xs text-[#2C1810]/40">
-              ♡ {book.likeCount}
-            </span>
+            <span className="text-xs text-[#2C1810]/40">♡ {book.likeCount}</span>
           )}
           <span
             className={`text-xs px-2 py-0.5 rounded-full ${
-              book.published
+              book.shareStatus === 'shared' || book.shareStatus === 'public'
                 ? 'bg-emerald-50 text-emerald-700'
                 : 'bg-[#2C1810]/5 text-[#2C1810]/40'
             }`}
           >
-            {book.published ? '已分享' : '草稿'}
+            {book.shareStatus === 'public' ? '公開' : book.shareStatus === 'shared' ? '已分享' : '草稿'}
           </span>
           <button
             type="button"
@@ -93,11 +134,44 @@ function BookCard({
           >
             ＋標籤
           </button>
-          <span className="text-[#2C1810]/30">
-            <PencilIcon />
-          </span>
+          {role === 'owner' && (
+            <span className="text-[#2C1810]/30">
+              <PencilIcon />
+            </span>
+          )}
+          {role === 'editor' && (
+            <div className="flex gap-2 ml-4 shrink-0">
+              <Link
+                href={`/read/${book._id}`}
+                className="text-xs border border-[#2C1810]/20 rounded-md px-2.5 py-1 text-[#2C1810] hover:bg-[#2C1810]/5 transition-colors"
+              >
+                閱讀
+              </Link>
+              <Link
+                href={`/books/${book._id}/edit`}
+                className="text-xs border border-[#2C1810]/20 rounded-md px-2.5 py-1 text-[#2C1810] hover:bg-[#2C1810]/5 transition-colors"
+              >
+                編輯 ✎
+              </Link>
+            </div>
+          )}
         </div>
       </div>
+      {role === 'owner' && editorName && (
+        <div className="border-t border-[#2C1810]/8 mt-2 pt-2 flex items-center justify-between">
+          <span className="text-xs text-[#2C1810]/55">✎ {editorName}（編輯中）</span>
+          <div className="flex items-center gap-2">
+            {removeError && <span className="text-xs text-red-500">{removeError}</span>}
+            <button
+              onClick={handleRemoveEditor}
+              disabled={removeLoading}
+              className="text-xs text-red-600 border border-red-300 rounded px-2 py-0.5 hover:bg-red-50 disabled:opacity-50 transition-colors"
+            >
+              {removeLoading ? '移除中…' : '移除'}
+            </button>
+          </div>
+        </div>
+      )}
       {showTagModal && (
         <TagManagerModal
           tags={book.tags}
@@ -272,20 +346,14 @@ function BookListView({
 type Props = {
   initialBooks: DashboardBook[]
   initialHasMore: boolean
+  debouncedSearch?: string
 }
 
-export function DashboardBooksClient({ initialBooks, initialHasMore }: Props) {
+export function DashboardBooksClient({ initialBooks, initialHasMore, debouncedSearch = '' }: Props) {
   const [sort, setSort] = useState<Sort>('newest')
   const [status, setStatus] = useState<Status>('all')
-  const [query, setQuery] = useState('')
-  const [debouncedQuery, setDebouncedQuery] = useState('')
 
-  useEffect(() => {
-    const timer = setTimeout(() => setDebouncedQuery(query.trim()), 300)
-    return () => clearTimeout(timer)
-  }, [query])
-
-  const isSearching = debouncedQuery.length > 0
+  const isSearching = debouncedSearch.length > 0
   const isDefault = sort === 'newest' && status === 'all'
 
   const sortLabels: Record<Sort, string> = { newest: '新→舊', oldest: '舊→新', title: 'A→Z' }
@@ -293,8 +361,147 @@ export function DashboardBooksClient({ initialBooks, initialHasMore }: Props) {
 
   return (
     <>
-      {/* Search input */}
-      <div className="mb-4 relative">
+      {/* Sort / status controls — hidden while searching */}
+      {!isSearching && (
+        <div className="mb-4 flex flex-wrap items-center gap-2">
+          <div className="flex items-center gap-1 text-sm">
+            {(['newest', 'oldest', 'title'] as Sort[]).map((s) => (
+              <button
+                key={s}
+                onClick={() => setSort(s)}
+                className={`rounded-md px-2.5 py-1 transition-colors ${
+                  sort === s ? 'bg-[#2C1810] text-white' : 'text-[#2C1810]/50 hover:text-[#2C1810]'
+                }`}
+              >
+                {sortLabels[s]}
+              </button>
+            ))}
+          </div>
+          <div className="ml-auto flex items-center gap-1 text-sm">
+            {(['all', 'published', 'unpublished'] as Status[]).map((st) => (
+              <button
+                key={st}
+                onClick={() => setStatus(st)}
+                className={`rounded-md px-2.5 py-1 transition-colors ${
+                  status === st ? 'bg-[#2C1810] text-white' : 'text-[#2C1810]/50 hover:text-[#2C1810]'
+                }`}
+              >
+                {statusLabels[st]}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {isSearching ? (
+        <SearchResultsView key={debouncedSearch} query={debouncedSearch} />
+      ) : (
+        <BookListView
+          key={`${sort}-${status}`}
+          sort={sort}
+          status={status}
+          initialBooks={isDefault ? initialBooks : []}
+          initialHasMore={isDefault ? initialHasMore : sort === 'newest'}
+        />
+      )}
+    </>
+  )
+}
+
+export function EditorBooksClient({
+  books,
+  debouncedSearch,
+}: {
+  books: DashboardBook[]
+  debouncedSearch: string
+}) {
+  const [tagOverrides, setTagOverrides] = useState<Record<string, string[]>>({})
+
+  const handleTagsChanged = useCallback((bookId: string, tags: string[]) => {
+    setTagOverrides((prev) => ({ ...prev, [bookId]: tags }))
+  }, [])
+
+  const filtered = debouncedSearch
+    ? books.filter((b) => b.title.toLowerCase().includes(debouncedSearch.toLowerCase()))
+    : books
+
+  if (filtered.length === 0 && debouncedSearch) {
+    return (
+      <p className="py-6 text-center text-sm text-[#2C1810]/40">
+        找不到符合「{debouncedSearch}」的記憶書。
+      </p>
+    )
+  }
+
+  return (
+    <ul className="space-y-3">
+      {filtered.map((book) => (
+        <li key={book._id}>
+          <BookCard
+            book={{ ...book, tags: tagOverrides[book._id] ?? book.tags }}
+            role="editor"
+            onTagsChanged={handleTagsChanged}
+          />
+        </li>
+      ))}
+    </ul>
+  )
+}
+
+function ReaderList({ books }: { books: ReaderBookItem[] }) {
+  return (
+    <ul className="space-y-3">
+      {books.map((b) => (
+        <li key={b._id}>
+          <Link
+            href={b.href}
+            className="flex items-center justify-between rounded-xl border border-[#2C1810]/10 bg-white px-5 py-4 transition-all hover:border-[#2C1810]/25 hover:shadow-sm"
+          >
+            <div>
+              <p className="font-medium text-[#2C1810]">{b.title}</p>
+              {b.description && (
+                <p className="mt-0.5 line-clamp-1 text-sm text-[#2C1810]/50">{b.description}</p>
+              )}
+            </div>
+            <span className="ml-4 text-[#2C1810]/30">
+              {b.isFullyRead ? <CheckCircleIcon /> : <CircleIcon />}
+            </span>
+          </Link>
+        </li>
+      ))}
+    </ul>
+  )
+}
+
+export function DashboardShell({
+  isAdmin,
+  ownerBooks,
+  ownerHasMore,
+  editorBooks,
+  readerBooks,
+  createButton,
+}: {
+  isAdmin: boolean
+  ownerBooks: DashboardBook[]
+  ownerHasMore: boolean
+  editorBooks: DashboardBook[]
+  readerBooks: ReaderBookItem[]
+  createButton: React.ReactNode
+}) {
+  const [query, setQuery] = useState('')
+  const [debouncedSearch, setDebouncedSearch] = useState('')
+
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedSearch(query.trim()), 300)
+    return () => clearTimeout(timer)
+  }, [query])
+
+  const hasSharedContent = editorBooks.length > 0 || readerBooks.length > 0
+
+  return (
+    <div className="space-y-10">
+      {/* Global search input */}
+      <div className="relative">
         <input
           type="text"
           value={query}
@@ -313,53 +520,35 @@ export function DashboardBooksClient({ initialBooks, initialHasMore }: Props) {
         )}
       </div>
 
-      {/* Sort / status controls — hidden while searching */}
-      {!isSearching && (
-        <div className="mb-4 flex flex-wrap items-center gap-2">
-          <div className="flex items-center gap-1 text-sm">
-            {(['newest', 'oldest', 'title'] as Sort[]).map((s) => (
-              <button
-                key={s}
-                onClick={() => setSort(s)}
-                className={`rounded-md px-2.5 py-1 transition-colors ${
-                  sort === s
-                    ? 'bg-[#2C1810] text-white'
-                    : 'text-[#2C1810]/50 hover:text-[#2C1810]'
-                }`}
-              >
-                {sortLabels[s]}
-              </button>
-            ))}
+      {/* Owner books section — admin only */}
+      {isAdmin && (
+        <section>
+          <div className="mb-6 flex items-center justify-between">
+            <h2 className="text-xl sm:text-2xl font-semibold text-[#2C1810]">謝謝你，幫我記住</h2>
+            {createButton}
           </div>
-          <div className="ml-auto flex items-center gap-1 text-sm">
-            {(['all', 'published', 'unpublished'] as Status[]).map((st) => (
-              <button
-                key={st}
-                onClick={() => setStatus(st)}
-                className={`rounded-md px-2.5 py-1 transition-colors ${
-                  status === st
-                    ? 'bg-[#2C1810] text-white'
-                    : 'text-[#2C1810]/50 hover:text-[#2C1810]'
-                }`}
-              >
-                {statusLabels[st]}
-              </button>
-            ))}
-          </div>
-        </div>
+          <DashboardBooksClient
+            initialBooks={ownerBooks}
+            initialHasMore={ownerHasMore}
+            debouncedSearch={debouncedSearch}
+          />
+        </section>
       )}
 
-      {isSearching ? (
-        <SearchResultsView key={debouncedQuery} query={debouncedQuery} />
-      ) : (
-        <BookListView
-          key={`${sort}-${status}`}
-          sort={sort}
-          status={status}
-          initialBooks={isDefault ? initialBooks : []}
-          initialHasMore={isDefault ? initialHasMore : sort === 'newest'}
-        />
+      {/* Editor + reader books section */}
+      {hasSharedContent && (
+        <section>
+          {!isAdmin && (
+            <h2 className="mb-6 text-xl sm:text-2xl font-semibold text-[#2C1810]">謝謝你，與我回憶</h2>
+          )}
+          {editorBooks.length > 0 && (
+            <div className={readerBooks.length > 0 ? 'mb-3' : ''}>
+              <EditorBooksClient books={editorBooks} debouncedSearch={debouncedSearch} />
+            </div>
+          )}
+          {readerBooks.length > 0 && <ReaderList books={readerBooks} />}
+        </section>
       )}
-    </>
+    </div>
   )
 }

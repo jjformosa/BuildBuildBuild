@@ -7,6 +7,7 @@ type Status = 'idle' | 'loading' | 'success' | 'error'
 export function InviteEditorButton({ bookId }: { bookId: string }) {
   const [open, setOpen] = useState(false)
   const [email, setEmail] = useState('')
+  const [letter, setLetter] = useState('')
   const [status, setStatus] = useState<Status>('idle')
   const [errorMsg, setErrorMsg] = useState('')
 
@@ -18,7 +19,7 @@ export function InviteEditorButton({ bookId }: { bookId: string }) {
       const res = await fetch(`/api/books/${bookId}/invite`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({ email, letter }),
       })
       const data = await res.json()
       if (!res.ok) {
@@ -30,6 +31,7 @@ export function InviteEditorButton({ bookId }: { bookId: string }) {
       }
       setStatus('success')
       setEmail('')
+      setLetter('')
     } catch (err) {
       setStatus('error')
       setErrorMsg(err instanceof Error ? err.message : '邀請失敗')
@@ -40,6 +42,7 @@ export function InviteEditorButton({ bookId }: { bookId: string }) {
     setOpen(false)
     setStatus('idle')
     setEmail('')
+    setLetter('')
     setErrorMsg('')
   }
 
@@ -87,6 +90,21 @@ export function InviteEditorButton({ bookId }: { bookId: string }) {
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="user@example.com"
                     className="w-full rounded-md border border-[#2C1810]/20 bg-white px-3 py-2 text-sm text-[#2C1810] placeholder:text-[#2C1810]/40 focus:outline-none focus:ring-2 focus:ring-[#2C1810]/30"
+                  />
+                </div>
+
+                <div>
+                  <label htmlFor="invite-letter" className="mb-1 block text-sm text-[#2C1810]/70">
+                    交接信（必填）
+                  </label>
+                  <textarea
+                    id="invite-letter"
+                    required
+                    value={letter}
+                    onChange={(e) => setLetter(e.target.value)}
+                    placeholder="你想對 ta 說的話…"
+                    rows={4}
+                    className="w-full rounded-md border border-[#2C1810]/20 bg-white px-3 py-2 text-sm text-[#2C1810] placeholder:text-[#2C1810]/40 focus:outline-none focus:ring-2 focus:ring-[#2C1810]/30 resize-none"
                   />
                 </div>
 

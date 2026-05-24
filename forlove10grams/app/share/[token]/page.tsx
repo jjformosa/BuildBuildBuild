@@ -27,6 +27,14 @@ export default async function SharePage({
     )
   }
 
+  if (share.expiresAt != null && share.expiresAt < new Date()) {
+    return (
+      <main className="flex min-h-screen items-center justify-center bg-[#FAF7F2]">
+        <p className="text-sm text-[#2C1810]/60">連結已到期</p>
+      </main>
+    )
+  }
+
   const book = await Book.findById(share.bookId)
 
   if (!book) {
@@ -37,7 +45,7 @@ export default async function SharePage({
     )
   }
 
-  if (!book.published) {
+  if (book.shareStatus !== 'shared' && book.shareStatus !== 'public') {
     return (
       <main className="flex min-h-screen items-center justify-center bg-[#FAF7F2]">
         <p className="text-sm text-[#2C1810]/60">此記憶書尚未發布</p>

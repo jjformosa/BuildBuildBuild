@@ -4,7 +4,7 @@ import { dbConnect } from '@/lib/mongoose'
 import Book from '@/lib/models/book'
 import Page from '@/lib/models/page'
 import User from '@/lib/models/user'
-import { canEditBook, isBookReader } from '@/lib/access'
+import { canEditBook } from '@/lib/access'
 import BookLike from '@/lib/models/book-like'
 import { ReadPageClient, type ReadPageData } from '@/components/read-page-client'
 
@@ -25,8 +25,8 @@ export default async function ReadBookPage({
   const userId = session.user.id
   const canAccess =
     canEditBook(userId, book) ||
-    book.published ||
-    (await isBookReader(userId, bookId))
+    book.shareStatus === 'shared' ||
+    book.shareStatus === 'public'
   if (!canAccess) {
     return (
       <main className="flex min-h-screen items-center justify-center bg-[#FAF7F2]">
@@ -36,6 +36,14 @@ export default async function ReadBookPage({
   }
 
   const hasLiked = !!(await BookLike.exists({ bookId: book._id, userId }))
+
+  const isEditor = book.editorId?.toString() === userId
+
+  let creatorName: string | null = null
+  if (isEditor && book.editorLetter) {
+    const creator = await User.findById(book.createdBy, 'name').lean<{ name: string }>()
+    creatorName = creator?.name ?? null
+  }
 
   const viewer = await User.findById(userId).lean()
   const viewerNickname = viewer?.nickname ?? null
@@ -68,6 +76,9 @@ export default async function ReadBookPage({
       viewerNickname={viewerNickname}
       viewerMyNickname={viewerMyNickname}
       hasLiked={hasLiked}
+      isEditor={isEditor}
+      editorLetter={book.editorLetter ?? null}
+      creatorName={creatorName}
     />
   )
 }

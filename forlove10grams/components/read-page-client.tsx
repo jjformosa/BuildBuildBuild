@@ -11,6 +11,7 @@ import { useReadProgress } from '@/hooks/use-read-progress'
 import { useInfiniteScroll } from '@/hooks/use-infinite-scroll'
 import { useActivePage } from '@/hooks/use-active-page'
 import { resolveSlots } from '@/lib/resolve-slots'
+import { HandoverLetter } from '@/components/handover-letter'
 
 const ReactMarkdown = dynamic(() => import('react-markdown'), {
   ssr: false,
@@ -33,6 +34,9 @@ type Props = {
   viewerNickname: string | null
   viewerMyNickname: string | null
   hasLiked: boolean
+  isEditor?: boolean
+  editorLetter?: string | null
+  creatorName?: string | null
 }
 
 function LikeButton({ bookId, initialHasLiked }: { bookId: string; initialHasLiked: boolean }) {
@@ -70,7 +74,7 @@ function LikeButton({ bookId, initialHasLiked }: { bookId: string; initialHasLik
   )
 }
 
-export function ReadPageClient({ bookId, bookTitle, initialPages, totalCount, viewerNickname, viewerMyNickname, hasLiked }: Props) {
+export function ReadPageClient({ bookId, bookTitle, initialPages, totalCount, viewerNickname, viewerMyNickname, hasLiked, isEditor, editorLetter, creatorName }: Props) {
   const scrollContainerRef = useRef<HTMLElement>(null)
 
   const fetchMore = useCallback(
@@ -176,6 +180,15 @@ export function ReadPageClient({ bookId, bookTitle, initialPages, totalCount, vi
             <div className="mt-16 mb-12 flex justify-center">
               <LikeButton bookId={bookId} initialHasLiked={hasLiked} />
             </div>
+          )}
+
+          {!hasMore && isEditor && editorLetter && creatorName && (
+            <HandoverLetter
+              isEditor={isEditor}
+              editorLetter={editorLetter}
+              creatorName={creatorName}
+              bookId={bookId}
+            />
           )}
         </div>
       </main>
