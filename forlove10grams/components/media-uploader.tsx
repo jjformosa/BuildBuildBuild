@@ -2,6 +2,7 @@
 
 import { useRef, useState, useEffect } from 'react'
 import Image from 'next/image'
+import imageCompression from 'browser-image-compression'
 
 type Props = {
   bookId: string
@@ -20,7 +21,8 @@ export function MediaUploader({ bookId, pageId, fileType, mediaUrls, onUrlsChang
   const [isTranscoding, setIsTranscoding] = useState(false)
 
   const IMAGE_LIMIT = 15
-  const accept = fileType === 'video' ? 'video/mp4,video/quicktime,video/x-m4v' : 'image/jpeg,image/png,image/webp'
+  const accept = fileType === 'video' ? 'video/mp4,video/quicktime,video/x-m4v' : 'image/*'
+  const MAX_IMAGE_BYTES = 2 * 1024 * 1024
   const multiple = fileType === 'carousel'
   const atImageLimit = fileType === 'carousel' && mediaUrls.length >= IMAGE_LIMIT
 
@@ -67,7 +69,27 @@ export function MediaUploader({ bookId, pageId, fileType, mediaUrls, onUrlsChang
     setError(null)
     setProgress(0)
 
-    const contentType = file.type
+    let fileToUpload = file
+    if (fileType !== 'video') {
+      try {
+        fileToUpload = await imageCompression(file, {
+          maxSizeMB: 2,
+          maxWidthOrHeight: 2048,
+          useWebWorker: true,
+        })
+      } catch {
+        setError('圖片處理失敗，請重試')
+        setProgress(null)
+        return
+      }
+      if (fileToUpload.size > MAX_IMAGE_BYTES) {
+        setError('圖片壓縮後仍超過 2MB，請換一張較小的圖片')
+        setProgress(null)
+        return
+      }
+    }
+
+    const contentType = fileToUpload.type || 'image/jpeg'
     const index = mediaUrls.length
 
     const presignRes = await fetch('/api/upload/presign', {
@@ -94,7 +116,7 @@ export function MediaUploader({ bookId, pageId, fileType, mediaUrls, onUrlsChang
       xhr.onerror = () => reject(new Error('網路錯誤'))
       xhr.open('PUT', presignedUrl)
       xhr.setRequestHeader('Content-Type', contentType)
-      xhr.send(file)
+      xhr.send(fileToUpload)
     }).catch((err: Error) => {
       setError(err.message)
       setProgress(null)

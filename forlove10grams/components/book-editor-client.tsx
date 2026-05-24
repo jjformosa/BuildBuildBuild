@@ -329,21 +329,25 @@ export function BookEditorClient({
       {/* Editor area */}
       <section className="flex flex-1 flex-col overflow-hidden">
         {/* Mobile page selector — horizontal scrollable strip, hidden on desktop */}
-        <div className="flex md:hidden flex-none items-center overflow-x-auto border-b border-[#2C1810]/10 gap-1 px-2 py-1.5">
-          {pages.map((page, i) => (
-            <button
-              key={page._id}
-              onClick={() => selectPage(page._id)}
-              className={`flex-none rounded px-2.5 py-1 text-xs whitespace-nowrap transition-colors ${
-                selectedId === page._id
-                  ? 'bg-[#2C1810]/10 text-[#2C1810]'
-                  : 'text-[#2C1810]/50 hover:bg-[#2C1810]/5'
-              }`}
-            >
-              {i + 1}. {page.type === 'carousel' ? '輪播' : '影片'}
-            </button>
-          ))}
-          <div className="flex flex-none gap-1 ml-auto pl-1">
+        <div className="flex md:hidden flex-none items-center border-b border-[#2C1810]/10">
+          {/* Scrollable page tabs */}
+          <div className="flex flex-1 overflow-x-auto gap-1 px-2 py-1.5">
+            {pages.map((page, i) => (
+              <button
+                key={page._id}
+                onClick={() => selectPage(page._id)}
+                className={`flex-none rounded px-2.5 py-1 text-xs whitespace-nowrap transition-colors ${
+                  selectedId === page._id
+                    ? 'bg-[#2C1810]/10 text-[#2C1810]'
+                    : 'text-[#2C1810]/50 hover:bg-[#2C1810]/5'
+                }`}
+              >
+                {i + 1}. {page.type === 'carousel' ? '輪播' : '影片'}
+              </button>
+            ))}
+          </div>
+          {/* Add-page buttons — always visible on the right */}
+          <div className="flex flex-none gap-1 border-l border-[#2C1810]/10 px-2 py-1.5">
             {pages.length >= PAGE_LIMIT ? (
               <span className="text-xs text-[#2C1810]/40 px-2 py-1">已達上限</span>
             ) : (

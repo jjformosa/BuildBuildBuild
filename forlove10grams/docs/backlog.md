@@ -65,17 +65,17 @@
 
 ## 體驗改善
 
-### Dashboard 編輯者導向調整
+### ~~Dashboard 編輯者導向調整~~ ✅ 已完成
 
-**問題**：editor 從 dashboard 點書時目前進入 edit 頁，若要讓交接信自然出現在 read 頁末尾，應改為導向 `/read/[bookId]`，讓 editor 先滑過書本內容再進入編輯。
+**原問題**：editor 從 dashboard 點書時目前進入 edit 頁，若要讓交接信自然出現在 read 頁末尾，應改為導向 `/read/[bookId]`，讓 editor 先滑過書本內容再進入編輯。
 
-**方向**：待「把書交給她」功能上線後評估是否一起調整 dashboard 的連結目的地。
+**實際實作**：Editor 書本卡片改為「閱讀」/ 「編輯 ✎」雙按鈕（無全卡片 link），分別導向 `/read/[bookId]` 和 `/books/[bookId]/edit`，讓 editor 自行選擇入口。
 
-### 「把書交給她」的儀式感
+### ~~「把書交給她」的儀式感~~ ✅ 已完成
 
-**問題**：邀請 editor 的流程目前是純技術性操作（填 email）。沒有任何儀式感。
+**原問題**：邀請 editor 的流程目前是純技術性操作（填 email）。沒有任何儀式感。
 
-**方向**：Creator 邀請時可附上一段「交接信」。Editor 第一次進入書時，看到的不是直接跳進 dashboard，而是先看到這段話。
+**實際實作**：Creator 邀請 editor 時可附上一段「交接信」（`editorLetter`）。Editor 閱讀至書末最後一頁時，`HandoverLetter` 元件顯示「creatorName 想對你說」與留言內容（italic 引號格式），並附「進入編輯 →」連結導向編輯頁。
 
 ### 手機上傳體驗
 

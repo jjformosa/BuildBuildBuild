@@ -1,4 +1,6 @@
 import Link from 'next/link'
+import Image from 'next/image'
+import logo from '@/public/logo.png'
 import { LoginSection } from '@/components/login-section'
 
 export default async function LoginPage({
@@ -12,13 +14,16 @@ export default async function LoginPage({
   return (
     <main className="min-h-screen flex items-center justify-center bg-background">
       <div className="flex flex-col items-center gap-8 px-6">
-        <div className="text-center">
-          <h1 className="text-3xl font-semibold text-foreground tracking-tight">
-            For Love 10 Grams
-          </h1>
-          <p className="mt-2 text-sm text-muted-foreground">
-            私人記憶書
-          </p>
+        <div className="text-center flex flex-col items-center gap-4">
+          <Image src={logo} alt="For Love 10 Grams" width={80} height={80} />
+          <div>
+            <h1 className="text-3xl font-semibold text-foreground tracking-tight">
+              For Love 10 Grams
+            </h1>
+            <p className="mt-2 text-sm text-muted-foreground">
+              私人記憶書
+            </p>
+          </div>
         </div>
 
         <LoginSection redirectTo={redirectTo} />

@@ -4,12 +4,12 @@ import { auth } from '@/auth'
 import { dbConnect } from '@/lib/mongoose'
 import Book from '@/lib/models/book'
 import Page from '@/lib/models/page'
-import { InviteEditorButton } from '@/components/invite-editor-button'
 import { ShareButton } from '@/components/share-button'
 import { CoverImageButton } from '@/components/cover-image-button'
 import { BookEditorClient, type PageData } from '@/components/book-editor-client'
 import { ShareStatusProvider } from '@/lib/contexts/share-status-context'
 import { ShareLinkManager } from '@/components/share-link-manager'
+import { ReaderList } from '@/components/reader-list'
 
 export default async function EditBookPage({
   params,
@@ -17,8 +17,9 @@ export default async function EditBookPage({
   params: Promise<{ bookId: string }>
 }) {
   const session = await auth()
+  if (!session?.user?.id) redirect('/login')
   const { bookId } = await params
-  const userId = session!.user!.id!
+  const userId = session.user.id
 
   await dbConnect()
   const book = await Book.findById(bookId)
@@ -59,21 +60,27 @@ export default async function EditBookPage({
         <div className="flex flex-none items-center gap-1 sm:gap-2">
           <Link
             href={`/read/${bookId}`}
-            className="rounded-md border border-[#2C1810]/20 px-3 py-1.5 text-sm text-[#2C1810] hover:bg-[#2C1810]/5 transition-colors"
+            title="查看書本"
+            className="flex items-center gap-1.5 rounded-md border border-[#2C1810]/20 px-2.5 py-1.5 text-sm text-[#2C1810] hover:bg-[#2C1810]/5 transition-colors"
           >
-            查看書本
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+              <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/>
+            </svg>
+            <span className="hidden sm:inline">查看書本</span>
           </Link>
           {isOwner && (
             <CoverImageButton bookId={bookId} initialCoverImage={book.coverImage ?? null} availableImages={carouselImages} />
           )}
           {(isOwner || isEditor) && <ShareButton bookId={bookId} />}
-          {isOwner && <InviteEditorButton bookId={bookId} />}
         </div>
       </header>
 
       <BookEditorClient bookId={bookId} initialPages={pages} initialTags={book.tags ?? []} />
       <section className="flex-none border-t border-[#2C1810]/10 bg-[#FAF7F2] px-4 sm:px-6 py-4 space-y-6">
         {(isOwner || isEditor) && <ShareLinkManager bookId={bookId} />}
+        {(isOwner || isEditor) && (
+          <ReaderList bookId={bookId} shareStatus={book.shareStatus} />
+        )}
       </section>
     </main>
     </ShareStatusProvider>

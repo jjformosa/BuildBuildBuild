@@ -8,6 +8,7 @@ import { PencilIcon } from '@/components/icons/pencil'
 import { CheckCircleIcon } from '@/components/icons/check-circle'
 import { CircleIcon } from '@/components/icons/circle'
 import TagManagerModal from '@/components/tag-manager-modal'
+import { createRipple } from '@/lib/ripple'
 
 export type DashboardBook = {
   _id: string
@@ -93,7 +94,7 @@ function BookCard({
         )}
       </div>
       <div className="flex-1 min-w-0">
-        <p className="font-medium text-[#2C1810] truncate">{book.title}</p>
+        <p className="font-medium text-[#2C1810] line-clamp-2 md:line-clamp-none md:truncate">{book.title}</p>
         {book.description && (
           <p className="mt-0.5 line-clamp-1 text-sm text-[#2C1810]/50">{book.description}</p>
         )}
@@ -103,7 +104,7 @@ function BookCard({
 
   return (
     <div className="rounded-xl border border-[#2C1810]/10 bg-white px-4 py-3 transition-all hover:border-[#2C1810]/25 hover:shadow-sm">
-      <div className="flex items-center gap-3">
+      <div className="flex flex-wrap items-center gap-x-3">
         {role === 'owner' ? (
           <Link href={`/books/${book._id}/edit`} className="flex items-center gap-3 flex-1 min-w-0">
             {coverAndTitle}
@@ -113,7 +114,7 @@ function BookCard({
             {coverAndTitle}
           </div>
         )}
-        <div className="shrink-0 flex items-center gap-2">
+        <div className="w-full md:w-auto md:shrink-0 flex flex-wrap items-center gap-2 mt-3 pt-3 border-t border-[#2C1810]/8 md:mt-0 md:pt-0 md:border-t-0">
           {book.likeCount > 0 && (
             <span className="text-xs text-[#2C1810]/40">♡ {book.likeCount}</span>
           )}
@@ -128,8 +129,8 @@ function BookCard({
           </span>
           <button
             type="button"
-            onClick={() => setShowTagModal(true)}
-            className="text-xs text-[#2C1810]/40 hover:text-[#2C1810]/70 transition-colors px-1"
+            onClick={(e) => { createRipple(e); setShowTagModal(true) }}
+            className="relative overflow-hidden rounded text-xs text-[#2C1810]/40 hover:text-[#2C1810]/70 transition-colors px-1"
             title="管理標籤"
           >
             ＋標籤
@@ -140,16 +141,18 @@ function BookCard({
             </span>
           )}
           {role === 'editor' && (
-            <div className="flex gap-2 ml-4 shrink-0">
+            <div className="flex gap-2 md:ml-4">
               <Link
                 href={`/read/${book._id}`}
-                className="text-xs border border-[#2C1810]/20 rounded-md px-2.5 py-1 text-[#2C1810] hover:bg-[#2C1810]/5 transition-colors"
+                className="relative overflow-hidden text-xs border border-[#2C1810]/20 rounded-md px-2.5 py-1 text-[#2C1810] hover:bg-[#2C1810]/5 transition-colors"
+                onClick={createRipple}
               >
                 閱讀
               </Link>
               <Link
                 href={`/books/${book._id}/edit`}
-                className="text-xs border border-[#2C1810]/20 rounded-md px-2.5 py-1 text-[#2C1810] hover:bg-[#2C1810]/5 transition-colors"
+                className="relative overflow-hidden text-xs border border-[#2C1810]/20 rounded-md px-2.5 py-1 text-[#2C1810] hover:bg-[#2C1810]/5 transition-colors"
+                onClick={createRipple}
               >
                 編輯 ✎
               </Link>
@@ -369,7 +372,7 @@ export function DashboardBooksClient({ initialBooks, initialHasMore, debouncedSe
               <button
                 key={s}
                 onClick={() => setSort(s)}
-                className={`rounded-md px-2.5 py-1 transition-colors ${
+                className={`rounded-md px-2.5 py-1 transition-[color,background-color,transform] duration-150 active:scale-95 ${
                   sort === s ? 'bg-[#2C1810] text-white' : 'text-[#2C1810]/50 hover:text-[#2C1810]'
                 }`}
               >
@@ -382,7 +385,7 @@ export function DashboardBooksClient({ initialBooks, initialHasMore, debouncedSe
               <button
                 key={st}
                 onClick={() => setStatus(st)}
-                className={`rounded-md px-2.5 py-1 transition-colors ${
+                className={`rounded-md px-2.5 py-1 transition-[color,background-color,transform] duration-150 active:scale-95 ${
                   status === st ? 'bg-[#2C1810] text-white' : 'text-[#2C1810]/50 hover:text-[#2C1810]'
                 }`}
               >
@@ -501,24 +504,36 @@ export function DashboardShell({
   return (
     <div className="space-y-10">
       {/* Global search input */}
-      <div className="relative">
-        <input
-          type="text"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder="搜尋記憶書標題…"
-          className="w-full rounded-lg border border-[#2C1810]/15 bg-white px-3 py-2 pr-8 text-sm text-[#2C1810] placeholder:text-[#2C1810]/30 focus:border-[#2C1810]/30 focus:outline-none"
-        />
-        {query && (
+      <form onSubmit={(e) => { e.preventDefault(); setDebouncedSearch(query.trim()) }}>
+        <div className="relative">
           <button
-            onClick={() => setQuery('')}
-            className="absolute right-2.5 top-1/2 -translate-y-1/2 text-lg leading-none text-[#2C1810]/30 hover:text-[#2C1810]/60"
-            aria-label="清除搜尋"
+            type="submit"
+            className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[#2C1810]/30 hover:text-[#2C1810]/60 transition-colors"
+            aria-label="搜尋"
           >
-            ×
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+            </svg>
           </button>
-        )}
-      </div>
+          <input
+            type="text"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="搜尋記憶書標題…"
+            className="w-full rounded-lg border border-[#2C1810]/15 bg-white pl-8 py-2 pr-8 text-sm text-[#2C1810] placeholder:text-[#2C1810]/30 focus:border-[#2C1810]/30 focus:outline-none"
+          />
+          {query && (
+            <button
+              type="button"
+              onClick={() => setQuery('')}
+              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-lg leading-none text-[#2C1810]/30 hover:text-[#2C1810]/60"
+              aria-label="清除搜尋"
+            >
+              ×
+            </button>
+          )}
+        </div>
+      </form>
 
       {/* Owner books section — admin only */}
       {isAdmin && (
