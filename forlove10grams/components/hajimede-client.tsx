@@ -45,7 +45,7 @@ export function HajimedeClient({ defaultPlaceholder, callbackUrl }: Props) {
           className="rounded-lg border border-[#2C1810]/20 bg-white px-4 py-3 text-[#2C1810] placeholder:text-[#2C1810]/30 focus:border-[#2C1810]/40 focus:outline-none focus:ring-1 focus:ring-[#2C1810]/20"
         />
         <p className="text-xs text-[#2C1810]/40">
-          空白也沒關係，之後只要知道網址就可以再來修改
+          可以先維持空白，隨時歡迎你修改！
         </p>
       </div>
 
