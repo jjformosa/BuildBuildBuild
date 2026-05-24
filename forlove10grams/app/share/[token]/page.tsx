@@ -3,6 +3,8 @@ import { auth } from '@/auth'
 import { dbConnect } from '@/lib/mongoose'
 import Share from '@/lib/models/share'
 import Book from '@/lib/models/book'
+import BookReader from '@/lib/models/book-reader'
+import { isManager } from '@/lib/access'
 
 export default async function SharePage({
   params,
@@ -50,6 +52,14 @@ export default async function SharePage({
       <main className="flex min-h-screen items-center justify-center bg-[#FAF7F2]">
         <p className="text-sm text-[#2C1810]/60">此記憶書尚未發布</p>
       </main>
+    )
+  }
+
+  if (book.shareStatus === 'shared' && !isManager(session.user.id!, book)) {
+    await BookReader.findOneAndUpdate(
+      { bookId: book._id, userId: session.user.id },
+      { $setOnInsert: { joinedAt: new Date() } },
+      { upsert: true }
     )
   }
 
