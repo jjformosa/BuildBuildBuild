@@ -60,9 +60,13 @@ export default async function EditBookPage({
         <div className="flex flex-none items-center gap-1 sm:gap-2">
           <Link
             href={`/read/${bookId}`}
-            className="rounded-md border border-[#2C1810]/20 px-3 py-1.5 text-sm text-[#2C1810] hover:bg-[#2C1810]/5 transition-colors"
+            title="查看書本"
+            className="flex items-center gap-1.5 rounded-md border border-[#2C1810]/20 px-2.5 py-1.5 text-sm text-[#2C1810] hover:bg-[#2C1810]/5 transition-colors"
           >
-            查看書本
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+              <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/>
+            </svg>
+            <span className="hidden sm:inline">查看書本</span>
           </Link>
           {isOwner && (
             <CoverImageButton bookId={bookId} initialCoverImage={book.coverImage ?? null} availableImages={carouselImages} />
