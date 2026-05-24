@@ -17,11 +17,11 @@
 
 ## 程式缺口（功能已設計但 UI 缺失）
 
-### 編輯者管理介面
+### ~~編輯者管理介面~~ ✅ 已完成
 
-**問題**：目前只有 `InviteEditorButton`（邀請），沒有「查看目前編輯者 / 移除編輯者」的管理 UI。`book.editorId` 只存一位 editor，無法從 UI 解除或替換。
+**原問題**：只有 `InviteEditorButton`（邀請），沒有查看 / 移除 editor 的管理 UI。
 
-**方向**：在編輯頁加入 editor 管理區塊，顯示目前 editor 名稱 + 移除按鈕，對應 `DELETE /api/books/[bookId]/editor`（待建）。
+**實際實作**：編輯頁新增 editor row，顯示目前 editor 名稱 + 「移除編輯者」按鈕，呼叫 `DELETE /api/books/[bookId]/editor`。Dashboard owner 書本卡片亦顯示 editor 名稱。已合併至 `refactor-2026-with-claude`。
 
 ### `myNickname` 設定介面
 
@@ -48,6 +48,18 @@
 **原問題**：目前只能「產生連結」，但無法查看有哪些連結是活的、什麼時候產生的，也無法讓特定連結失效。
 
 **實際實作**：以 `shareStatus` enum 取代 `book.published` boolean。`ShareLinkManager` 元件在編輯頁顯示目前的分享連結（URL、建立日期、撤銷按鈕）。`ShareStatusContext` 協調 `ShareButton`（header，載入前 disabled）與 `ShareLinkManager`（底部，mount 後 lazy fetch）的狀態。新增 `GET /api/books/[bookId]/share`（查詢連結）和 `DELETE /api/books/[bookId]/share`（撤銷）。已合併至 `refactor-2026-with-claude`。
+
+### ~~分享連結時效管理~~ ✅ 已完成
+
+**原問題**：分享連結永久有效，無法設定時效或在不換 URL 的前提下延長。
+
+**實際實作**：`shared` 書本的分享連結新增 7 天有效期（`Share.expiresAt`）。POST 改為 upsert — 已有有效連結時只更新 `expiresAt`，token 不變（URL 恆不變）。`ShareLinkManager` 顯示「N 天後到期」/ 「連結已到期」，提供「延長七天」按鈕。`public` 書本不受時限（`expiresAt = null`）。已合併至 `refactor-2026-with-claude`。
+
+### ~~Editor 分享權限 + Dashboard 整合~~ ✅ 已完成
+
+**原問題**：Editor 無法操作分享連結；Dashboard 沒有 editor 角色的書本列表。
+
+**實際實作**：編輯頁的 `ShareButton` 和 `ShareLinkManager` 對 editor 開放。Dashboard 新增「謝謝你，與我回憶」section，editor 書本以 `BookCard role='editor'` 渲染（「閱讀 / 編輯 ✎」雙按鈕，無全卡片 link）。`DashboardShell` 統一管理搜尋 state，owner 和 editor 兩個列表共享同一個搜尋輸入。`ReadProgress` 取代 `BookReader`，讀者存取改為純 `shareStatus` 判斷。已合併至 `refactor-2026-with-claude`。
 
 ---
 
