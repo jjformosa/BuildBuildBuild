@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import Image from 'next/image'
 
 export const metadata: Metadata = {
   title: '隱私權政策 | Film Diary',
@@ -16,7 +17,10 @@ export default function PrivacyPage() {
           ← 返回
         </Link>
 
-        <h1 className="text-2xl font-semibold tracking-tight mb-2">隱私權政策</h1>
+        <div className="flex items-center gap-3 mb-6">
+          <Image src="/logo.png" alt="For Love 10 Grams" width={40} height={40} />
+          <h1 className="text-2xl font-semibold tracking-tight">隱私權政策</h1>
+        </div>
         <p className="text-sm text-[#2C1810]/50 mb-10">最後更新：2026 年 5 月</p>
 
         <p className="text-sm leading-relaxed mb-10 text-[#2C1810]/80">

@@ -1,5 +1,6 @@
 import { notFound, redirect } from 'next/navigation'
 import { auth } from '@/auth'
+import { BlockedPage } from '@/components/blocked-page'
 import { dbConnect } from '@/lib/mongoose'
 import Book from '@/lib/models/book'
 import Page from '@/lib/models/page'
@@ -25,11 +26,7 @@ export default async function ReadBookPage({
   const userId = session.user.id
   const canAccess = await canReadBook(userId, book)
   if (!canAccess) {
-    return (
-      <main className="flex min-h-screen items-center justify-center bg-[#FAF7F2]">
-        <p className="text-sm text-[#2C1810]/60">你沒有這本書的閱讀權限</p>
-      </main>
-    )
+    return <BlockedPage message="你沒有這本書的閱讀權限" />
   }
 
   const hasLiked = !!(await BookLike.exists({ bookId: book._id, userId }))

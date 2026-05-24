@@ -128,7 +128,8 @@ export function ReadPageClient({ bookId, bookTitle, initialPages, totalCount, vi
 
       <main ref={scrollContainerRef} id="read-scroll-container" className="flex-1 overflow-y-auto">
         <div className="mx-auto max-w-2xl px-4 py-8 sm:py-10">
-          <header className="mb-10 sm:mb-12 text-center">
+          <header className="mb-10 sm:mb-12 text-center flex flex-col items-center gap-3">
+            <img src="/logo.png" alt="" aria-hidden width={48} height={48} className="opacity-80" />
             <h1 className="text-xl sm:text-2xl font-semibold tracking-tight text-[#2C1810]">
               {bookTitle}
             </h1>
