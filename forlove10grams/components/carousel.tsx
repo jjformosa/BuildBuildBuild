@@ -3,9 +3,8 @@
 import { useState, useEffect, useCallback } from 'react'
 import Image from 'next/image'
 import useEmblaCarousel from 'embla-carousel-react'
-import Lightbox from 'yet-another-react-lightbox'
-import 'yet-another-react-lightbox/styles.css'
 import type { EmblaCarouselType } from 'embla-carousel'
+import { FullscreenGallery } from '@/components/fullscreen-gallery'
 
 type Props = { urls: string[] }
 
@@ -102,12 +101,13 @@ export function Carousel({ urls }: Props) {
         )}
       </div>
 
-      <Lightbox
-        open={lightboxOpen}
-        close={() => setLightboxOpen(false)}
-        index={lightboxIndex}
-        slides={urls.map((src) => ({ src }))}
-      />
+      {lightboxOpen && (
+        <FullscreenGallery
+          urls={urls}
+          initialIndex={lightboxIndex}
+          onClose={() => setLightboxOpen(false)}
+        />
+      )}
     </>
   )
 }
