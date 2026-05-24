@@ -1,6 +1,6 @@
 # Share Reader Management Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [x]`) syntax for tracking.
 
 **Goal:** Rebuild reader management on top of the existing share link — track who reads a book, let managers view and remove individual readers.
 
@@ -31,7 +31,7 @@
 **Files:**
 - Create: `lib/models/book-reader.ts`
 
-- [ ] **Step 1: Create the model file**
+- [x] **Step 1: Create the model file**
 
 ```typescript
 // lib/models/book-reader.ts
@@ -61,7 +61,7 @@ const BookReader: Model<IBookReader> =
 export default BookReader
 ```
 
-- [ ] **Step 2: Commit**
+- [x] **Step 2: Commit**
 
 ```bash
 git add lib/models/book-reader.ts
@@ -77,7 +77,7 @@ git commit -m "feat: add BookReader model"
 
 The current `canReadBook` uses a share token for validation. Replace it with a BookReader-based check. Remove the now-unused `Share` import and `token` parameter.
 
-- [ ] **Step 1: Rewrite lib/access.ts**
+- [x] **Step 1: Rewrite lib/access.ts**
 
 ```typescript
 // lib/access.ts
@@ -107,7 +107,7 @@ export async function canReadBook(userId: string, book: IBook): Promise<boolean>
 }
 ```
 
-- [ ] **Step 2: Commit**
+- [x] **Step 2: Commit**
 
 ```bash
 git add lib/access.ts
@@ -123,7 +123,7 @@ git commit -m "feat: canReadBook now checks BookReader for shared books"
 
 Replace the inline access check with `canReadBook`. The `canEditBook` import is no longer needed for the access gate (it's still used indirectly via `canReadBook`).
 
-- [ ] **Step 1: Update imports and access check**
+- [x] **Step 1: Update imports and access check**
 
 Replace the import line:
 ```typescript
@@ -160,7 +160,7 @@ with:
   }
 ```
 
-- [ ] **Step 2: Verify the file compiles**
+- [x] **Step 2: Verify the file compiles**
 
 ```bash
 cd forlove10grams && npx tsc --noEmit 2>&1 | head -30
@@ -168,7 +168,7 @@ cd forlove10grams && npx tsc --noEmit 2>&1 | head -30
 
 Expected: no errors related to `read/[bookId]/page.tsx` or `lib/access.ts`.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add app/read/\[bookId\]/page.tsx
@@ -184,14 +184,14 @@ git commit -m "feat: gate shared-book read access on BookReader record"
 
 When a logged-in user follows a valid share link for a `shared` book, upsert a BookReader record before redirecting. This creates the reader's access record silently. For `public` books, skip the upsert (public access doesn't require a BookReader).
 
-- [ ] **Step 1: Add imports**
+- [x] **Step 1: Add imports**
 
 Add to the top of `app/share/[token]/page.tsx` after existing imports:
 ```typescript
 import BookReader from '@/lib/models/book-reader'
 ```
 
-- [ ] **Step 2: Replace the final redirect block**
+- [x] **Step 2: Replace the final redirect block**
 
 The current last block in the page function is:
 ```typescript
@@ -227,7 +227,7 @@ Replace with:
   redirect(`/read/${share.bookId.toString()}`)
 ```
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add app/share/\[token\]/page.tsx
@@ -243,7 +243,7 @@ git commit -m "feat: upsert BookReader when user follows share link"
 
 Returns the reader list for a book. Only accessible to Managers (owner or editor). `displayName` prefers `user.nickname`, falls back to `user.name`.
 
-- [ ] **Step 1: Create the route file**
+- [x] **Step 1: Create the route file**
 
 ```typescript
 // app/api/books/[bookId]/readers/route.ts
@@ -288,7 +288,7 @@ export async function GET(
 }
 ```
 
-- [ ] **Step 2: Commit**
+- [x] **Step 2: Commit**
 
 ```bash
 git add app/api/books/\[bookId\]/readers/route.ts
@@ -304,7 +304,7 @@ git commit -m "feat: GET /api/books/[bookId]/readers"
 
 Removes a single reader. Returns 404 if the reader record doesn't exist.
 
-- [ ] **Step 1: Create the route file**
+- [x] **Step 1: Create the route file**
 
 ```typescript
 // app/api/books/[bookId]/readers/[userId]/route.ts
@@ -337,7 +337,7 @@ export async function DELETE(
 }
 ```
 
-- [ ] **Step 2: Commit**
+- [x] **Step 2: Commit**
 
 ```bash
 git add app/api/books/\[bookId\]/readers/\[userId\]/route.ts
@@ -353,7 +353,7 @@ git commit -m "feat: DELETE /api/books/[bookId]/readers/[userId]"
 
 Client component. Fetches readers on mount (only when `shareStatus === 'shared'`). Supports inline remove with optimistic list update.
 
-- [ ] **Step 1: Create the component**
+- [x] **Step 1: Create the component**
 
 ```typescript
 // components/reader-list.tsx
@@ -449,7 +449,7 @@ export function ReaderList({
 }
 ```
 
-- [ ] **Step 2: Commit**
+- [x] **Step 2: Commit**
 
 ```bash
 git add components/reader-list.tsx
@@ -465,14 +465,14 @@ git commit -m "feat: ReaderList component"
 
 Add import and render `ReaderList` in the bottom section after `ShareLinkManager`. Pass `shareStatus` from the SSR-fetched book.
 
-- [ ] **Step 1: Add import**
+- [x] **Step 1: Add import**
 
 Add after the existing component imports (around line 13):
 ```typescript
 import { ReaderList } from '@/components/reader-list'
 ```
 
-- [ ] **Step 2: Add ReaderList to the bottom section**
+- [x] **Step 2: Add ReaderList to the bottom section**
 
 Find the bottom section (currently around line 75–78):
 ```tsx
@@ -491,7 +491,7 @@ Replace with:
       </section>
 ```
 
-- [ ] **Step 3: Verify the file compiles**
+- [x] **Step 3: Verify the file compiles**
 
 ```bash
 npx tsc --noEmit 2>&1 | head -30
@@ -499,7 +499,7 @@ npx tsc --noEmit 2>&1 | head -30
 
 Expected: no errors.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add app/books/\[bookId\]/edit/page.tsx
@@ -515,13 +515,13 @@ git commit -m "feat: add ReaderList to book edit page"
 
 This was the old editor-invite-by-email route. It set `book.editorId` via an admin-only API and is no longer used. Removing it avoids dead code confusion.
 
-- [ ] **Step 1: Delete the file**
+- [x] **Step 1: Delete the file**
 
 ```bash
 rm forlove10grams/app/api/books/\[bookId\]/invite/route.ts
 ```
 
-- [ ] **Step 2: Verify no remaining references**
+- [x] **Step 2: Verify no remaining references**
 
 ```bash
 grep -r "books/\[bookId\]/invite\|/invite/route" forlove10grams/app forlove10grams/components forlove10grams/lib --include="*.ts" --include="*.tsx"
@@ -529,7 +529,7 @@ grep -r "books/\[bookId\]/invite\|/invite/route" forlove10grams/app forlove10gra
 
 Expected: no output.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add -A

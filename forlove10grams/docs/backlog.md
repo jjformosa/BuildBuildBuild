@@ -77,6 +77,18 @@
 
 **實際實作**：Creator 邀請 editor 時可附上一段「交接信」（`editorLetter`）。Editor 閱讀至書末最後一頁時，`HandoverLetter` 元件顯示「creatorName 想對你說」與留言內容（italic 引號格式），並附「進入編輯 →」連結導向編輯頁。
 
+### ~~Reader 追蹤與管理~~ ✅ 已完成
+
+**原問題**：Creator / editor 無法得知誰透過分享連結讀了書，也無法移除個別讀者。
+
+**實際實作**：引入 `BookReader` model，讀者跟隨有效分享連結後被 upsert 記錄。管理者可在編輯頁透過 `ReaderList` 元件查看讀者清單（頭像、暱稱）並移除個別讀者，後端新增 `GET /api/books/[bookId]/readers` 及 `DELETE /api/books/[bookId]/readers/[userId]`。已合併至 `improve-ux`。
+
+### ~~全屏圖片瀏覽~~ ✅ 已完成
+
+**原問題**：圖片點擊後的 lightbox（`yet-another-react-lightbox`）在手機上未佔滿畫面，左右箭頭不明顯。
+
+**實際實作**：以自訂 `FullscreenGallery` 元件取代 `yet-another-react-lightbox`，純 CSS fixed overlay 黑底全屏，支援左右箭頭（首末張自動隱藏）、dot indicators、觸控 swipe、鍵盤 Escape / ← / →、圖片載入 pulse placeholder。移除 `yet-another-react-lightbox` 套件。已合併至 `improve-ux`。
+
 ### 手機上傳體驗
 
 **問題**：目前的媒體上傳流程未針對手機優化（相機直拍、多選、壓縮）。

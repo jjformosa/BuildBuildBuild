@@ -1,6 +1,6 @@
 # Fullscreen Gallery Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [x]`) syntax for tracking.
 
 **Goal:** 以自訂 CSS fullscreen overlay 取代 `yet-another-react-lightbox`，讓 Carousel 的圖片全屏預覽在手機上佔滿整個畫面，並提供清晰的左右換頁箭頭與 dot indicators。
 
@@ -25,7 +25,7 @@
 **Files:**
 - Create: `forlove10grams/components/fullscreen-gallery.tsx`
 
-- [ ] **Step 1: 建立檔案，寫入完整元件**
+- [x] **Step 1: 建立檔案，寫入完整元件**
 
 建立 `forlove10grams/components/fullscreen-gallery.tsx`，內容如下：
 
@@ -192,7 +192,7 @@ function ImageSlide({ src }: { src: string }) {
 }
 ```
 
-- [ ] **Step 2: 確認 TypeScript 無報錯**
+- [x] **Step 2: 確認 TypeScript 無報錯**
 
 ```bash
 cd forlove10grams && npx tsc --noEmit 2>&1 | head -20
@@ -200,7 +200,7 @@ cd forlove10grams && npx tsc --noEmit 2>&1 | head -20
 
 預期：無 error 輸出（或只有與本次修改無關的既有 warning）
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add forlove10grams/components/fullscreen-gallery.tsx
@@ -214,7 +214,7 @@ git commit -m "feat: add FullscreenGallery component for mobile fullscreen image
 **Files:**
 - Modify: `forlove10grams/components/carousel.tsx`
 
-- [ ] **Step 1: 移除 yarl imports，加入 FullscreenGallery**
+- [x] **Step 1: 移除 yarl imports，加入 FullscreenGallery**
 
 開啟 `forlove10grams/components/carousel.tsx`。
 
@@ -229,7 +229,7 @@ import 'yet-another-react-lightbox/styles.css'
 import { FullscreenGallery } from '@/components/fullscreen-gallery'
 ```
 
-- [ ] **Step 2: 替換 `<Lightbox>` 為 `<FullscreenGallery>`**
+- [x] **Step 2: 替換 `<Lightbox>` 為 `<FullscreenGallery>`**
 
 找到檔案底部的：
 ```tsx
@@ -252,7 +252,7 @@ import { FullscreenGallery } from '@/components/fullscreen-gallery'
       )}
 ```
 
-- [ ] **Step 3: 確認 TypeScript 無報錯**
+- [x] **Step 3: 確認 TypeScript 無報錯**
 
 ```bash
 cd forlove10grams && npx tsc --noEmit 2>&1 | head -20
@@ -260,7 +260,7 @@ cd forlove10grams && npx tsc --noEmit 2>&1 | head -20
 
 預期：無新增 error
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add forlove10grams/components/carousel.tsx
@@ -274,7 +274,7 @@ git commit -m "feat: replace yet-another-react-lightbox with FullscreenGallery i
 **Files:**
 - Modify: `forlove10grams/package.json`
 
-- [ ] **Step 1: 移除套件（由使用者執行）**
+- [x] **Step 1: 移除套件（由使用者執行）**
 
 > ⚠️ 此指令需要使用者在終端機手動執行（`! <command>` 語法可在 Claude Code 中直接執行）：
 
@@ -284,7 +284,7 @@ cd forlove10grams && npm uninstall yet-another-react-lightbox
 
 預期：`package.json` 中 `yet-another-react-lightbox` 條目消失，`node_modules` 中對應資料夾被移除。
 
-- [ ] **Step 2: 確認 build 正常**
+- [x] **Step 2: 確認 build 正常**
 
 ```bash
 cd forlove10grams && npm run build 2>&1 | tail -20
@@ -292,7 +292,7 @@ cd forlove10grams && npm run build 2>&1 | tail -20
 
 預期：build 成功，無與 `yet-another-react-lightbox` 相關的 import error。
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add forlove10grams/package.json forlove10grams/package-lock.json
@@ -303,13 +303,13 @@ git commit -m "chore: remove yet-another-react-lightbox dependency"
 
 ## Task 4: 人工驗證
 
-- [ ] **Step 1: 啟動 dev server（由使用者執行）**
+- [x] **Step 1: 啟動 dev server（由使用者執行）**
 
 ```bash
 cd forlove10grams && npm run dev
 ```
 
-- [ ] **Step 2: 驗證項目清單**
+- [x] **Step 2: 驗證項目清單**
 
 前往任一有 Carousel 的 `read/[bookId]` 頁面，逐項確認：
 
