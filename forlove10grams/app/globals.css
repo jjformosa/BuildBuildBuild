@@ -28,26 +28,26 @@
 }
 
 :root {
-  --background: #FAF7F2;
-  --foreground: #2C1810;
-  --card: #FFFFFF;
-  --card-foreground: #2C1810;
-  --popover: #FFFFFF;
-  --popover-foreground: #2C1810;
-  --primary: #2C1810;
-  --primary-foreground: #FAF7F2;
-  --secondary: #F0E6D8;
-  --secondary-foreground: #4A2C1E;
-  --muted: #EDE4D8;
-  --muted-foreground: #8C6B55;
-  --accent: #D4956A;
-  --accent-foreground: #2C1810;
-  --destructive: #C0392B;
-  --destructive-foreground: #FAF7F2;
-  --border: #D9C9B8;
-  --input: #D9C9B8;
-  --ring: #2C1810;
-  --gold: #A0826D;
+  --background: #ecebf4;
+  --foreground: #2d3848;
+  --card: #ffffff;
+  --card-foreground: #2d3848;
+  --popover: #ffffff;
+  --popover-foreground: #2d3848;
+  --primary: #3d6b7c;
+  --primary-foreground: #ffffff;
+  --secondary: #dde0f0;
+  --secondary-foreground: #2d3848;
+  --muted: #e4e2f2;
+  --muted-foreground: #7a8fa0;
+  --accent: #5a8fa0;
+  --accent-foreground: #ffffff;
+  --destructive: #c84b4b;
+  --destructive-foreground: #ffffff;
+  --border: #c8c4e0;
+  --input: #c8c4e0;
+  --ring: #3d6b7c;
+  --gold: #b4945a;
   --radius: 0.5rem;
 }
 
@@ -68,7 +68,7 @@
 .ripple-effect {
   position: absolute;
   border-radius: 50%;
-  background: rgba(44, 24, 16, 0.18);
+  background: rgba(61, 107, 124, 0.18);
   pointer-events: none;
   animation: ripple-expand 0.45s ease-out forwards;
 }
