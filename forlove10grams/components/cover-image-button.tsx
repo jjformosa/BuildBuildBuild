@@ -41,11 +41,11 @@ export function CoverImageButton({ bookId, initialCoverImage, availableImages }:
             ? '更換封面'
             : '設定封面'
         }
-        className="flex items-center gap-1.5 rounded-md border border-[#2C1810]/20 px-2.5 py-1 text-sm text-[#2C1810]/60 hover:text-[#2C1810] hover:bg-[#2C1810]/5 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+        className="flex items-center gap-1.5 rounded-md border border-foreground/20 px-2.5 py-1 text-sm text-foreground/60 hover:text-foreground hover:bg-foreground/5 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
       >
         {isSaving ? (
           <span className="h-5 w-5 flex items-center justify-center">
-            <span className="h-3 w-3 rounded-full border-2 border-[#2C1810]/30 border-t-[#2C1810] animate-spin" />
+            <span className="h-3 w-3 rounded-full border-2 border-foreground/30 border-t-foreground animate-spin" />
           </span>
         ) : coverImage ? (
           <Image src={coverImage} alt="" width={20} height={20} className="rounded object-cover" />
@@ -65,8 +65,8 @@ export function CoverImageButton({ bookId, initialCoverImage, availableImages }:
             onClick={() => setIsOpen(false)}
           />
           {/* picker panel */}
-          <div className="fixed right-4 top-16 z-50 w-72 rounded-xl border border-[#2C1810]/10 bg-white p-3 shadow-lg">
-            <p className="mb-2 text-xs font-medium text-[#2C1810]/50">選擇封面圖片</p>
+          <div className="fixed right-4 top-16 z-50 w-72 rounded-xl border border-foreground/10 bg-white p-3 shadow-lg">
+            <p className="mb-2 text-xs font-medium text-foreground/50">選擇封面圖片</p>
             <div className="grid grid-cols-4 gap-1.5 max-h-64 overflow-y-auto">
               {availableImages.map((url) => (
                 <button
@@ -75,8 +75,8 @@ export function CoverImageButton({ bookId, initialCoverImage, availableImages }:
                   disabled={isSaving}
                   className={`relative aspect-square overflow-hidden rounded-md border-2 transition-all ${
                     coverImage === url
-                      ? 'border-[#2C1810]'
-                      : 'border-transparent hover:border-[#2C1810]/30'
+                      ? 'border-foreground'
+                      : 'border-transparent hover:border-foreground/30'
                   }`}
                 >
                   <Image src={url} alt="" fill className="object-cover" />

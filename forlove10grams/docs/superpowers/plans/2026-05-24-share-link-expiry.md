@@ -1,6 +1,6 @@
 # Share Link Expiry Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [x]`) syntax for tracking.
 >
 > **IMPORTANT (CLAUDE.md constraint):** `git commit`, `git push`, and other state-changing git commands must NOT be executed directly. Provide the command text for the user to run manually.
 
@@ -28,7 +28,7 @@
 **Files:**
 - Modify: `forlove10grams/lib/models/share.ts`
 
-- [ ] **Step 1: Read current file**
+- [x] **Step 1: Read current file**
 
 ```bash
 cat forlove10grams/lib/models/share.ts
@@ -63,7 +63,7 @@ const Share: Model<IShare> =
 export default Share
 ```
 
-- [ ] **Step 2: Replace file with updated version**
+- [x] **Step 2: Replace file with updated version**
 
 Write `forlove10grams/lib/models/share.ts`:
 
@@ -97,13 +97,13 @@ const Share: Model<IShare> =
 export default Share
 ```
 
-- [ ] **Step 3: TypeScript check**
+- [x] **Step 3: TypeScript check**
 
 Run: `cd forlove10grams && npx tsc --noEmit --skipLibCheck 2>&1 | grep -v ".next/"`
 
 Expected: no errors from `lib/models/share.ts`
 
-- [ ] **Step 4: Provide commit command for user to run**
+- [x] **Step 4: Provide commit command for user to run**
 
 ```
 git add forlove10grams/lib/models/share.ts
@@ -119,7 +119,7 @@ git commit -m "feat: add expiresAt to Share model"
 
 Context: POST currently always deactivates the old share and creates a new token. We change it to upsert — if an active share already exists, only update `expiresAt` and keep the token unchanged. GET currently returns `{ active, token, shareUrl, createdAt }`; we add `expiresAt`.
 
-- [ ] **Step 1: Replace the POST handler body**
+- [x] **Step 1: Replace the POST handler body**
 
 The full updated POST handler (replace everything after `if (err) return err` in the POST function):
 
@@ -170,7 +170,7 @@ export async function POST(
 }
 ```
 
-- [ ] **Step 2: Update GET to return `expiresAt`**
+- [x] **Step 2: Update GET to return `expiresAt`**
 
 In the GET handler, find the `return Response.json({ active: true, ... })` block and replace it:
 
@@ -184,7 +184,7 @@ In the GET handler, find the `return Response.json({ active: true, ... })` block
   })
 ```
 
-- [ ] **Step 3: Verify the full file looks correct**
+- [x] **Step 3: Verify the full file looks correct**
 
 The complete `route.ts` should be:
 
@@ -303,13 +303,13 @@ export async function DELETE(
 }
 ```
 
-- [ ] **Step 4: TypeScript check**
+- [x] **Step 4: TypeScript check**
 
 Run: `cd forlove10grams && npx tsc --noEmit --skipLibCheck 2>&1 | grep -v ".next/"`
 
 Expected: no new errors from `app/api/books/[bookId]/share/route.ts`
 
-- [ ] **Step 5: Provide commit command for user to run**
+- [x] **Step 5: Provide commit command for user to run**
 
 ```
 git add forlove10grams/app/api/books/[bookId]/share/route.ts
@@ -325,13 +325,13 @@ git commit -m "feat: share POST upsert with expiresAt, GET returns expiresAt"
 
 Context: The page currently shows "連結無效或已過期" if `Share.findOne({ token, active: true })` returns null. We add a check after that: if the share exists but `expiresAt` is in the past, show "連結已到期" instead of redirecting.
 
-- [ ] **Step 1: Read the current file**
+- [x] **Step 1: Read the current file**
 
 ```bash
 cat forlove10grams/app/share/[token]/page.tsx
 ```
 
-- [ ] **Step 2: Add the expiry check**
+- [x] **Step 2: Add the expiry check**
 
 After the `if (!share)` block (around line 22), insert:
 
@@ -407,13 +407,13 @@ export default async function SharePage({
 }
 ```
 
-- [ ] **Step 3: TypeScript check**
+- [x] **Step 3: TypeScript check**
 
 Run: `cd forlove10grams && npx tsc --noEmit --skipLibCheck 2>&1 | grep -v ".next/"`
 
 Expected: no errors
 
-- [ ] **Step 4: Provide commit command for user to run**
+- [x] **Step 4: Provide commit command for user to run**
 
 ```
 git add forlove10grams/app/share/[token]/page.tsx
@@ -429,7 +429,7 @@ git commit -m "feat: share page shows 連結已到期 when expiresAt has passed"
 
 Context: Currently has two states: `share.active && share.shareUrl` (active) vs else (inactive). We add `expiresAt` to `ShareState`, compute `isExpired` client-side, and split into three render branches. A new `handleExtend` function calls POST and updates local state without full re-fetch.
 
-- [ ] **Step 1: Replace the full file**
+- [x] **Step 1: Replace the full file**
 
 Write `forlove10grams/components/share-link-manager.tsx`:
 
@@ -601,13 +601,13 @@ export function ShareLinkManager({ bookId }: { bookId: string }) {
 }
 ```
 
-- [ ] **Step 2: TypeScript check**
+- [x] **Step 2: TypeScript check**
 
 Run: `cd forlove10grams && npx tsc --noEmit --skipLibCheck 2>&1 | grep -v ".next/"`
 
 Expected: no errors
 
-- [ ] **Step 3: Manual browser test checklist**
+- [x] **Step 3: Manual browser test checklist**
 
 Start dev server, open a book's edit page as owner:
 
@@ -617,7 +617,7 @@ Start dev server, open a book's edit page as owner:
 4. **share page 過期**：手動在 MongoDB 把 `expiresAt` 改到過去的時間，開啟該 share URL → 顯示「連結已到期」
 5. **過期後延長**：在 ShareLinkManager 顯示「連結已到期」時點「延長七天」→ 連結恢復有效，URL 不變
 
-- [ ] **Step 4: Provide commit command for user to run**
+- [x] **Step 4: Provide commit command for user to run**
 
 ```
 git add forlove10grams/components/share-link-manager.tsx

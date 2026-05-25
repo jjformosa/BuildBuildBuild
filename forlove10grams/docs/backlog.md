@@ -65,17 +65,29 @@
 
 ## 體驗改善
 
-### Dashboard 編輯者導向調整
+### ~~Dashboard 編輯者導向調整~~ ✅ 已完成
 
-**問題**：editor 從 dashboard 點書時目前進入 edit 頁，若要讓交接信自然出現在 read 頁末尾，應改為導向 `/read/[bookId]`，讓 editor 先滑過書本內容再進入編輯。
+**原問題**：editor 從 dashboard 點書時目前進入 edit 頁，若要讓交接信自然出現在 read 頁末尾，應改為導向 `/read/[bookId]`，讓 editor 先滑過書本內容再進入編輯。
 
-**方向**：待「把書交給她」功能上線後評估是否一起調整 dashboard 的連結目的地。
+**實際實作**：Editor 書本卡片改為「閱讀」/ 「編輯 ✎」雙按鈕（無全卡片 link），分別導向 `/read/[bookId]` 和 `/books/[bookId]/edit`，讓 editor 自行選擇入口。
 
-### 「把書交給她」的儀式感
+### ~~「把書交給她」的儀式感~~ ✅ 已完成
 
-**問題**：邀請 editor 的流程目前是純技術性操作（填 email）。沒有任何儀式感。
+**原問題**：邀請 editor 的流程目前是純技術性操作（填 email）。沒有任何儀式感。
 
-**方向**：Creator 邀請時可附上一段「交接信」。Editor 第一次進入書時，看到的不是直接跳進 dashboard，而是先看到這段話。
+**實際實作**：Creator 邀請 editor 時可附上一段「交接信」（`editorLetter`）。Editor 閱讀至書末最後一頁時，`HandoverLetter` 元件顯示「creatorName 想對你說」與留言內容（italic 引號格式），並附「進入編輯 →」連結導向編輯頁。
+
+### ~~Reader 追蹤與管理~~ ✅ 已完成
+
+**原問題**：Creator / editor 無法得知誰透過分享連結讀了書，也無法移除個別讀者。
+
+**實際實作**：引入 `BookReader` model，讀者跟隨有效分享連結後被 upsert 記錄。管理者可在編輯頁透過 `ReaderList` 元件查看讀者清單（頭像、暱稱）並移除個別讀者，後端新增 `GET /api/books/[bookId]/readers` 及 `DELETE /api/books/[bookId]/readers/[userId]`。已合併至 `improve-ux`。
+
+### ~~全屏圖片瀏覽~~ ✅ 已完成
+
+**原問題**：圖片點擊後的 lightbox（`yet-another-react-lightbox`）在手機上未佔滿畫面，左右箭頭不明顯。
+
+**實際實作**：以自訂 `FullscreenGallery` 元件取代 `yet-another-react-lightbox`，純 CSS fixed overlay 黑底全屏，支援左右箭頭（首末張自動隱藏）、dot indicators、觸控 swipe、鍵盤 Escape / ← / →、圖片載入 pulse placeholder。移除 `yet-another-react-lightbox` 套件。已合併至 `improve-ux`。
 
 ### 手機上傳體驗
 

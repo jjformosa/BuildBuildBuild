@@ -55,18 +55,18 @@ export function Toc({ pages, readPageIds, activePageId, onJumpTo }: Props) {
   }
 
   function pageIcon(page: TocPage, isRead: boolean, isActive: boolean, isJumping: boolean, forDesktop: boolean) {
-    if (isJumping) return <span className="text-[#2C1810]/40 text-[10px] animate-spin">◌</span>
+    if (isJumping) return <span className="text-foreground/40 text-[10px] animate-spin">◌</span>
     if (forDesktop && isActive) {
       return (
-        <span className="text-[#2C1810] text-[10px] font-bold">►</span>
+        <span className="text-foreground text-[10px] font-bold">►</span>
       )
     }
     return (
       <span
         className={`flex h-4 w-4 flex-none items-center justify-center rounded-full border text-[9px] transition-colors ${
           isRead
-            ? 'border-[#2C1810]/50 bg-[#2C1810]/50 text-white'
-            : 'border-[#2C1810]/20 text-[#2C1810]/30'
+            ? 'border-foreground/50 bg-foreground/50 text-white'
+            : 'border-foreground/20 text-foreground/30'
         }`}
       >
         {isRead ? '✓' : page.index + 1}
@@ -88,8 +88,8 @@ export function Toc({ pages, readPageIds, activePageId, onJumpTo }: Props) {
               <button
                 onClick={() => scrollTo(page._id)}
                 disabled={isJumping}
-                className={`group w-full rounded-md px-3 py-2 text-left transition-colors hover:bg-[#2C1810]/5 ${
-                  isActive ? 'bg-[#2C1810]/5' : ''
+                className={`group w-full rounded-md px-3 py-2 text-left transition-colors hover:bg-foreground/5 ${
+                  isActive ? 'bg-foreground/5' : ''
                 }`}
               >
                 <div className="flex items-center gap-2.5">
@@ -97,8 +97,8 @@ export function Toc({ pages, readPageIds, activePageId, onJumpTo }: Props) {
                   <span
                     className={`truncate text-xs transition-colors ${
                       isActive
-                        ? 'text-[#2C1810]/90 font-medium'
-                        : 'text-[#2C1810]/55 group-hover:text-[#2C1810]/80'
+                        ? 'text-foreground/90 font-medium'
+                        : 'text-foreground/55 group-hover:text-foreground/80'
                     }`}
                   >
                     {label}
@@ -115,12 +115,12 @@ export function Toc({ pages, readPageIds, activePageId, onJumpTo }: Props) {
   return (
     <>
       {/* Desktop sidebar — acts as a flex child in the parent layout */}
-      <aside className="hidden md:flex w-56 flex-none flex-col border-r border-[#2C1810]/10">
-        <div className="flex-none border-b border-[#2C1810]/10 px-4 py-3">
-          <span className="text-xs font-medium uppercase tracking-wide text-[#2C1810]/40">
+      <aside className="hidden md:flex w-56 flex-none flex-col border-r border-foreground/10">
+        <div className="flex-none border-b border-foreground/10 px-4 py-3">
+          <span className="text-xs font-medium uppercase tracking-wide text-foreground/40">
             目錄
           </span>
-          <span className="ml-2 text-xs text-[#2C1810]/30">
+          <span className="ml-2 text-xs text-foreground/30">
             {readPageIds.length}/{pages.length}
           </span>
         </div>
@@ -131,7 +131,7 @@ export function Toc({ pages, readPageIds, activePageId, onJumpTo }: Props) {
       <div className="md:hidden">
         <button
           onClick={() => setMobileOpen(true)}
-          className="fixed bottom-6 right-6 z-30 rounded-full bg-[#2C1810] px-4 py-2 text-xs font-medium text-white shadow-lg"
+          className="fixed bottom-6 right-6 z-30 rounded-full bg-primary px-4 py-2 text-xs font-medium text-white shadow-lg"
         >
           目錄
         </button>
@@ -142,12 +142,12 @@ export function Toc({ pages, readPageIds, activePageId, onJumpTo }: Props) {
               className="fixed inset-0 z-40 bg-black/30"
               onClick={() => setMobileOpen(false)}
             />
-            <div className="fixed inset-x-0 bottom-0 z-50 max-h-[72vh] overflow-y-auto rounded-t-2xl bg-[#FAF7F2] pb-8">
-              <div className="sticky top-0 border-b border-[#2C1810]/10 bg-[#FAF7F2] px-4 pb-3 pt-3">
-                <div className="mx-auto mb-2 h-1 w-10 rounded-full bg-[#2C1810]/20" />
+            <div className="fixed inset-x-0 bottom-0 z-50 max-h-[72vh] overflow-y-auto rounded-t-2xl bg-background pb-8">
+              <div className="sticky top-0 border-b border-foreground/10 bg-background px-4 pb-3 pt-3">
+                <div className="mx-auto mb-2 h-1 w-10 rounded-full bg-foreground/20" />
                 <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium text-[#2C1810]">目錄</span>
-                  <span className="text-xs text-[#2C1810]/40">
+                  <span className="text-sm font-medium text-foreground">目錄</span>
+                  <span className="text-xs text-foreground/40">
                     {readPageIds.length}/{pages.length} 已讀
                   </span>
                 </div>

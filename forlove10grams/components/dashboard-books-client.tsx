@@ -8,6 +8,7 @@ import { PencilIcon } from '@/components/icons/pencil'
 import { CheckCircleIcon } from '@/components/icons/check-circle'
 import { CircleIcon } from '@/components/icons/circle'
 import TagManagerModal from '@/components/tag-manager-modal'
+import { createRipple } from '@/lib/ripple'
 
 export type DashboardBook = {
   _id: string
@@ -85,25 +86,25 @@ function BookCard({
 
   const coverAndTitle = (
     <>
-      <div className="relative shrink-0 h-14 w-14 overflow-hidden rounded-lg bg-[#2C1810]/5 flex items-center justify-center">
+      <div className="relative shrink-0 h-14 w-14 overflow-hidden rounded-lg bg-foreground/5 flex items-center justify-center">
         {book.coverImage ? (
           <Image src={book.coverImage} alt="" fill className="object-cover" />
         ) : (
-          <span className="text-xl font-semibold text-[#2C1810]/25">{initial}</span>
+          <span className="text-xl font-semibold text-foreground/25">{initial}</span>
         )}
       </div>
       <div className="flex-1 min-w-0">
-        <p className="font-medium text-[#2C1810] truncate">{book.title}</p>
+        <p className="font-medium text-foreground line-clamp-2 md:line-clamp-none md:truncate">{book.title}</p>
         {book.description && (
-          <p className="mt-0.5 line-clamp-1 text-sm text-[#2C1810]/50">{book.description}</p>
+          <p className="mt-0.5 line-clamp-1 text-sm text-foreground/50">{book.description}</p>
         )}
       </div>
     </>
   )
 
   return (
-    <div className="rounded-xl border border-[#2C1810]/10 bg-white px-4 py-3 transition-all hover:border-[#2C1810]/25 hover:shadow-sm">
-      <div className="flex items-center gap-3">
+    <div className="rounded-xl border border-foreground/10 bg-white px-4 py-3 transition-all hover:border-foreground/25 hover:shadow-sm">
+      <div className="flex flex-wrap items-center gap-x-3">
         {role === 'owner' ? (
           <Link href={`/books/${book._id}/edit`} className="flex items-center gap-3 flex-1 min-w-0">
             {coverAndTitle}
@@ -113,43 +114,45 @@ function BookCard({
             {coverAndTitle}
           </div>
         )}
-        <div className="shrink-0 flex items-center gap-2">
+        <div className="w-full md:w-auto md:shrink-0 flex flex-wrap items-center gap-2 mt-3 pt-3 border-t border-foreground/8 md:mt-0 md:pt-0 md:border-t-0">
           {book.likeCount > 0 && (
-            <span className="text-xs text-[#2C1810]/40">♡ {book.likeCount}</span>
+            <span className="text-xs text-foreground/40">♡ {book.likeCount}</span>
           )}
           <span
             className={`text-xs px-2 py-0.5 rounded-full ${
               book.shareStatus === 'shared' || book.shareStatus === 'public'
                 ? 'bg-emerald-50 text-emerald-700'
-                : 'bg-[#2C1810]/5 text-[#2C1810]/40'
+                : 'bg-foreground/5 text-foreground/40'
             }`}
           >
             {book.shareStatus === 'public' ? '公開' : book.shareStatus === 'shared' ? '已分享' : '草稿'}
           </span>
           <button
             type="button"
-            onClick={() => setShowTagModal(true)}
-            className="text-xs text-[#2C1810]/40 hover:text-[#2C1810]/70 transition-colors px-1"
+            onClick={(e) => { createRipple(e); setShowTagModal(true) }}
+            className="relative overflow-hidden rounded text-xs text-foreground/40 hover:text-foreground/70 transition-colors px-1"
             title="管理標籤"
           >
             ＋標籤
           </button>
           {role === 'owner' && (
-            <span className="text-[#2C1810]/30">
+            <span className="text-foreground/30">
               <PencilIcon />
             </span>
           )}
           {role === 'editor' && (
-            <div className="flex gap-2 ml-4 shrink-0">
+            <div className="flex gap-2 md:ml-4">
               <Link
                 href={`/read/${book._id}`}
-                className="text-xs border border-[#2C1810]/20 rounded-md px-2.5 py-1 text-[#2C1810] hover:bg-[#2C1810]/5 transition-colors"
+                className="relative overflow-hidden text-xs border border-foreground/20 rounded-md px-2.5 py-1 text-foreground hover:bg-foreground/5 transition-colors"
+                onClick={createRipple}
               >
                 閱讀
               </Link>
               <Link
                 href={`/books/${book._id}/edit`}
-                className="text-xs border border-[#2C1810]/20 rounded-md px-2.5 py-1 text-[#2C1810] hover:bg-[#2C1810]/5 transition-colors"
+                className="relative overflow-hidden text-xs border border-foreground/20 rounded-md px-2.5 py-1 text-foreground hover:bg-foreground/5 transition-colors"
+                onClick={createRipple}
               >
                 編輯 ✎
               </Link>
@@ -158,8 +161,8 @@ function BookCard({
         </div>
       </div>
       {role === 'owner' && editorName && (
-        <div className="border-t border-[#2C1810]/8 mt-2 pt-2 flex items-center justify-between">
-          <span className="text-xs text-[#2C1810]/55">✎ {editorName}（編輯中）</span>
+        <div className="border-t border-foreground/8 mt-2 pt-2 flex items-center justify-between">
+          <span className="text-xs text-foreground/55">✎ {editorName}（編輯中）</span>
           <div className="flex items-center gap-2">
             {removeError && <span className="text-xs text-red-500">{removeError}</span>}
             <button
@@ -215,7 +218,7 @@ function SearchResultsView({ query }: { query: string }) {
 
   if (items.length === 0 && !showLoading) {
     return (
-      <p className="py-20 text-center text-sm text-[#2C1810]/40">
+      <p className="py-20 text-center text-sm text-foreground/40">
         找不到符合「{query}」的記憶書。
       </p>
     )
@@ -235,7 +238,7 @@ function SearchResultsView({ query }: { query: string }) {
       </ul>
       <div ref={sentinelRef} className="h-10" aria-hidden />
       {showLoading && (
-        <p className="py-4 text-center text-sm text-[#2C1810]/40">載入中…</p>
+        <p className="py-4 text-center text-sm text-foreground/40">載入中…</p>
       )}
     </>
   )
@@ -313,7 +316,7 @@ function BookListView({
 
   if (displayBooks.length === 0 && !showLoading) {
     return (
-      <p className="py-20 text-center text-sm text-[#2C1810]/40">
+      <p className="py-20 text-center text-sm text-foreground/40">
         {isNewest && status === 'all'
           ? '還沒有記憶書，點「+ 新增記憶書」開始建立。'
           : '沒有符合條件的記憶書。'}
@@ -337,7 +340,7 @@ function BookListView({
       {isNewest && <div ref={sentinelRef} className="h-10" aria-hidden />}
 
       {showLoading && (
-        <p className="py-4 text-center text-sm text-[#2C1810]/40">載入中…</p>
+        <p className="py-4 text-center text-sm text-foreground/40">載入中…</p>
       )}
     </>
   )
@@ -369,8 +372,8 @@ export function DashboardBooksClient({ initialBooks, initialHasMore, debouncedSe
               <button
                 key={s}
                 onClick={() => setSort(s)}
-                className={`rounded-md px-2.5 py-1 transition-colors ${
-                  sort === s ? 'bg-[#2C1810] text-white' : 'text-[#2C1810]/50 hover:text-[#2C1810]'
+                className={`rounded-md px-2.5 py-1 transition-[color,background-color,transform] duration-150 active:scale-95 ${
+                  sort === s ? 'bg-primary text-white' : 'text-foreground/50 hover:text-foreground'
                 }`}
               >
                 {sortLabels[s]}
@@ -382,8 +385,8 @@ export function DashboardBooksClient({ initialBooks, initialHasMore, debouncedSe
               <button
                 key={st}
                 onClick={() => setStatus(st)}
-                className={`rounded-md px-2.5 py-1 transition-colors ${
-                  status === st ? 'bg-[#2C1810] text-white' : 'text-[#2C1810]/50 hover:text-[#2C1810]'
+                className={`rounded-md px-2.5 py-1 transition-[color,background-color,transform] duration-150 active:scale-95 ${
+                  status === st ? 'bg-primary text-white' : 'text-foreground/50 hover:text-foreground'
                 }`}
               >
                 {statusLabels[st]}
@@ -427,7 +430,7 @@ export function EditorBooksClient({
 
   if (filtered.length === 0 && debouncedSearch) {
     return (
-      <p className="py-6 text-center text-sm text-[#2C1810]/40">
+      <p className="py-6 text-center text-sm text-foreground/40">
         找不到符合「{debouncedSearch}」的記憶書。
       </p>
     )
@@ -455,15 +458,15 @@ function ReaderList({ books }: { books: ReaderBookItem[] }) {
         <li key={b._id}>
           <Link
             href={b.href}
-            className="flex items-center justify-between rounded-xl border border-[#2C1810]/10 bg-white px-5 py-4 transition-all hover:border-[#2C1810]/25 hover:shadow-sm"
+            className="flex items-center justify-between rounded-xl border border-foreground/10 bg-white px-5 py-4 transition-all hover:border-foreground/25 hover:shadow-sm"
           >
             <div>
-              <p className="font-medium text-[#2C1810]">{b.title}</p>
+              <p className="font-medium text-foreground">{b.title}</p>
               {b.description && (
-                <p className="mt-0.5 line-clamp-1 text-sm text-[#2C1810]/50">{b.description}</p>
+                <p className="mt-0.5 line-clamp-1 text-sm text-foreground/50">{b.description}</p>
               )}
             </div>
-            <span className="ml-4 text-[#2C1810]/30">
+            <span className="ml-4 text-foreground/30">
               {b.isFullyRead ? <CheckCircleIcon /> : <CircleIcon />}
             </span>
           </Link>
@@ -501,30 +504,42 @@ export function DashboardShell({
   return (
     <div className="space-y-10">
       {/* Global search input */}
-      <div className="relative">
-        <input
-          type="text"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder="搜尋記憶書標題…"
-          className="w-full rounded-lg border border-[#2C1810]/15 bg-white px-3 py-2 pr-8 text-sm text-[#2C1810] placeholder:text-[#2C1810]/30 focus:border-[#2C1810]/30 focus:outline-none"
-        />
-        {query && (
+      <form onSubmit={(e) => { e.preventDefault(); setDebouncedSearch(query.trim()) }}>
+        <div className="relative">
           <button
-            onClick={() => setQuery('')}
-            className="absolute right-2.5 top-1/2 -translate-y-1/2 text-lg leading-none text-[#2C1810]/30 hover:text-[#2C1810]/60"
-            aria-label="清除搜尋"
+            type="submit"
+            className="absolute left-2.5 top-1/2 -translate-y-1/2 text-foreground/30 hover:text-foreground/60 transition-colors"
+            aria-label="搜尋"
           >
-            ×
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+            </svg>
           </button>
-        )}
-      </div>
+          <input
+            type="text"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="搜尋記憶書標題…"
+            className="w-full rounded-lg border border-foreground/15 bg-white pl-8 py-2 pr-8 text-sm text-foreground placeholder:text-foreground/30 focus:border-foreground/30 focus:outline-none"
+          />
+          {query && (
+            <button
+              type="button"
+              onClick={() => setQuery('')}
+              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-lg leading-none text-foreground/30 hover:text-foreground/60"
+              aria-label="清除搜尋"
+            >
+              ×
+            </button>
+          )}
+        </div>
+      </form>
 
       {/* Owner books section — admin only */}
       {isAdmin && (
         <section>
           <div className="mb-6 flex items-center justify-between">
-            <h2 className="text-xl sm:text-2xl font-semibold text-[#2C1810]">謝謝你，幫我記住</h2>
+            <h2 className="text-xl sm:text-2xl font-semibold text-foreground">謝謝你，幫我記住</h2>
             {createButton}
           </div>
           <DashboardBooksClient
@@ -539,7 +554,7 @@ export function DashboardShell({
       {hasSharedContent && (
         <section>
           {!isAdmin && (
-            <h2 className="mb-6 text-xl sm:text-2xl font-semibold text-[#2C1810]">謝謝你，與我回憶</h2>
+            <h2 className="mb-6 text-xl sm:text-2xl font-semibold text-foreground">謝謝你，與我回憶</h2>
           )}
           {editorBooks.length > 0 && (
             <div className={readerBooks.length > 0 ? 'mb-3' : ''}>

@@ -26,14 +26,14 @@ export function AddPageButton({ bookId }: { bookId: string }) {
       <button
         onClick={() => addPage('carousel')}
         disabled={loading !== null}
-        className="flex-1 rounded-md border border-[#2C1810]/20 py-1.5 text-xs text-[#2C1810] hover:bg-[#2C1810]/5 disabled:opacity-40 transition-colors"
+        className="flex-1 rounded-md border border-foreground/20 py-1.5 text-xs text-foreground hover:bg-foreground/5 disabled:opacity-40 transition-colors"
       >
         {loading === 'carousel' ? '新增中…' : '+ 輪播'}
       </button>
       <button
         onClick={() => addPage('video')}
         disabled={loading !== null}
-        className="flex-1 rounded-md border border-[#2C1810]/20 py-1.5 text-xs text-[#2C1810] hover:bg-[#2C1810]/5 disabled:opacity-40 transition-colors"
+        className="flex-1 rounded-md border border-foreground/20 py-1.5 text-xs text-foreground hover:bg-foreground/5 disabled:opacity-40 transition-colors"
       >
         {loading === 'video' ? '新增中…' : '+ 影片'}
       </button>

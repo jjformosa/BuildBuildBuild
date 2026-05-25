@@ -69,14 +69,14 @@ export default function TagInput({ tags, onAdd, onRemove, disabled }: TagInputPr
           {tags.map((tag) => (
             <span
               key={tag}
-              className="inline-flex items-center gap-1 rounded-full bg-[#2C1810]/8 px-2.5 py-1 text-xs text-[#2C1810]/70"
+              className="inline-flex items-center gap-1 rounded-full bg-foreground/8 px-2.5 py-1 text-xs text-foreground/70"
             >
               {tag}
               {onRemove && (
                 <button
                   type="button"
                   onClick={() => onRemove(tag)}
-                  className="ml-0.5 text-[#2C1810]/40 hover:text-red-400 transition-colors"
+                  className="ml-0.5 text-foreground/40 hover:text-red-400 transition-colors"
                   aria-label={`移除 ${tag}`}
                 >
                   ✕
@@ -96,17 +96,17 @@ export default function TagInput({ tags, onAdd, onRemove, disabled }: TagInputPr
             onFocus={() => input && setShowDropdown(true)}
             disabled={disabled}
             placeholder="新增標籤…"
-            className="w-full rounded-lg border border-[#2C1810]/15 bg-white px-3 py-1.5 text-sm text-[#2C1810] placeholder:text-[#2C1810]/30 focus:border-[#2C1810]/35 focus:outline-none disabled:opacity-50"
+            className="w-full rounded-lg border border-foreground/15 bg-white px-3 py-1.5 text-sm text-foreground placeholder:text-foreground/30 focus:border-foreground/35 focus:outline-none disabled:opacity-50"
           />
           {showDropdown && (loading || suggestions.length > 0) && (
-            <ul className="absolute z-[200] mt-1 w-full rounded-lg border border-[#2C1810]/10 bg-white shadow-md overflow-hidden">
+            <ul className="absolute z-[200] mt-1 w-full rounded-lg border border-foreground/10 bg-white shadow-md overflow-hidden">
               {loading && (
-                <li className="px-3 py-2 text-xs text-[#2C1810]/40">搜尋中…</li>
+                <li className="px-3 py-2 text-xs text-foreground/40">搜尋中…</li>
               )}
               {suggestions.map((s) => {
                 const alreadyAdded = tags.includes(s)
                 return alreadyAdded ? (
-                  <li key={s} className="flex items-center gap-1.5 px-3 py-2 text-sm text-[#2C1810]/30 select-none">
+                  <li key={s} className="flex items-center gap-1.5 px-3 py-2 text-sm text-foreground/30 select-none">
                     <span className="text-xs">✓</span>
                     {s}
                   </li>
@@ -118,7 +118,7 @@ export default function TagInput({ tags, onAdd, onRemove, disabled }: TagInputPr
                         e.preventDefault()
                         handleAdd(s)
                       }}
-                      className="w-full px-3 py-2 text-left text-sm text-[#2C1810]/70 hover:bg-[#2C1810]/5 transition-colors"
+                      className="w-full px-3 py-2 text-left text-sm text-foreground/70 hover:bg-foreground/5 transition-colors"
                     >
                       {s}
                     </button>
@@ -132,7 +132,7 @@ export default function TagInput({ tags, onAdd, onRemove, disabled }: TagInputPr
           type="button"
           onClick={() => handleAdd(input)}
           disabled={disabled || !input.trim()}
-          className="flex-none rounded-lg border border-[#2C1810]/15 bg-white px-2.5 py-1.5 text-sm text-[#2C1810]/50 hover:text-[#2C1810] hover:border-[#2C1810]/35 disabled:opacity-30 transition-colors"
+          className="flex-none rounded-lg border border-foreground/15 bg-white px-2.5 py-1.5 text-sm text-foreground/50 hover:text-foreground hover:border-foreground/35 disabled:opacity-30 transition-colors"
           aria-label="新增標籤"
         >
           ＋

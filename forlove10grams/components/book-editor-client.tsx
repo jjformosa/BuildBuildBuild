@@ -63,32 +63,32 @@ function SortablePageItem({
         transition,
         opacity: isDragging ? 0.4 : 1,
       }}
-      className={`relative group ${isSelected ? 'bg-[#2C1810]/8 border-l-2 border-[#2C1810]/40' : ''}`}
+      className={`relative group ${isSelected ? 'bg-foreground/8 border-l-2 border-foreground/40' : ''}`}
     >
       <div className="flex items-center px-2 py-3 gap-1">
         <span
           ref={setActivatorNodeRef}
           {...attributes}
           {...listeners}
-          className="cursor-grab flex-none text-[#2C1810]/20 hover:text-[#2C1810]/45 select-none px-1 text-xs"
+          className="cursor-grab flex-none text-foreground/20 hover:text-foreground/45 select-none px-1 text-xs"
           title="拖曳排序"
         >
           ⠿
         </span>
         <button onClick={onSelect} className="flex-1 text-left min-w-0">
           <div className="flex items-center gap-1.5">
-            <span className="text-xs text-[#2C1810]/35">{index + 1}</span>
-            <span className="rounded bg-[#2C1810]/8 px-1.5 py-0.5 text-xs text-[#2C1810]/55">
+            <span className="text-xs text-foreground/35">{index + 1}</span>
+            <span className="rounded bg-foreground/8 px-1.5 py-0.5 text-xs text-foreground/55">
               {page.type === 'carousel' ? '輪播' : '影片'}
             </span>
           </div>
           {page.content && (
-            <p className="mt-1 line-clamp-2 text-xs text-[#2C1810]/45 pr-2">{page.content}</p>
+            <p className="mt-1 line-clamp-2 text-xs text-foreground/45 pr-2">{page.content}</p>
           )}
         </button>
         <button
           onClick={(e) => { e.stopPropagation(); onDelete() }}
-          className="flex-none opacity-0 group-hover:opacity-100 text-[#2C1810]/25 hover:text-red-400 transition-opacity text-xs px-1"
+          className="flex-none opacity-0 group-hover:opacity-100 text-foreground/25 hover:text-red-400 transition-opacity text-xs px-1"
           title="刪除頁面"
         >
           ✕
@@ -252,15 +252,15 @@ export function BookEditorClient({
   return (
     <div className="flex flex-1 overflow-hidden">
       {/* Sidebar — desktop only */}
-      <aside className="hidden md:flex w-52 flex-none flex-col overflow-y-auto border-r border-[#2C1810]/10">
-        <div className="flex-none border-b border-[#2C1810]/10 px-4 py-3">
-          <span className="text-xs font-medium uppercase tracking-wide text-[#2C1810]/50">
+      <aside className="hidden md:flex w-52 flex-none flex-col overflow-y-auto border-r border-foreground/10">
+        <div className="flex-none border-b border-foreground/10 px-4 py-3">
+          <span className="text-xs font-medium uppercase tracking-wide text-foreground/50">
             頁面 {pages.length > 0 && `(${pages.length})`}
           </span>
         </div>
 
         {pages.length === 0 ? (
-          <p className="px-4 py-8 text-center text-xs text-[#2C1810]/35">尚無頁面</p>
+          <p className="px-4 py-8 text-center text-xs text-foreground/35">尚無頁面</p>
         ) : (
           <DndContext
             sensors={sensors}
@@ -271,7 +271,7 @@ export function BookEditorClient({
               items={pages.map((p) => p._id)}
               strategy={verticalListSortingStrategy}
             >
-              <ul className="divide-y divide-[#2C1810]/5">
+              <ul className="divide-y divide-foreground/5">
                 {pages.map((page, i) => (
                   <SortablePageItem
                     key={page._id}
@@ -287,9 +287,9 @@ export function BookEditorClient({
           </DndContext>
         )}
 
-        <div className="mt-auto border-t border-[#2C1810]/10 p-3">
+        <div className="mt-auto border-t border-foreground/10 p-3">
           {pages.length >= PAGE_LIMIT ? (
-            <p className="text-center text-xs text-[#2C1810]/50 py-1">
+            <p className="text-center text-xs text-foreground/50 py-1">
               已達頁數上限（{PAGE_LIMIT} 頁）
             </p>
           ) : (
@@ -299,18 +299,18 @@ export function BookEditorClient({
                   key={type}
                   onClick={() => handleAddPage(type)}
                   disabled={addingType !== null}
-                  className="flex-1 rounded-md border border-[#2C1810]/20 py-1.5 text-xs text-[#2C1810] hover:bg-[#2C1810]/5 disabled:opacity-40 transition-colors"
+                  className="flex-1 rounded-md border border-foreground/20 py-1.5 text-xs text-foreground hover:bg-foreground/5 disabled:opacity-40 transition-colors"
                 >
                   {addingType === type ? '新增中…' : type === 'carousel' ? '+ 輪播' : '+ 影片'}
                 </button>
               ))}
             </div>
           )}
-          <div className="mt-3 border-t border-[#2C1810]/8 pt-3">
+          <div className="mt-3 border-t border-foreground/8 pt-3">
             <button
               type="button"
               onClick={() => setShowTagModal(true)}
-              className="w-full rounded-md border border-[#2C1810]/20 py-1.5 text-xs text-[#2C1810] hover:bg-[#2C1810]/5 transition-colors"
+              className="w-full rounded-md border border-foreground/20 py-1.5 text-xs text-foreground hover:bg-foreground/5 transition-colors"
             >
               標籤{tags.length > 0 ? ` (${tags.length})` : ''}
             </button>
@@ -329,30 +329,34 @@ export function BookEditorClient({
       {/* Editor area */}
       <section className="flex flex-1 flex-col overflow-hidden">
         {/* Mobile page selector — horizontal scrollable strip, hidden on desktop */}
-        <div className="flex md:hidden flex-none items-center overflow-x-auto border-b border-[#2C1810]/10 gap-1 px-2 py-1.5">
-          {pages.map((page, i) => (
-            <button
-              key={page._id}
-              onClick={() => selectPage(page._id)}
-              className={`flex-none rounded px-2.5 py-1 text-xs whitespace-nowrap transition-colors ${
-                selectedId === page._id
-                  ? 'bg-[#2C1810]/10 text-[#2C1810]'
-                  : 'text-[#2C1810]/50 hover:bg-[#2C1810]/5'
-              }`}
-            >
-              {i + 1}. {page.type === 'carousel' ? '輪播' : '影片'}
-            </button>
-          ))}
-          <div className="flex flex-none gap-1 ml-auto pl-1">
+        <div className="flex md:hidden flex-none items-center border-b border-foreground/10">
+          {/* Scrollable page tabs */}
+          <div className="flex flex-1 overflow-x-auto gap-1 px-2 py-1.5">
+            {pages.map((page, i) => (
+              <button
+                key={page._id}
+                onClick={() => selectPage(page._id)}
+                className={`flex-none rounded px-2.5 py-1 text-xs whitespace-nowrap transition-colors ${
+                  selectedId === page._id
+                    ? 'bg-foreground/10 text-foreground'
+                    : 'text-foreground/50 hover:bg-foreground/5'
+                }`}
+              >
+                {i + 1}. {page.type === 'carousel' ? '輪播' : '影片'}
+              </button>
+            ))}
+          </div>
+          {/* Add-page buttons — always visible on the right */}
+          <div className="flex flex-none gap-1 border-l border-foreground/10 px-2 py-1.5">
             {pages.length >= PAGE_LIMIT ? (
-              <span className="text-xs text-[#2C1810]/40 px-2 py-1">已達上限</span>
+              <span className="text-xs text-foreground/40 px-2 py-1">已達上限</span>
             ) : (
               (['carousel', 'video'] as const).map((type) => (
                 <button
                   key={type}
                   onClick={() => handleAddPage(type)}
                   disabled={addingType !== null}
-                  className="flex-none rounded border border-[#2C1810]/20 px-2 py-1 text-xs whitespace-nowrap text-[#2C1810]/60 hover:bg-[#2C1810]/5 disabled:opacity-40 transition-colors"
+                  className="flex-none rounded border border-foreground/20 px-2 py-1 text-xs whitespace-nowrap text-foreground/60 hover:bg-foreground/5 disabled:opacity-40 transition-colors"
                 >
                   {addingType === type ? '…' : type === 'carousel' ? '+ 輪播' : '+ 影片'}
                 </button>
@@ -363,17 +367,17 @@ export function BookEditorClient({
 
         {selectedPage ? (
           <>
-            <div className="flex-none border-b border-[#2C1810]/10 px-6 py-3 flex items-center justify-between">
-              <span className="rounded bg-[#2C1810]/8 px-2 py-0.5 text-xs text-[#2C1810]/60">
+            <div className="flex-none border-b border-foreground/10 px-6 py-3 flex items-center justify-between">
+              <span className="rounded bg-foreground/8 px-2 py-0.5 text-xs text-foreground/60">
                 {selectedPage.type === 'carousel' ? '輪播頁' : '影片頁'}
               </span>
-              <span className="text-xs text-[#2C1810]/35">
+              <span className="text-xs text-foreground/35">
                 {saveState === 'saving' ? '儲存中…' : saveState === 'unsaved' ? '未儲存' : '已儲存'}
               </span>
             </div>
             <div className="flex-1 overflow-auto p-6 space-y-6">
               <div data-color-mode="light">
-                <p className="mb-2 text-xs text-[#2C1810]/50">說明文字（Markdown）</p>
+                <p className="mb-2 text-xs text-foreground/50">說明文字（Markdown）</p>
                 <MDEditor
                   value={selectedPage.content ?? ''}
                   onChange={handleContentChange}
@@ -382,7 +386,7 @@ export function BookEditorClient({
                 />
               </div>
               <div>
-                <p className="mb-2 text-xs text-[#2C1810]/50">
+                <p className="mb-2 text-xs text-foreground/50">
                   {selectedPage.type === 'carousel' ? '圖片（可多張）' : '影片'}
                 </p>
                 <MediaUploader
@@ -397,7 +401,7 @@ export function BookEditorClient({
           </>
         ) : (
           <div className="flex flex-1 items-center justify-center">
-            <p className="text-sm text-[#2C1810]/30">請選擇或新增頁面以開始編輯</p>
+            <p className="text-sm text-foreground/30">請選擇或新增頁面以開始編輯</p>
           </div>
         )}
       </section>

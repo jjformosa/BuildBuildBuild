@@ -3,9 +3,8 @@
 import { useState, useEffect, useCallback } from 'react'
 import Image from 'next/image'
 import useEmblaCarousel from 'embla-carousel-react'
-import Lightbox from 'yet-another-react-lightbox'
-import 'yet-another-react-lightbox/styles.css'
 import type { EmblaCarouselType } from 'embla-carousel'
+import { FullscreenGallery } from '@/components/fullscreen-gallery'
 
 type Props = { urls: string[] }
 
@@ -51,7 +50,7 @@ export function Carousel({ urls }: Props) {
                 <div key={i} className="flex-none w-full">
                   <div
                     className="relative w-full"
-                    style={{ paddingBottom: '75%', background: '#FAF7F2' }}
+                    style={{ paddingBottom: '75%', background: 'var(--background)' }}
                   >
                     <ImgSlide
                       src={url}
@@ -69,7 +68,7 @@ export function Carousel({ urls }: Props) {
               {canPrev && (
                 <button
                   onClick={() => emblaApi?.scrollPrev()}
-                  className="absolute left-2 top-1/2 -translate-y-1/2 hidden md:flex h-8 w-8 items-center justify-center rounded-full bg-white/85 hover:bg-white shadow text-[#2C1810] text-xl leading-none"
+                  className="absolute left-2 top-1/2 -translate-y-1/2 hidden md:flex h-8 w-8 items-center justify-center rounded-full bg-white/85 hover:bg-white shadow text-foreground text-xl leading-none"
                 >
                   ‹
                 </button>
@@ -77,7 +76,7 @@ export function Carousel({ urls }: Props) {
               {canNext && (
                 <button
                   onClick={() => emblaApi?.scrollNext()}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 hidden md:flex h-8 w-8 items-center justify-center rounded-full bg-white/85 hover:bg-white shadow text-[#2C1810] text-xl leading-none"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 hidden md:flex h-8 w-8 items-center justify-center rounded-full bg-white/85 hover:bg-white shadow text-foreground text-xl leading-none"
                 >
                   ›
                 </button>
@@ -94,7 +93,7 @@ export function Carousel({ urls }: Props) {
                 key={i}
                 onClick={() => emblaApi?.scrollTo(i)}
                 className={`h-1.5 rounded-full transition-all ${
-                  i === selectedIndex ? 'w-4 bg-[#2C1810]/55' : 'w-1.5 bg-[#2C1810]/20'
+                  i === selectedIndex ? 'w-4 bg-foreground/55' : 'w-1.5 bg-foreground/20'
                 }`}
               />
             ))}
@@ -102,12 +101,13 @@ export function Carousel({ urls }: Props) {
         )}
       </div>
 
-      <Lightbox
-        open={lightboxOpen}
-        close={() => setLightboxOpen(false)}
-        index={lightboxIndex}
-        slides={urls.map((src) => ({ src }))}
-      />
+      {lightboxOpen && (
+        <FullscreenGallery
+          urls={urls}
+          initialIndex={lightboxIndex}
+          onClose={() => setLightboxOpen(false)}
+        />
+      )}
     </>
   )
 }
@@ -118,10 +118,10 @@ function ImgSlide({ src, onClick }: { src: string; onClick: () => void }) {
   return (
     <>
       {status === 'loading' && (
-        <div className="absolute inset-0 animate-pulse bg-[#2C1810]/5" />
+        <div className="absolute inset-0 animate-pulse bg-foreground/5" />
       )}
       {status === 'error' ? (
-        <div className="absolute inset-0 flex items-center justify-center bg-[#2C1810]/5">
+        <div className="absolute inset-0 flex items-center justify-center bg-foreground/5">
           <BrokenImageIcon />
         </div>
       ) : (
@@ -144,7 +144,7 @@ function ImgSlide({ src, onClick }: { src: string; onClick: () => void }) {
 function BrokenImageIcon() {
   return (
     <svg
-      className="h-10 w-10 text-[#2C1810]/20"
+      className="h-10 w-10 text-foreground/20"
       fill="none"
       viewBox="0 0 24 24"
       stroke="currentColor"
