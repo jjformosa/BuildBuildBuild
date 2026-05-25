@@ -4,12 +4,12 @@ import logo from '@/public/logo.png'
 
 export function BlockedPage({ message }: { message: string }) {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center gap-6 bg-[#FAF7F2] px-6">
+    <main className="flex min-h-screen flex-col items-center justify-center gap-6 bg-background px-6">
       <Image src={logo} alt="For Love 10 Grams" width={88} height={88} className="opacity-90" />
-      <p className="text-sm text-[#2C1810]/55 text-center">{message}</p>
+      <p className="text-sm text-foreground/55 text-center">{message}</p>
       <Link
         href="/"
-        className="text-xs text-[#2C1810]/35 hover:text-[#2C1810]/60 transition-colors"
+        className="text-xs text-foreground/35 hover:text-foreground/60 transition-colors"
       >
         回首頁
       </Link>

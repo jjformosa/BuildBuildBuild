@@ -42,7 +42,7 @@ export function CreateBookButton() {
     <>
       <button
         onClick={() => setOpen(true)}
-        className="rounded-md bg-[#2C1810] px-4 py-2 text-sm font-medium text-[#FAF7F2] hover:bg-[#2C1810]/90 transition-colors"
+        className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors"
       >
         + 新增記憶書
       </button>
@@ -53,15 +53,15 @@ export function CreateBookButton() {
           onClick={handleClose}
         >
           <div
-            className="w-full max-w-sm rounded-xl bg-[#FAF7F2] p-6 shadow-lg"
+            className="w-full max-w-sm rounded-xl bg-background p-6 shadow-lg"
             onClick={(e) => e.stopPropagation()}
           >
-            <h2 className="mb-4 text-lg font-semibold text-[#2C1810]">新增記憶書</h2>
+            <h2 className="mb-4 text-lg font-semibold text-foreground">新增記憶書</h2>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
                 <label
                   htmlFor="book-title"
-                  className="mb-1 block text-sm text-[#2C1810]/70"
+                  className="mb-1 block text-sm text-foreground/70"
                 >
                   標題
                 </label>
@@ -72,7 +72,7 @@ export function CreateBookButton() {
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   placeholder="我們的回憶"
-                  className="w-full rounded-md border border-[#2C1810]/20 bg-white px-3 py-2 text-sm text-[#2C1810] placeholder:text-[#2C1810]/40 focus:outline-none focus:ring-2 focus:ring-[#2C1810]/30"
+                  className="w-full rounded-md border border-foreground/20 bg-white px-3 py-2 text-sm text-foreground placeholder:text-foreground/40 focus:outline-none focus:ring-2 focus:ring-foreground/30"
                 />
               </div>
 
@@ -84,14 +84,14 @@ export function CreateBookButton() {
                 <button
                   type="button"
                   onClick={handleClose}
-                  className="flex-1 rounded-md border border-[#2C1810]/20 py-2 text-sm text-[#2C1810] hover:bg-[#2C1810]/5 transition-colors"
+                  className="flex-1 rounded-md border border-foreground/20 py-2 text-sm text-foreground hover:bg-foreground/5 transition-colors"
                 >
                   取消
                 </button>
                 <button
                   type="submit"
                   disabled={status === 'loading'}
-                  className="flex-1 rounded-md bg-[#2C1810] py-2 text-sm font-medium text-[#FAF7F2] disabled:opacity-50 transition-opacity"
+                  className="flex-1 rounded-md bg-primary py-2 text-sm font-medium text-primary-foreground disabled:opacity-50 transition-opacity"
                 >
                   {status === 'loading' ? '建立中…' : '建立'}
                 </button>

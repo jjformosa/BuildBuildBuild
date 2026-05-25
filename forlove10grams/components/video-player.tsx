@@ -57,12 +57,12 @@ export function VideoPlayer({ url, transcodingStatus }: Props) {
   if (transcodingStatus === 'pending' || transcodingStatus === 'processing') {
     return (
       <div
-        className="relative w-full bg-[#2C1810]/5 flex items-center justify-center"
+        className="relative w-full bg-foreground/5 flex items-center justify-center"
         style={{ paddingBottom: '56.25%' }}
       >
         <div className="absolute inset-0 flex flex-col items-center justify-center gap-2">
-          <span className="h-6 w-6 rounded-full border-2 border-[#2C1810]/30 border-t-[#2C1810] animate-spin" />
-          <span className="text-xs text-[#2C1810]/40">轉檔中…</span>
+          <span className="h-6 w-6 rounded-full border-2 border-foreground/30 border-t-foreground animate-spin" />
+          <span className="text-xs text-foreground/40">轉檔中…</span>
         </div>
       </div>
     )
@@ -71,7 +71,7 @@ export function VideoPlayer({ url, transcodingStatus }: Props) {
   if (transcodingStatus === 'error') {
     return (
       <div
-        className="relative w-full bg-[#2C1810]/5"
+        className="relative w-full bg-foreground/5"
         style={{ paddingBottom: '56.25%' }}
       >
         <div className="absolute inset-0 flex items-center justify-center">
@@ -87,9 +87,9 @@ export function VideoPlayer({ url, transcodingStatus }: Props) {
       style={{ paddingBottom: '56.25%' }}
     >
       {error ? (
-        <div className="absolute inset-0 flex items-center justify-center bg-[#2C1810]/5">
+        <div className="absolute inset-0 flex items-center justify-center bg-foreground/5">
           <svg
-            className="h-10 w-10 text-[#2C1810]/20"
+            className="h-10 w-10 text-foreground/20"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"

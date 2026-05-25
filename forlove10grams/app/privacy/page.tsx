@@ -9,11 +9,11 @@ export const metadata: Metadata = {
 
 export default function PrivacyPage() {
   return (
-    <main className="min-h-screen bg-[#FAF7F2] py-16 px-6">
-      <article className="mx-auto max-w-2xl text-[#2C1810]">
+    <main className="min-h-screen bg-background py-16 px-6">
+      <article className="mx-auto max-w-2xl text-foreground">
         <Link
           href="/login"
-          className="text-sm text-[#2C1810]/50 hover:text-[#2C1810] transition-colors mb-8 inline-block"
+          className="text-sm text-foreground/50 hover:text-foreground transition-colors mb-8 inline-block"
         >
           ← 返回
         </Link>
@@ -22,9 +22,9 @@ export default function PrivacyPage() {
           <Image src={logo} alt="For Love 10 Grams" width={40} height={40} />
           <h1 className="text-2xl font-semibold tracking-tight">隱私權政策</h1>
         </div>
-        <p className="text-sm text-[#2C1810]/50 mb-10">最後更新：2026 年 5 月</p>
+        <p className="text-sm text-foreground/50 mb-10">最後更新：2026 年 5 月</p>
 
-        <p className="text-sm leading-relaxed mb-10 text-[#2C1810]/80">
+        <p className="text-sm leading-relaxed mb-10 text-foreground/80">
           Film Diary（以下簡稱「本服務」）是一個私人記憶書工具，供管理者與受邀朋友共同使用。
           本政策說明我們如何蒐集、使用及保護您的個人資料。
         </p>
@@ -187,7 +187,7 @@ export default function PrivacyPage() {
           </p>
         </Section>
 
-        <p className="text-xs text-[#2C1810]/40 mt-12 border-t border-[#2C1810]/10 pt-6">
+        <p className="text-xs text-foreground/40 mt-12 border-t border-foreground/10 pt-6">
           本政策若有重大異動，將於本頁面更新內容並標示日期。
         </p>
       </article>
@@ -198,8 +198,8 @@ export default function PrivacyPage() {
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <section className="mb-10">
-      <h2 className="text-base font-semibold mb-4 pb-2 border-b border-[#2C1810]/10">{title}</h2>
-      <div className="text-sm leading-relaxed text-[#2C1810]/80 space-y-3 [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:space-y-1 [&_table]:w-full [&_table]:text-left [&_th]:font-medium [&_th]:text-[#2C1810] [&_th]:py-2 [&_td]:py-2 [&_td]:border-t [&_td]:border-[#2C1810]/10 [&_a]:underline [&_a]:underline-offset-2 [&_code]:bg-[#2C1810]/5 [&_code]:px-1 [&_code]:rounded [&_code]:text-xs [&_code]:font-mono">
+      <h2 className="text-base font-semibold mb-4 pb-2 border-b border-foreground/10">{title}</h2>
+      <div className="text-sm leading-relaxed text-foreground/80 space-y-3 [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:space-y-1 [&_table]:w-full [&_table]:text-left [&_th]:font-medium [&_th]:text-foreground [&_th]:py-2 [&_td]:py-2 [&_td]:border-t [&_td]:border-foreground/10 [&_a]:underline [&_a]:underline-offset-2 [&_code]:bg-foreground/5 [&_code]:px-1 [&_code]:rounded [&_code]:text-xs [&_code]:font-mono">
         {children}
       </div>
     </section>
@@ -209,7 +209,7 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 function Subsection({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div className="mb-4">
-      <h3 className="font-medium text-[#2C1810] mb-2">{title}</h3>
+      <h3 className="font-medium text-foreground mb-2">{title}</h3>
       <div className="space-y-2">{children}</div>
     </div>
   )

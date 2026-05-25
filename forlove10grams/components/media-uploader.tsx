@@ -170,12 +170,12 @@ export function MediaUploader({ bookId, pageId, fileType, mediaUrls, onUrlsChang
                   alt=""
                   width={80}
                   height={80}
-                  className="rounded object-cover border border-[#2C1810]/10"
+                  className="rounded object-cover border border-foreground/10"
                 />
               ) : (
                 <video
                   src={url}
-                  className="h-20 w-32 rounded object-cover border border-[#2C1810]/10"
+                  className="h-20 w-32 rounded object-cover border border-foreground/10"
                   muted
                 />
               )}
@@ -194,12 +194,12 @@ export function MediaUploader({ bookId, pageId, fileType, mediaUrls, onUrlsChang
       {(fileType === 'carousel' || mediaUrls.length === 0) && (
         <div>
           {isTranscoding ? (
-            <div className="flex items-center gap-2 text-xs text-[#2C1810]/50">
-              <span className="h-3 w-3 rounded-full border-2 border-[#2C1810]/30 border-t-[#2C1810] animate-spin" />
+            <div className="flex items-center gap-2 text-xs text-foreground/50">
+              <span className="h-3 w-3 rounded-full border-2 border-foreground/30 border-t-foreground animate-spin" />
               轉檔中，請稍候…
             </div>
           ) : atImageLimit ? (
-            <p className="text-xs text-[#2C1810]/50">已達圖片上限（{IMAGE_LIMIT} 張）</p>
+            <p className="text-xs text-foreground/50">已達圖片上限（{IMAGE_LIMIT} 張）</p>
           ) : (
             <>
               <input
@@ -213,7 +213,7 @@ export function MediaUploader({ bookId, pageId, fileType, mediaUrls, onUrlsChang
               <button
                 onClick={() => inputRef.current?.click()}
                 disabled={progress !== null}
-                className="rounded-md border border-[#2C1810]/20 px-3 py-1.5 text-xs text-[#2C1810] hover:bg-[#2C1810]/5 disabled:opacity-40 transition-colors"
+                className="rounded-md border border-foreground/20 px-3 py-1.5 text-xs text-foreground hover:bg-foreground/5 disabled:opacity-40 transition-colors"
               >
                 {progress !== null ? `上傳中 ${progress}%` : fileType === 'carousel' ? '+ 新增圖片' : '+ 上傳影片'}
               </button>
@@ -222,9 +222,9 @@ export function MediaUploader({ bookId, pageId, fileType, mediaUrls, onUrlsChang
 
           {/* Progress bar */}
           {progress !== null && (
-            <div className="mt-2 h-1.5 w-full rounded-full bg-[#2C1810]/10">
+            <div className="mt-2 h-1.5 w-full rounded-full bg-foreground/10">
               <div
-                className="h-1.5 rounded-full bg-[#2C1810]/50 transition-all"
+                className="h-1.5 rounded-full bg-foreground/50 transition-all"
                 style={{ width: `${progress}%` }}
               />
             </div>

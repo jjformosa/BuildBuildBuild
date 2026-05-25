@@ -41,7 +41,7 @@ export function ShareButton({ bookId }: { bookId: string }) {
       onClick={handleShare}
       disabled={!isLoaded || status === 'loading'}
       title={label}
-      className="flex items-center gap-1.5 rounded-md border border-[#2C1810]/20 px-2.5 py-1.5 text-sm text-[#2C1810] hover:bg-[#2C1810]/5 disabled:opacity-50 transition-colors"
+      className="flex items-center gap-1.5 rounded-md border border-foreground/20 px-2.5 py-1.5 text-sm text-foreground hover:bg-foreground/5 disabled:opacity-50 transition-colors"
     >
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
         <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/>

@@ -66,7 +66,7 @@ function LikeButton({ bookId, initialHasLiked }: { bookId: string; initialHasLik
     <button
       onClick={toggle}
       disabled={pending}
-      className="flex flex-col items-center gap-3 text-[#2C1810]/50 hover:text-[#A0826D] transition-colors disabled:opacity-40"
+      className="flex flex-col items-center gap-3 text-foreground/50 hover:text-gold transition-colors disabled:opacity-40"
     >
       <span className="text-4xl leading-none">{liked ? '❤️' : '🤍'}</span>
       <span className="text-xs tracking-wide">
@@ -120,7 +120,7 @@ export function ReadPageClient({ bookId, bookTitle, initialPages, totalCount, vi
   }))
 
   return (
-    <div className="flex h-screen bg-[#FAF7F2]">
+    <div className="flex h-screen bg-background">
       <Toc
         pages={tocPages}
         readPageIds={readPageIds}
@@ -132,7 +132,7 @@ export function ReadPageClient({ bookId, bookTitle, initialPages, totalCount, vi
         <div className="mx-auto max-w-2xl px-4 py-8 sm:py-10">
           <header className="mb-10 sm:mb-12 text-center flex flex-col items-center gap-3">
             <Image src={logo} alt="" aria-hidden width={48} height={48} className="opacity-80" />
-            <h1 className="text-xl sm:text-2xl font-semibold tracking-tight text-[#2C1810]">
+            <h1 className="text-xl sm:text-2xl font-semibold tracking-tight text-foreground">
               {bookTitle}
             </h1>
           </header>
@@ -156,7 +156,7 @@ export function ReadPageClient({ bookId, bookTitle, initialPages, totalCount, vi
                     ))}
 
                   {page.content && (
-                    <div className="mt-6 text-sm leading-relaxed text-[#2C1810]/80 [&_blockquote]:border-l-2 [&_blockquote]:border-[#2C1810]/20 [&_blockquote]:pl-3 [&_blockquote]:italic [&_h1]:mb-1 [&_h1]:text-xl [&_h1]:font-semibold [&_h1]:text-[#2C1810] [&_h2]:mb-1 [&_h2]:text-lg [&_h2]:font-semibold [&_h3]:font-medium [&_ol]:mt-2 [&_ol]:list-decimal [&_ol]:pl-5 [&_p]:mt-3 [&_strong]:font-semibold [&_ul]:mt-2 [&_ul]:list-disc [&_ul]:pl-5">
+                    <div className="mt-6 text-sm leading-relaxed text-foreground/80 [&_blockquote]:border-l-2 [&_blockquote]:border-foreground/20 [&_blockquote]:pl-3 [&_blockquote]:italic [&_h1]:mb-1 [&_h1]:text-xl [&_h1]:font-semibold [&_h1]:text-foreground [&_h2]:mb-1 [&_h2]:text-lg [&_h2]:font-semibold [&_h3]:font-medium [&_ol]:mt-2 [&_ol]:list-decimal [&_ol]:pl-5 [&_p]:mt-3 [&_strong]:font-semibold [&_ul]:mt-2 [&_ul]:list-disc [&_ul]:pl-5">
                       <ReactMarkdown remarkPlugins={[remarkGfm]}>
                         {resolveSlots(page.content, viewerNickname, viewerMyNickname)}
                       </ReactMarkdown>
@@ -166,9 +166,9 @@ export function ReadPageClient({ bookId, bookTitle, initialPages, totalCount, vi
 
                 {index < pages.length - 1 && (
                   <div aria-hidden className="flex items-center justify-center gap-2 py-8">
-                    <span className="block h-1 w-1 rounded-full bg-[#A0826D]/50" />
-                    <span className="block h-1 w-1 rounded-full bg-[#A0826D]/50" />
-                    <span className="block h-1 w-1 rounded-full bg-[#A0826D]/50" />
+                    <span className="block h-1 w-1 rounded-full bg-gold/50" />
+                    <span className="block h-1 w-1 rounded-full bg-gold/50" />
+                    <span className="block h-1 w-1 rounded-full bg-gold/50" />
                   </div>
                 )}
               </div>

@@ -112,11 +112,11 @@ export default async function DashboardPage() {
   const hasAnyBook = isAdmin || editorBooks.length > 0 || readerBooks.length > 0
 
   return (
-    <main className="min-h-screen bg-[#FAF7F2]">
-      <header className="flex items-center justify-between border-b border-[#2C1810]/10 px-4 sm:px-6 py-4">
+    <main className="min-h-screen bg-background">
+      <header className="flex items-center justify-between border-b border-foreground/10 px-4 sm:px-6 py-4">
         <Image src={logo} alt="For Love 10 Grams" width={36} height={36} />
         <div className="flex items-center gap-2 sm:gap-4">
-          <span className="hidden sm:inline text-sm text-[#2C1810]/60">{session?.user?.email}</span>
+          <span className="hidden sm:inline text-sm text-foreground/60">{session?.user?.email}</span>
           <form
             action={async () => {
               'use server'
@@ -125,7 +125,7 @@ export default async function DashboardPage() {
           >
             <button
               type="submit"
-              className="rounded-md border border-[#2C1810]/20 px-3 py-1.5 text-sm text-[#2C1810] hover:bg-[#2C1810]/5 transition-colors"
+              className="rounded-md border border-foreground/20 px-3 py-1.5 text-sm text-foreground hover:bg-foreground/5 transition-colors"
             >
               登出
             </button>
@@ -144,7 +144,7 @@ export default async function DashboardPage() {
             createButton={<CreateBookButton />}
           />
         ) : (
-          <p className="py-20 text-center text-sm text-[#2C1810]/40">
+          <p className="py-20 text-center text-sm text-foreground/40">
             尚未有任何相關的記憶書。
           </p>
         )}

@@ -86,7 +86,7 @@ export function ShareLinkManager({ bookId }: { bookId: string }) {
   }
 
   if (share === null) {
-    return <p className="text-sm text-[#2C1810]/50">載入中…</p>
+    return <p className="text-sm text-foreground/50">載入中…</p>
   }
 
   const isExpired = !!share.expiresAt && new Date(share.expiresAt) < new Date()
@@ -96,7 +96,7 @@ export function ShareLinkManager({ bookId }: { bookId: string }) {
 
   return (
     <div className="space-y-3">
-      <h3 className="text-sm font-semibold text-[#2C1810]">分享連結</h3>
+      <h3 className="text-sm font-semibold text-foreground">分享連結</h3>
 
       {error && <p className="text-xs text-red-600">{error}</p>}
 
@@ -106,25 +106,25 @@ export function ShareLinkManager({ bookId }: { bookId: string }) {
             <input
               readOnly
               value={share.shareUrl}
-              className="flex-1 truncate rounded border border-[#2C1810]/20 bg-white px-2 py-1 text-xs text-[#2C1810]"
+              className="flex-1 truncate rounded border border-foreground/20 bg-white px-2 py-1 text-xs text-foreground"
             />
             <button
               onClick={copyUrl}
-              className="rounded border border-[#2C1810]/20 px-2 py-1 text-xs text-[#2C1810] hover:bg-[#2C1810]/5"
+              className="rounded border border-foreground/20 px-2 py-1 text-xs text-foreground hover:bg-foreground/5"
             >
               {copied ? '✓ 已複製' : '複製'}
             </button>
           </div>
           {share.expiresAt ? (
-            <p className="text-xs text-[#2C1810]/50">{daysLeft} 天後到期</p>
+            <p className="text-xs text-foreground/50">{daysLeft} 天後到期</p>
           ) : (
-            <p className="text-xs text-[#2C1810]/50">永久有效</p>
+            <p className="text-xs text-foreground/50">永久有效</p>
           )}
           <div className="flex gap-2">
             <button
               onClick={handleExtend}
               disabled={actionLoading}
-              className="rounded border border-[#2C1810]/20 px-2 py-1 text-xs text-[#2C1810] hover:bg-[#2C1810]/5 disabled:opacity-50"
+              className="rounded border border-foreground/20 px-2 py-1 text-xs text-foreground hover:bg-foreground/5 disabled:opacity-50"
             >
               延長七天
             </button>
@@ -144,7 +144,7 @@ export function ShareLinkManager({ bookId }: { bookId: string }) {
             <button
               onClick={handleExtend}
               disabled={actionLoading}
-              className="rounded border border-[#2C1810]/20 px-2 py-1 text-xs text-[#2C1810] hover:bg-[#2C1810]/5 disabled:opacity-50"
+              className="rounded border border-foreground/20 px-2 py-1 text-xs text-foreground hover:bg-foreground/5 disabled:opacity-50"
             >
               延長七天
             </button>
@@ -158,7 +158,7 @@ export function ShareLinkManager({ bookId }: { bookId: string }) {
           </div>
         </div>
       ) : (
-        <p className="text-xs text-[#2C1810]/50">目前沒有分享連結</p>
+        <p className="text-xs text-foreground/50">目前沒有分享連結</p>
       )}
     </div>
   )

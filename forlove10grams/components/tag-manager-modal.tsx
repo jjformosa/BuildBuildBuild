@@ -50,18 +50,18 @@ export default function TagManagerModal({ tags, onAdd, onRemove, onClose }: TagM
         onClick={(e) => e.stopPropagation()}
       >
         <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-sm font-medium text-[#2C1810]">標籤管理</h2>
+          <h2 className="text-sm font-medium text-foreground">標籤管理</h2>
           <button
             type="button"
             onClick={onClose}
-            className="text-[#2C1810]/30 hover:text-[#2C1810]/60 transition-colors text-lg leading-none"
+            className="text-foreground/30 hover:text-foreground/60 transition-colors text-lg leading-none"
             aria-label="關閉"
           >
             ✕
           </button>
         </div>
         {saving ? (
-          <p className="py-4 text-center text-sm text-[#2C1810]/50">儲存中…</p>
+          <p className="py-4 text-center text-sm text-foreground/50">儲存中…</p>
         ) : (
           <TagInput tags={safeTags} onAdd={handleAdd} onRemove={handleRemove} />
         )}

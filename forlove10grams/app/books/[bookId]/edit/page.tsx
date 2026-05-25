@@ -46,22 +46,22 @@ export default async function EditBookPage({
 
   return (
     <ShareStatusProvider>
-    <main className="flex h-screen flex-col bg-[#FAF7F2]">
-      <header className="flex flex-none items-center justify-between border-b border-[#2C1810]/10 px-4 sm:px-6 py-3 sm:py-4">
+    <main className="flex h-screen flex-col bg-background">
+      <header className="flex flex-none items-center justify-between border-b border-foreground/10 px-4 sm:px-6 py-3 sm:py-4">
         <div className="flex min-w-0 items-center gap-2 sm:gap-3">
           <Link
             href="/dashboard"
-            className="flex-none text-sm text-[#2C1810]/50 transition-colors hover:text-[#2C1810]"
+            className="flex-none text-sm text-foreground/50 transition-colors hover:text-foreground"
           >
             ← 返回
           </Link>
-          <h1 className="truncate text-base sm:text-lg font-semibold text-[#2C1810]">{book.title}</h1>
+          <h1 className="truncate text-base sm:text-lg font-semibold text-foreground">{book.title}</h1>
         </div>
         <div className="flex flex-none items-center gap-1 sm:gap-2">
           <Link
             href={`/read/${bookId}`}
             title="查看書本"
-            className="flex items-center gap-1.5 rounded-md border border-[#2C1810]/20 px-2.5 py-1.5 text-sm text-[#2C1810] hover:bg-[#2C1810]/5 transition-colors"
+            className="flex items-center gap-1.5 rounded-md border border-foreground/20 px-2.5 py-1.5 text-sm text-foreground hover:bg-foreground/5 transition-colors"
           >
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
               <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/>
@@ -76,7 +76,7 @@ export default async function EditBookPage({
       </header>
 
       <BookEditorClient bookId={bookId} initialPages={pages} initialTags={book.tags ?? []} />
-      <section className="flex-none border-t border-[#2C1810]/10 bg-[#FAF7F2] px-4 sm:px-6 py-4 space-y-6">
+      <section className="flex-none border-t border-foreground/10 bg-background px-4 sm:px-6 py-4 space-y-6">
         {(isOwner || isEditor) && <ShareLinkManager bookId={bookId} />}
         {(isOwner || isEditor) && (
           <ReaderList bookId={bookId} shareStatus={book.shareStatus} />

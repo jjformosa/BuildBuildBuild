@@ -58,19 +58,19 @@ export function ReaderList({
 
   return (
     <div className="space-y-3">
-      <h3 className="text-sm font-semibold text-[#2C1810]">讀者名單</h3>
+      <h3 className="text-sm font-semibold text-foreground">讀者名單</h3>
       {error && <p className="text-xs text-red-600">{error}</p>}
       {loading ? (
-        <p className="text-sm text-[#2C1810]/50">載入中…</p>
+        <p className="text-sm text-foreground/50">載入中…</p>
       ) : readers.length === 0 ? (
-        <p className="text-sm text-[#2C1810]/50">還沒有讀者</p>
+        <p className="text-sm text-foreground/50">還沒有讀者</p>
       ) : (
         <ul className="space-y-2">
           {readers.map((r) => (
             <li key={r.userId} className="flex items-center justify-between gap-2">
               <div>
-                <span className="text-sm text-[#2C1810]">{r.displayName}</span>
-                <span className="ml-2 text-xs text-[#2C1810]/50">
+                <span className="text-sm text-foreground">{r.displayName}</span>
+                <span className="ml-2 text-xs text-foreground/50">
                   {new Date(r.joinedAt).toLocaleDateString('zh-TW')}
                 </span>
               </div>
