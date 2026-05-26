@@ -101,6 +101,16 @@ export function ReadPageClient({ bookId, bookTitle, initialPages, totalCount, vi
   const readPageIds = useReadProgress(bookId, pageIds)
   const activePageId = useActivePage(scrollContainerRef, pageIds)
 
+  const [seenIds, setSeenIds] = useState<Set<string>>(new Set())
+  const markSeen = useCallback((id: string) => {
+    setSeenIds(prev => {
+      if (prev.has(id)) return prev
+      const next = new Set(prev)
+      next.add(id)
+      return next
+    })
+  }, [])
+
   const loadedIdSet = useMemo(() => new Set(pageIds), [pageIds])
 
   const handleJumpTo = useCallback(
@@ -140,9 +150,17 @@ export function ReadPageClient({ bookId, bookTitle, initialPages, totalCount, vi
                 <motion.article
                   id={page._id}
                   className="scroll-mt-8 min-h-[65vh] sm:min-h-[75vh] py-12 sm:py-16"
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
+                  initial={{ opacity: 0, y: 20, scale: 1 }}
+                  animate={seenIds.has(page._id)
+                    ? {
+                        opacity: activePageId === page._id ? 1 : 0.28,
+                        y: 0,
+                        scale: activePageId === page._id ? 1 : 0.975,
+                      }
+                    : undefined}
                   transition={{ duration: 0.5, ease: 'easeOut' }}
+                  style={{ transformOrigin: 'center top' }}
+                  onViewportEnter={() => markSeen(page._id)}
                   viewport={{ root: scrollContainerRef, once: true, amount: 0.1 }}
                 >
                   {page.mediaUrls.length > 0 &&
