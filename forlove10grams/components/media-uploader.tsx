@@ -64,8 +64,8 @@ export function MediaUploader({ bookId, pageId, fileType, mediaUrls, onUrlsChang
     return () => { if (pollIntervalRef.current) clearInterval(pollIntervalRef.current) }
   }, [])
 
-  async function uploadFile(file: File) {
-    if (atImageLimit) return
+  async function uploadFile(file: File, currentUrls: string[]): Promise<string[]> {
+    if (currentUrls.length >= IMAGE_LIMIT) return currentUrls
     setError(null)
     setProgress(0)
 
@@ -80,17 +80,17 @@ export function MediaUploader({ bookId, pageId, fileType, mediaUrls, onUrlsChang
       } catch {
         setError('圖片處理失敗，請重試')
         setProgress(null)
-        return
+        return currentUrls
       }
       if (fileToUpload.size > MAX_IMAGE_BYTES) {
         setError('圖片壓縮後仍超過 2MB，請換一張較小的圖片')
         setProgress(null)
-        return
+        return currentUrls
       }
     }
 
     const contentType = fileToUpload.type || 'image/jpeg'
-    const index = mediaUrls.length
+    const index = currentUrls.length
 
     const presignRes = await fetch('/api/upload/presign', {
       method: 'POST',
@@ -100,37 +100,38 @@ export function MediaUploader({ bookId, pageId, fileType, mediaUrls, onUrlsChang
     if (!presignRes.ok) {
       setError('無法取得上傳連結')
       setProgress(null)
-      return
+      return currentUrls
     }
     const { presignedUrl, s3Url } = await presignRes.json()
 
-    await new Promise<void>((resolve, reject) => {
-      const xhr = new XMLHttpRequest()
-      xhr.upload.onprogress = (e) => {
-        if (e.lengthComputable) setProgress(Math.round((e.loaded / e.total) * 100))
-      }
-      xhr.onload = () => {
-        if (xhr.status === 200) resolve()
-        else reject(new Error(`S3 回傳 ${xhr.status}`))
-      }
-      xhr.onerror = () => reject(new Error('網路錯誤'))
-      xhr.open('PUT', presignedUrl)
-      xhr.setRequestHeader('Content-Type', contentType)
-      xhr.send(fileToUpload)
-    }).catch((err: Error) => {
-      setError(err.message)
+    try {
+      await new Promise<void>((resolve, reject) => {
+        const xhr = new XMLHttpRequest()
+        xhr.upload.onprogress = (e) => {
+          if (e.lengthComputable) setProgress(Math.round((e.loaded / e.total) * 100))
+        }
+        xhr.onload = () => {
+          if (xhr.status === 200) resolve()
+          else reject(new Error(`S3 回傳 ${xhr.status}`))
+        }
+        xhr.onerror = () => reject(new Error('網路錯誤'))
+        xhr.open('PUT', presignedUrl)
+        xhr.setRequestHeader('Content-Type', contentType)
+        xhr.send(fileToUpload)
+      })
+    } catch (err) {
+      setError((err as Error).message)
       setProgress(null)
-      throw err
-    })
+      return currentUrls
+    }
 
     if (fileType === 'video') {
-      // presign already set transcodingStatus=pending; start polling
       setIsTranscoding(true)
       setProgress(null)
       pollTranscoding()
+      return currentUrls
     } else {
-      // carousel: save URL immediately
-      const newUrls = [...mediaUrls, s3Url]
+      const newUrls = [...currentUrls, s3Url]
       await fetch(`/api/books/${bookId}/pages/${pageId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
@@ -138,12 +139,14 @@ export function MediaUploader({ bookId, pageId, fileType, mediaUrls, onUrlsChang
       })
       onUrlsChange(newUrls)
       setProgress(null)
+      return newUrls
     }
   }
 
   async function handleFiles(files: FileList) {
+    let currentUrls = [...mediaUrls]
     for (const file of Array.from(files)) {
-      await uploadFile(file)
+      currentUrls = await uploadFile(file, currentUrls)
     }
   }
 
