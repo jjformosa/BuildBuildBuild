@@ -8,7 +8,7 @@ import { canEditBook } from '@/lib/access'
 
 export async function GET(
   _req: NextRequest,
-  ctx: RouteContext<'/api/books/[bookId]/pages/[pageId]'>
+  ctx: { params: Promise<{ bookId: string; pageId: string }> }
 ) {
   const session = await auth()
   if (!session?.user) {
@@ -41,7 +41,7 @@ const PatchPageBody = z.object({
 
 export async function PATCH(
   req: NextRequest,
-  ctx: RouteContext<'/api/books/[bookId]/pages/[pageId]'>
+  ctx: { params: Promise<{ bookId: string; pageId: string }> }
 ) {
   const session = await auth()
   if (!session?.user) {
@@ -83,7 +83,7 @@ export async function PATCH(
 
 export async function DELETE(
   _req: NextRequest,
-  ctx: RouteContext<'/api/books/[bookId]/pages/[pageId]'>
+  ctx: { params: Promise<{ bookId: string; pageId: string }> }
 ) {
   const session = await auth()
   if (!session?.user) {
