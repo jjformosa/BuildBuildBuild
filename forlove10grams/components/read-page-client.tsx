@@ -12,8 +12,6 @@ import { useInfiniteScroll } from '@/hooks/use-infinite-scroll'
 import { useActivePage } from '@/hooks/use-active-page'
 import { resolveSlots } from '@/lib/resolve-slots'
 import { HandoverLetter } from '@/components/handover-letter'
-import Image from 'next/image'
-import logo from '@/public/logo.png'
 
 const ReactMarkdown = dynamic(() => import('react-markdown'), {
   ssr: false,
@@ -130,8 +128,7 @@ export function ReadPageClient({ bookId, bookTitle, initialPages, totalCount, vi
 
       <main ref={scrollContainerRef} id="read-scroll-container" className="flex-1 overflow-y-auto">
         <div className="mx-auto max-w-2xl px-4 py-8 sm:py-10">
-          <header className="mb-10 sm:mb-12 text-center flex flex-col items-center gap-3">
-            <Image src={logo} alt="" aria-hidden width={48} height={48} className="opacity-80" />
+          <header className="mb-10 sm:mb-12 text-center">
             <h1 className="text-xl sm:text-2xl font-semibold tracking-tight text-foreground">
               {bookTitle}
             </h1>
