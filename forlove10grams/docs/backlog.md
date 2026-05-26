@@ -97,6 +97,26 @@
 
 ---
 
+## 體驗實驗（待選型）
+
+### 閱讀頁換頁動畫
+
+**背景**：`/read/[bookId]` 以滾動為主要操作，目前每頁已有基本 `whileInView` 進場（opacity + translateY）。  
+想在「頁與頁之間」加入更有儀式感的轉場，讓閱讀體驗更具沉浸感。
+
+**已評估的三個方向**（sample HTML 放於 `docs/samples/`）：
+
+| 選項 | 效果 | 檔案 | 備注 |
+|------|------|------|------|
+| **A — 聚光燈焦點** | 當前頁全亮，其他頁淡出 + 微縮（0.3 → 1.0 opacity，scale 0.975 → 1） | `option-a-spotlight.html` | 已有 `activePageId`，實作成本最低 |
+| **B — 分鏡進場** | 每頁進入視野時圖片先出現，文字 300ms 後跟進 | `option-b-stagger.html` | 需拆 article 子結構；一次性觸發 |
+| **C — 景深模糊** | 非當前頁套 blur(3px)，當前頁對焦清晰 | `option-c-blur.html` | 最電影感；`filter: blur` 在低階手機需測效能 |
+
+**推薦**：Option A 為主，搭配強化現有 whileInView 進場動畫（加 scale 0.97 → 1）。  
+`activePageId` 已追蹤完畢，改動只需在 `motion.article` 加 `animate` prop。
+
+---
+
 ## 技術改善（不影響功能，但值得處理）
 
 ### ~~`next/image` 的 S3 `remotePatterns` 設定~~ ✅ 已完成

@@ -23,6 +23,8 @@ import '@uiw/react-md-editor/markdown-editor.css'
 import { MediaUploader } from '@/components/media-uploader'
 import TagManagerModal from '@/components/tag-manager-modal'
 
+import { getCommands, getExtraCommands } from '@uiw/react-md-editor'
+
 const MDEditor = dynamic(() => import('@uiw/react-md-editor'), { ssr: false })
 
 export type PageData = {
@@ -383,6 +385,8 @@ export function BookEditorClient({
                   onChange={handleContentChange}
                   height={300}
                   preview="live"
+                  commands={getCommands().filter((cmd) => cmd.name !== 'image')}
+                  extraCommands={getExtraCommands()}
                 />
               </div>
               <div>
