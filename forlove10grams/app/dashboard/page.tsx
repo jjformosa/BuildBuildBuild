@@ -113,10 +113,16 @@ export default async function DashboardPage() {
 
   return (
     <main className="min-h-screen bg-background">
-      <header className="flex items-center justify-between border-b border-foreground/10 px-4 sm:px-6 py-4">
-        <Image src={logo} alt="For Love 10 Grams" width={36} height={36} />
-        <div className="flex items-center gap-2 sm:gap-4">
-          <span className="hidden sm:inline text-sm text-foreground/60">{session?.user?.email}</span>
+      <header className="sticky top-0 z-20 flex items-center justify-between border-b border-border bg-background/90 backdrop-blur-sm px-4 sm:px-8 py-3.5">
+        <div className="flex items-center gap-3">
+          <Image src={logo} alt="For Love 10 Grams" width={34} height={34} />
+          <div className="hidden sm:block">
+            <p className="text-sm font-semibold text-foreground leading-tight">愛10克</p>
+            <p className="text-[10px] text-muted-foreground leading-tight tracking-wide">親手烘焙 DIY Bakery</p>
+          </div>
+        </div>
+        <div className="flex items-center gap-3">
+          <span className="hidden md:inline text-xs text-muted-foreground">{session?.user?.email}</span>
           <form
             action={async () => {
               'use server'
@@ -125,7 +131,7 @@ export default async function DashboardPage() {
           >
             <button
               type="submit"
-              className="rounded-md border border-foreground/20 px-3 py-1.5 text-sm text-foreground hover:bg-foreground/5 transition-colors"
+              className="rounded-lg border border-border px-3 py-1.5 text-sm text-muted-foreground hover:border-primary/40 hover:text-foreground transition-colors"
             >
               登出
             </button>
@@ -133,7 +139,7 @@ export default async function DashboardPage() {
         </div>
       </header>
 
-      <div className="mx-auto max-w-3xl px-4 sm:px-6 py-8 sm:py-10">
+      <div className="mx-auto max-w-2xl sm:max-w-3xl lg:max-w-4xl px-4 sm:px-6 py-8 sm:py-10">
         {hasAnyBook ? (
           <DashboardShell
             isAdmin={isAdmin}
@@ -144,9 +150,9 @@ export default async function DashboardPage() {
             createButton={<CreateBookButton />}
           />
         ) : (
-          <p className="py-20 text-center text-sm text-foreground/40">
-            尚未有任何相關的記憶書。
-          </p>
+          <div className="py-24 text-center">
+            <p className="text-sm text-muted-foreground">尚未有任何相關的記憶書。</p>
+          </div>
         )}
       </div>
     </main>
