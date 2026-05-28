@@ -42,7 +42,7 @@ export function CreateBookButton() {
     <>
       <button
         onClick={() => setOpen(true)}
-        className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors"
+        className="rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground shadow-sm hover:bg-primary/90 transition-all duration-150 cursor-pointer active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
       >
         + 新增記憶書
       </button>
@@ -72,7 +72,7 @@ export function CreateBookButton() {
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   placeholder="我們的回憶"
-                  className="w-full rounded-md border border-foreground/20 bg-white px-3 py-2 text-sm text-foreground placeholder:text-foreground/40 focus:outline-none focus:ring-2 focus:ring-foreground/30"
+                  className="w-full rounded-lg border border-border bg-card px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/50 transition-all"
                 />
               </div>
 
@@ -84,14 +84,14 @@ export function CreateBookButton() {
                 <button
                   type="button"
                   onClick={handleClose}
-                  className="flex-1 rounded-md border border-foreground/20 py-2 text-sm text-foreground hover:bg-foreground/5 transition-colors"
+                  className="btn-outline-sm flex-1 justify-center py-2.5"
                 >
                   取消
                 </button>
                 <button
                   type="submit"
                   disabled={status === 'loading'}
-                  className="flex-1 rounded-md bg-primary py-2 text-sm font-medium text-primary-foreground disabled:opacity-50 transition-opacity"
+                  className="flex-1 rounded-lg bg-primary py-2.5 text-sm font-medium text-primary-foreground shadow-sm hover:bg-primary/90 transition-all duration-150 cursor-pointer active:scale-[0.97] disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 >
                   {status === 'loading' ? '建立中…' : '建立'}
                 </button>

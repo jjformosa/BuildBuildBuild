@@ -77,7 +77,7 @@ export function ReaderList({
               <button
                 onClick={() => handleRemove(r.userId)}
                 disabled={removing === r.userId}
-                className="rounded border border-red-300 px-2 py-0.5 text-xs text-red-600 hover:bg-red-50 disabled:opacity-50"
+                className="btn-danger-xs"
               >
                 移除
               </button>

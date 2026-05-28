@@ -41,7 +41,7 @@ export function CoverImageButton({ bookId, initialCoverImage, availableImages }:
             ? '更換封面'
             : '設定封面'
         }
-        className="flex items-center gap-1.5 rounded-md border border-foreground/20 px-2.5 py-1 text-sm text-foreground/60 hover:text-foreground hover:bg-foreground/5 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+        className="btn-outline-sm"
       >
         {isSaving ? (
           <span className="h-5 w-5 flex items-center justify-center">

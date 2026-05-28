@@ -1,6 +1,7 @@
 @import "tailwindcss";
 
 @theme inline {
+  --animate-fade-up: fade-up 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -21,6 +22,7 @@
   --color-input: var(--input);
   --color-ring: var(--ring);
   --color-gold: var(--gold);
+  --color-rose: var(--rose);
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
@@ -28,27 +30,37 @@
 }
 
 :root {
-  --background: #ecebf4;
-  --foreground: #2d3848;
-  --card: #ffffff;
-  --card-foreground: #2d3848;
-  --popover: #ffffff;
-  --popover-foreground: #2d3848;
-  --primary: #3d6b7c;
+  /* Surfaces */
+  --background: #e9e7f3;
+  --foreground: #1b2a3a;
+  --card: #f4f2fa;
+  --card-foreground: #1b2a3a;
+  --popover: #f4f2fa;
+  --popover-foreground: #1b2a3a;
+
+  /* Brand */
+  --primary: #2c5e77;
   --primary-foreground: #ffffff;
-  --secondary: #dde0f0;
-  --secondary-foreground: #2d3848;
-  --muted: #e4e2f2;
-  --muted-foreground: #7a8fa0;
-  --accent: #5a8fa0;
+  --secondary: #d8dbed;
+  --secondary-foreground: #2a3c50;
+
+  /* Text hierarchy — explicit values instead of opacity tricks */
+  --muted: #e1dff0;
+  --muted-foreground: #506070;
+
+  /* Warm rose accent (matches logo handwritten text highlight) */
+  --accent: #c4788a;
   --accent-foreground: #ffffff;
+  --rose: #c4788a;
+
+  /* Utility */
   --destructive: #c84b4b;
   --destructive-foreground: #ffffff;
-  --border: #c8c4e0;
-  --input: #c8c4e0;
-  --ring: #3d6b7c;
+  --border: #b8b4d0;
+  --input: #b8b4d0;
+  --ring: #2c5e77;
   --gold: #b4945a;
-  --radius: 0.5rem;
+  --radius: 0.625rem;
 }
 
 @layer base {
@@ -58,6 +70,47 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+@layer components {
+  /* Secondary/outline button — medium (toolbar, header actions) */
+  .btn-outline-sm {
+    @apply inline-flex items-center gap-1.5 rounded-lg border border-border bg-card
+           px-3 py-1.5 text-sm font-medium text-foreground shadow-sm
+           cursor-pointer select-none whitespace-nowrap
+           transition-all duration-150
+           hover:border-primary/40 hover:bg-secondary
+           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring
+           active:scale-[0.97]
+           disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100;
+  }
+  /* Secondary/outline button — compact (inline actions, editor toolbar) */
+  .btn-outline-xs {
+    @apply inline-flex items-center gap-1 rounded-md border border-border bg-card
+           px-2 py-1 text-xs font-medium text-foreground shadow-sm
+           cursor-pointer select-none whitespace-nowrap
+           transition-all duration-150
+           hover:border-primary/40 hover:bg-secondary
+           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring
+           active:scale-[0.97]
+           disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100;
+  }
+  /* Danger button — compact (revoke, remove) */
+  .btn-danger-xs {
+    @apply inline-flex items-center gap-1 rounded-md border border-destructive/30
+           px-2 py-1 text-xs font-medium text-destructive
+           cursor-pointer select-none whitespace-nowrap
+           transition-all duration-150
+           hover:bg-destructive/8 hover:border-destructive/50
+           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring
+           active:scale-[0.97]
+           disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100;
+  }
+}
+
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes ripple-expand {

@@ -25,8 +25,8 @@ export function LoginSection({ redirectTo }: Props) {
 
   if (isLoading) {
     return (
-      <div className="flex h-[104px] items-center justify-center text-foreground/40">
-        <div className="h-6 w-6 animate-spin rounded-full border-2 border-current border-t-transparent" />
+      <div className="flex h-[112px] items-center justify-center text-muted-foreground">
+        <div className="h-5 w-5 animate-spin rounded-full border-2 border-current border-t-transparent" />
       </div>
     )
   }
@@ -34,7 +34,7 @@ export function LoginSection({ redirectTo }: Props) {
   return (
     <div className="flex flex-col gap-3">
       {error && (
-        <p className="rounded-md bg-red-50 px-4 py-2 text-sm text-red-700">
+        <p className="rounded-xl bg-destructive/8 border border-destructive/20 px-4 py-2.5 text-sm text-destructive" role="alert">
           {error.message}（第 {error.count} 次失敗）
         </p>
       )}
@@ -42,7 +42,7 @@ export function LoginSection({ redirectTo }: Props) {
       <button
         type="button"
         onClick={() => handleSignIn('google')}
-        className="flex w-full items-center gap-3 rounded-lg border border-border bg-card px-6 py-3 text-sm font-medium text-foreground shadow-sm transition-colors hover:bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        className="flex w-full items-center justify-center gap-3 rounded-xl border border-border bg-card px-5 py-3.5 text-sm font-medium text-muted-foreground shadow-sm transition-all duration-150 hover:border-primary/30 hover:text-foreground hover:shadow-[0_2px_12px_rgba(44,94,119,0.10)] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring cursor-pointer"
       >
         <GoogleIcon />
         使用 Google 帳號登入
@@ -51,7 +51,7 @@ export function LoginSection({ redirectTo }: Props) {
       <button
         type="button"
         onClick={() => handleSignIn('line')}
-        className="flex w-full items-center gap-3 rounded-lg bg-[#06C755] px-6 py-3 text-sm font-medium text-white shadow-sm transition-colors hover:bg-[#05B349] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        className="flex w-full items-center justify-center gap-3 rounded-xl bg-[#06C755] px-5 py-3.5 text-sm font-medium text-white/85 shadow-sm transition-all duration-150 hover:bg-[#05B349] hover:text-white active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring cursor-pointer"
       >
         <LineIcon />
         使用 LINE 帳號登入

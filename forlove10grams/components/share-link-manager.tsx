@@ -106,11 +106,11 @@ export function ShareLinkManager({ bookId }: { bookId: string }) {
             <input
               readOnly
               value={share.shareUrl}
-              className="flex-1 truncate rounded border border-foreground/20 bg-white px-2 py-1 text-xs text-foreground"
+              className="flex-1 truncate rounded-md border border-border bg-card px-2 py-1 text-xs text-foreground"
             />
             <button
               onClick={copyUrl}
-              className="rounded border border-foreground/20 px-2 py-1 text-xs text-foreground hover:bg-foreground/5"
+              className="btn-outline-xs"
             >
               {copied ? '✓ 已複製' : '複製'}
             </button>
@@ -124,14 +124,14 @@ export function ShareLinkManager({ bookId }: { bookId: string }) {
             <button
               onClick={handleExtend}
               disabled={actionLoading}
-              className="rounded border border-foreground/20 px-2 py-1 text-xs text-foreground hover:bg-foreground/5 disabled:opacity-50"
+              className="btn-outline-xs"
             >
               延長七天
             </button>
             <button
               onClick={handleRevoke}
               disabled={actionLoading}
-              className="rounded border border-red-300 px-2 py-1 text-xs text-red-600 hover:bg-red-50 disabled:opacity-50"
+              className="btn-danger-xs"
             >
               撤銷連結
             </button>
@@ -144,14 +144,14 @@ export function ShareLinkManager({ bookId }: { bookId: string }) {
             <button
               onClick={handleExtend}
               disabled={actionLoading}
-              className="rounded border border-foreground/20 px-2 py-1 text-xs text-foreground hover:bg-foreground/5 disabled:opacity-50"
+              className="btn-outline-xs"
             >
               延長七天
             </button>
             <button
               onClick={handleRevoke}
               disabled={actionLoading}
-              className="rounded border border-red-300 px-2 py-1 text-xs text-red-600 hover:bg-red-50 disabled:opacity-50"
+              className="btn-danger-xs"
             >
               撤銷
             </button>

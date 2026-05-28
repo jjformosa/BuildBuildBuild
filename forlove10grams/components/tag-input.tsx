@@ -96,7 +96,7 @@ export default function TagInput({ tags, onAdd, onRemove, disabled }: TagInputPr
             onFocus={() => input && setShowDropdown(true)}
             disabled={disabled}
             placeholder="新增標籤…"
-            className="w-full rounded-lg border border-foreground/15 bg-white px-3 py-1.5 text-sm text-foreground placeholder:text-foreground/30 focus:border-foreground/35 focus:outline-none disabled:opacity-50"
+            className="w-full rounded-lg border border-border bg-card px-3 py-1.5 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/15 transition-all disabled:opacity-50"
           />
           {showDropdown && (loading || suggestions.length > 0) && (
             <ul className="absolute z-[200] mt-1 w-full rounded-lg border border-foreground/10 bg-white shadow-md overflow-hidden">
@@ -132,7 +132,7 @@ export default function TagInput({ tags, onAdd, onRemove, disabled }: TagInputPr
           type="button"
           onClick={() => handleAdd(input)}
           disabled={disabled || !input.trim()}
-          className="flex-none rounded-lg border border-foreground/15 bg-white px-2.5 py-1.5 text-sm text-foreground/50 hover:text-foreground hover:border-foreground/35 disabled:opacity-30 transition-colors"
+          className="btn-outline-sm flex-none"
           aria-label="新增標籤"
         >
           ＋
