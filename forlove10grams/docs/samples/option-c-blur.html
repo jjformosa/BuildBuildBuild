@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Option C — 景深模糊</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:       #ecebf4;
+      --fg:       #2d3848;
+      --fg-faint: rgba(45, 56, 72, 0.25);
+      --gold:     #b4945a;
+      --primary:  #3d6b7c;
+      --border:   #c8c4e0;
+    }
+
+    html, body { height: 100%; background: var(--bg); color: var(--fg); }
+
+    /* ── Demo label ── */
+    .demo-label {
+      position: fixed;
+      top: 14px; left: 50%;
+      transform: translateX(-50%);
+      z-index: 200;
+      background: var(--primary);
+      color: #fff;
+      font: 600 11px/1 system-ui, sans-serif;
+      letter-spacing: .06em;
+      padding: 5px 14px;
+      border-radius: 100px;
+      pointer-events: none;
+    }
+
+    .demo-hint {
+      position: fixed;
+      bottom: 18px; left: 50%;
+      transform: translateX(-50%);
+      z-index: 200;
+      background: rgba(45, 56, 72, 0.82);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      color: rgba(255,255,255,.8);
+      font: 11px/1.5 system-ui, sans-serif;
+      padding: 6px 16px;
+      border-radius: 100px;
+      pointer-events: none;
+      text-align: center;
+    }
+
+    /* ── Layout ── */
+    .shell {
+      display: flex;
+      height: 100vh;
+    }
+
+    /* Minimal TOC dots */
+    .toc {
+      width: 44px;
+      flex-shrink: 0;
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding-top: 56px;
+      gap: 20px;
+    }
+
+    .toc-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--fg-faint);
+      transition: background .4s ease, transform .4s ease;
+      cursor: pointer;
+    }
+    .toc-dot.active {
+      background: var(--gold);
+      transform: scale(1.4);
+    }
+
+    /* ── Scroll container ── */
+    main {
+      flex: 1;
+      overflow-y: auto;
+      scroll-behavior: smooth;
+    }
+
+    .content {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 40px 28px 100px;
+    }
+
+    /* ── Book header ── */
+    .book-header {
+      text-align: center;
+      margin-bottom: 56px;
+    }
+    .book-header h1 {
+      font: 600 17px/1.4 Georgia, 'Noto Serif TC', serif;
+      letter-spacing: .06em;
+    }
+
+    /* ── Page: depth-of-field effect ── */
+    .page {
+      min-height: 72vh;
+      padding: 28px 0;
+      /*
+        blur() is GPU-composited but can be slow on low-end mobile.
+        Consider disabling on < 768px if needed.
+        Using will-change hints the compositor to prepare a layer.
+      */
+      transition: opacity .55s ease, filter .55s ease, transform .55s ease;
+      opacity: .28;
+      filter: blur(3px);
+      transform: scale(.975);
+      transform-origin: center top;
+      will-change: opacity, filter, transform;
+    }
+    .page.active {
+      opacity: 1;
+      filter: blur(0px);
+      transform: scale(1);
+    }
+
+    /* Photo placeholder */
+    .photo {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      border-radius: 10px;
+      margin-bottom: 22px;
+      overflow: hidden;
+      position: relative;
+    }
+    .photo::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to bottom, transparent 55%, rgba(45,56,72,.12));
+    }
+
+    /* Page text */
+    .page-text {
+      font: 15px/1.95 Georgia, 'Noto Serif TC', serif;
+      color: var(--fg);
+    }
+    .page-text p + p { margin-top: 14px; }
+
+    /* ── Separator ── */
+    .sep {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      padding: 8px 0;
+      /* separator also blurs/dims when neither adjacent page is active */
+      transition: opacity .5s ease, filter .5s ease;
+    }
+    .sep span {
+      display: block;
+      width: 4px; height: 4px;
+      border-radius: 50%;
+      background: var(--gold);
+      opacity: .5;
+    }
+
+    /* Performance note badge */
+    .perf-note {
+      position: fixed;
+      top: 44px; left: 50%;
+      transform: translateX(-50%);
+      z-index: 200;
+      background: rgba(180, 148, 90, .18);
+      border: 1px solid rgba(180, 148, 90, .4);
+      color: #7a5c28;
+      font: 10px/1.5 system-ui, sans-serif;
+      padding: 3px 12px;
+      border-radius: 100px;
+      pointer-events: none;
+      white-space: nowrap;
+    }
+  </style>
+</head>
+<body>
+
+<div class="demo-label">Option C &nbsp;·&nbsp; 景深模糊</div>
+<div class="perf-note">⚠️ filter: blur — 低階手機需測效能</div>
+<div class="demo-hint">向下捲動 — 焦點對準當前頁面，其餘頁面模糊退後</div>
+
+<div class="shell">
+
+  <aside class="toc" id="toc">
+    <div class="toc-dot" data-i="0"></div>
+    <div class="toc-dot" data-i="1"></div>
+    <div class="toc-dot" data-i="2"></div>
+    <div class="toc-dot" data-i="3"></div>
+  </aside>
+
+  <main id="main">
+    <div class="content">
+
+      <div class="book-header">
+        <h1>如果你願意讀到最後</h1>
+      </div>
+
+      <!-- Page 1 -->
+      <article class="page" id="p0">
+        <div class="photo" style="background: linear-gradient(145deg,#b8cad8,#9db5ca 45%,#8aa8c2)"></div>
+        <div class="page-text">
+          <p>海邊那天的風很大，你的頭髮一直被吹亂，你也一直在笑。</p>
+          <p>我拍了很多照片，但最後最喜歡的那一張你沒有看到鏡頭，你只是在看海。</p>
+          <p>那個顏色，我後來再沒有看過第二次。</p>
+        </div>
+      </article>
+
+      <div class="sep" id="sep0"><span></span><span></span><span></span></div>
+
+      <!-- Page 2 -->
+      <article class="page" id="p1">
+        <div class="photo" style="background: linear-gradient(145deg,#d4b896,#c9a87c 45%,#b89060)"></div>
+        <div class="page-text">
+          <p>晚餐後你喝了兩杯熱茶，說等一下再走，就這樣說著說著過了三個小時。</p>
+          <p>你說了很多平時不說的事，關於小時候，關於你怕的東西。</p>
+          <p>我聽著，覺得能聽到這些很榮幸。</p>
+        </div>
+      </article>
+
+      <div class="sep" id="sep1"><span></span><span></span><span></span></div>
+
+      <!-- Page 3 -->
+      <article class="page" id="p2">
+        <div class="photo" style="background: linear-gradient(145deg,#a8c4b0,#8fb49a 45%,#78a488)"></div>
+        <div class="page-text">
+          <p>回程的路上你睡著了，窗外的路燈一格一格掃過你的臉。</p>
+          <p>我沒有叫你，只是開慢一點，想讓這段路再長一點。</p>
+          <p>後來我才知道你其實沒有睡著，你只是想讓我以為你睡著了。</p>
+        </div>
+      </article>
+
+      <div class="sep" id="sep2"><span></span><span></span><span></span></div>
+
+      <!-- Page 4 -->
+      <article class="page" id="p3">
+        <div class="photo" style="background: linear-gradient(145deg,#c0b0d0,#b0a0c4 45%,#9e8eb6)"></div>
+        <div class="page-text">
+          <p>我不知道怎麼說謝謝，不是因為不想說，而是覺得說了也不夠。</p>
+          <p>所以就把所有的東西都放在這裡，希望你哪天翻開的時候，還記得我們有多好。</p>
+          <p>謝謝你，總是用你的方式讓我覺得被在乎。</p>
+        </div>
+      </article>
+
+    </div>
+  </main>
+</div>
+
+<script>
+  const main  = document.getElementById('main');
+  const pages = Array.from(document.querySelectorAll('.page'));
+  const dots  = Array.from(document.querySelectorAll('.toc-dot'));
+  const seps  = Array.from(document.querySelectorAll('.sep'));
+
+  function getActiveIdx() {
+    const mid = main.getBoundingClientRect().top + main.clientHeight / 2;
+    let idx = 0, best = Infinity;
+    pages.forEach((p, i) => {
+      const r = p.getBoundingClientRect();
+      const d = Math.abs(r.top + r.height / 2 - mid);
+      if (d < best) { best = d; idx = i; }
+    });
+    return idx;
+  }
+
+  function refresh() {
+    const a = getActiveIdx();
+
+    pages.forEach((p, i) => p.classList.toggle('active', i === a));
+    dots.forEach((d, i)  => d.classList.toggle('active', i === a));
+
+    // Separators adjacent to active page are less dimmed
+    seps.forEach((s, i) => {
+      const near = i === a - 1 || i === a;
+      s.style.opacity = near ? '.65' : '.3';
+      s.style.filter  = near ? 'blur(0)' : 'blur(1.5px)';
+    });
+  }
+
+  main.addEventListener('scroll', refresh, { passive: true });
+  refresh();
+
+  dots.forEach((dot, i) => {
+    dot.addEventListener('click', () =>
+      pages[i].scrollIntoView({ behavior: 'smooth', block: 'center' })
+    );
+  });
+</script>
+</body>
+</html>
