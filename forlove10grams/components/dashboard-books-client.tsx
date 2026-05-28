@@ -225,7 +225,7 @@ function BookCard({
             <button
               onClick={handleRemoveEditor}
               disabled={removeLoading}
-              className="text-xs text-destructive border border-destructive/30 rounded-lg px-2 py-1 hover:bg-destructive/8 disabled:opacity-50 transition-colors cursor-pointer"
+              className="btn-danger-xs"
             >
               {removeLoading ? '移除中…' : '移除'}
             </button>

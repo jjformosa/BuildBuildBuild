@@ -216,7 +216,7 @@ export function MediaUploader({ bookId, pageId, fileType, mediaUrls, onUrlsChang
               <button
                 onClick={() => inputRef.current?.click()}
                 disabled={progress !== null}
-                className="rounded-md border border-foreground/20 px-3 py-1.5 text-xs text-foreground hover:bg-foreground/5 disabled:opacity-40 transition-colors"
+                className="btn-outline-xs"
               >
                 {progress !== null ? `上傳中 ${progress}%` : fileType === 'carousel' ? '+ 新增圖片' : '+ 上傳影片'}
               </button>

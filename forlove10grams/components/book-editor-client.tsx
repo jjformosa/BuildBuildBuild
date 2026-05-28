@@ -358,7 +358,7 @@ export function BookEditorClient({
                   key={type}
                   onClick={() => handleAddPage(type)}
                   disabled={addingType !== null}
-                  className="flex-none rounded border border-foreground/20 px-2 py-1 text-xs whitespace-nowrap text-foreground/60 hover:bg-foreground/5 disabled:opacity-40 transition-colors"
+                  className="btn-outline-xs flex-none"
                 >
                   {addingType === type ? '…' : type === 'carousel' ? '+ 輪播' : '+ 影片'}
                 </button>

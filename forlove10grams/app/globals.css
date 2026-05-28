@@ -72,6 +72,42 @@
   }
 }
 
+@layer components {
+  /* Secondary/outline button — medium (toolbar, header actions) */
+  .btn-outline-sm {
+    @apply inline-flex items-center gap-1.5 rounded-lg border border-border bg-card
+           px-3 py-1.5 text-sm font-medium text-foreground shadow-sm
+           cursor-pointer select-none whitespace-nowrap
+           transition-all duration-150
+           hover:border-primary/40 hover:bg-secondary
+           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring
+           active:scale-[0.97]
+           disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100;
+  }
+  /* Secondary/outline button — compact (inline actions, editor toolbar) */
+  .btn-outline-xs {
+    @apply inline-flex items-center gap-1 rounded-md border border-border bg-card
+           px-2 py-1 text-xs font-medium text-foreground shadow-sm
+           cursor-pointer select-none whitespace-nowrap
+           transition-all duration-150
+           hover:border-primary/40 hover:bg-secondary
+           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring
+           active:scale-[0.97]
+           disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100;
+  }
+  /* Danger button — compact (revoke, remove) */
+  .btn-danger-xs {
+    @apply inline-flex items-center gap-1 rounded-md border border-destructive/30
+           px-2 py-1 text-xs font-medium text-destructive
+           cursor-pointer select-none whitespace-nowrap
+           transition-all duration-150
+           hover:bg-destructive/8 hover:border-destructive/50
+           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring
+           active:scale-[0.97]
+           disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100;
+  }
+}
+
 @keyframes fade-up {
   from { opacity: 0; transform: translateY(18px); }
   to   { opacity: 1; transform: translateY(0); }

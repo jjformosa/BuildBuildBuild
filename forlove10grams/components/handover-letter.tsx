@@ -26,7 +26,7 @@ export function HandoverLetter({
       <div className="pt-2">
         <Link
           href={`/books/${bookId}/edit`}
-          className="rounded-md border border-foreground/30 px-4 py-2 text-sm text-foreground hover:bg-foreground/5 transition-colors"
+          className="btn-outline-sm"
         >
           進入編輯 →
         </Link>

@@ -42,7 +42,7 @@ export function LoginSection({ redirectTo }: Props) {
       <button
         type="button"
         onClick={() => handleSignIn('google')}
-        className="flex w-full items-center gap-3 rounded-xl border border-border bg-card px-5 py-3.5 text-sm font-medium text-foreground shadow-sm transition-all duration-150 hover:border-primary/30 hover:shadow-[0_2px_12px_rgba(44,94,119,0.10)] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring cursor-pointer"
+        className="flex w-full items-center justify-center gap-3 rounded-xl border border-border bg-card px-5 py-3.5 text-sm font-medium text-muted-foreground shadow-sm transition-all duration-150 hover:border-primary/30 hover:text-foreground hover:shadow-[0_2px_12px_rgba(44,94,119,0.10)] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring cursor-pointer"
       >
         <GoogleIcon />
         使用 Google 帳號登入
@@ -51,7 +51,7 @@ export function LoginSection({ redirectTo }: Props) {
       <button
         type="button"
         onClick={() => handleSignIn('line')}
-        className="flex w-full items-center gap-3 rounded-xl bg-[#06C755] px-5 py-3.5 text-sm font-medium text-white shadow-sm transition-all duration-150 hover:bg-[#05B349] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring cursor-pointer"
+        className="flex w-full items-center justify-center gap-3 rounded-xl bg-[#06C755] px-5 py-3.5 text-sm font-medium text-white/85 shadow-sm transition-all duration-150 hover:bg-[#05B349] hover:text-white active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring cursor-pointer"
       >
         <LineIcon />
         使用 LINE 帳號登入

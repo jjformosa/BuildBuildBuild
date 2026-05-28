@@ -131,7 +131,7 @@ export default async function DashboardPage() {
           >
             <button
               type="submit"
-              className="rounded-lg border border-border px-3 py-1.5 text-sm text-muted-foreground hover:border-primary/40 hover:text-foreground transition-colors"
+              className="btn-outline-sm"
             >
               登出
             </button>
