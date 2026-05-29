@@ -7,6 +7,11 @@ if (process.env.CLOUDFRONT_URL) {
   remotePatterns.push({ protocol: 'https', hostname })
 }
 
+if (process.env.CLOUDFRONT_MEDIA_URL) {
+  const { hostname } = new URL(process.env.CLOUDFRONT_MEDIA_URL)
+  remotePatterns.push({ protocol: 'https', hostname })
+}
+
 if (process.env.S3_BUCKET_NAME && process.env.AWS_REGION) {
   remotePatterns.push({
     protocol: 'https',
