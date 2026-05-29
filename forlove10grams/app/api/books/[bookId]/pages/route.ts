@@ -5,6 +5,7 @@ import { dbConnect } from '@/lib/mongoose'
 import Book from '@/lib/models/book'
 import Page from '@/lib/models/page'
 import { canEditBook } from '@/lib/access'
+import { signImageUrl } from '@/lib/sign-media'
 
 export async function GET(
   req: NextRequest,
@@ -39,7 +40,7 @@ export async function GET(
       _id: p!._id.toString(),
       type: p!.type,
       content: p!.content ?? '',
-      mediaUrls: p!.mediaUrls,
+      mediaUrls: p!.type === 'carousel' ? p!.mediaUrls.map(signImageUrl) : p!.mediaUrls,
       transcodingStatus: p!.transcodingStatus ?? null,
     }))
 
