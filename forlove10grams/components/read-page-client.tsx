@@ -101,6 +101,14 @@ export function ReadPageClient({
 }: Props) {
   const scrollContainerRef = useRef<HTMLElement>(null)
 
+  // ── CloudFront signed cookie ──────────────────────────────────────────────────
+  const [tokenReady, setTokenReady] = useState(false)
+  useEffect(() => {
+    fetch(`/api/books/${bookId}/read-token`)
+      .then((r) => { if (r.ok) setTokenReady(true) })
+      .catch(() => {})
+  }, [bookId])
+
   // ── Infinite scroll ──────────────────────────────────────────────────────────
   const fetchMore = useCallback(
     async (cursor: string): Promise<ReadPageData[]> => {
@@ -293,7 +301,7 @@ export function ReadPageClient({
                       {page.type === 'carousel' ? (
                         <Carousel urls={page.mediaUrls} />
                       ) : (
-                        <VideoPlayer url={page.mediaUrls[0]} transcodingStatus={page.transcodingStatus} />
+                        <VideoPlayer url={page.mediaUrls[0]} transcodingStatus={page.transcodingStatus} tokenReady={tokenReady} />
                       )}
                     </div>
                   )}
