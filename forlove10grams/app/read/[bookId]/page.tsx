@@ -6,6 +6,7 @@ import Book from '@/lib/models/book'
 import Page from '@/lib/models/page'
 import User from '@/lib/models/user'
 import { canReadBook } from '@/lib/access'
+import { signImageUrl } from '@/lib/sign-media'
 import BookLike from '@/lib/models/book-like'
 import { ReadPageClient, type ReadPageData } from '@/components/read-page-client'
 
@@ -57,7 +58,7 @@ export default async function ReadBookPage({
     _id: p._id.toString(),
     type: p.type,
     content: p.content ?? '',
-    mediaUrls: p.mediaUrls,
+    mediaUrls: p.type === 'carousel' ? p.mediaUrls.map(signImageUrl) : p.mediaUrls,
     transcodingStatus: p.transcodingStatus ?? null,
   }))
 
