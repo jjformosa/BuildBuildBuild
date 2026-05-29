@@ -37,11 +37,7 @@ export function Carousel({ urls }: Props) {
 
   return (
     <>
-      {/* Polaroid-style container: white bg, padding heavier at bottom */}
-      <div
-        className="w-full bg-card shadow-[0_4px_24px_rgba(44,24,16,0.10)]"
-        style={{ padding: '12px 12px 28px' }}
-      >
+      <div className="w-full">
         {/* Embla viewport */}
         <div className="relative">
           <div className="overflow-hidden" ref={emblaRef}>
@@ -85,9 +81,9 @@ export function Carousel({ urls }: Props) {
           )}
         </div>
 
-        {/* Dot indicators */}
+        {/* Dot indicators bar */}
         {urls.length > 1 && (
-          <div className="mt-3 flex justify-center gap-1.5">
+          <div className="flex h-8 items-center justify-center gap-1.5">
             {urls.map((_, i) => (
               <button
                 key={i}

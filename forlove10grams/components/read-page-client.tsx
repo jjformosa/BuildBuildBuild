@@ -101,6 +101,14 @@ export function ReadPageClient({
 }: Props) {
   const scrollContainerRef = useRef<HTMLElement>(null)
 
+  // ── CloudFront signed cookie ──────────────────────────────────────────────────
+  const [tokenReady, setTokenReady] = useState(false)
+  useEffect(() => {
+    fetch(`/api/books/${bookId}/read-token`)
+      .then((r) => { if (r.ok) setTokenReady(true) })
+      .catch(() => {})
+  }, [bookId])
+
   // ── Infinite scroll ──────────────────────────────────────────────────────────
   const fetchMore = useCallback(
     async (cursor: string): Promise<ReadPageData[]> => {
@@ -288,12 +296,15 @@ export function ReadPageClient({
                   onViewportEnter={() => markSeen(page._id)}
                   viewport={{ root: scrollContainerRef, once: true, amount: 0.1 }}
                 >
-                  {page.mediaUrls.length > 0 &&
-                    (page.type === 'carousel' ? (
-                      <Carousel urls={page.mediaUrls} />
-                    ) : (
-                      <VideoPlayer url={page.mediaUrls[0]} transcodingStatus={page.transcodingStatus} />
-                    ))}
+                  {page.mediaUrls.length > 0 && (
+                    <div className="-mx-4 sm:mx-0">
+                      {page.type === 'carousel' ? (
+                        <Carousel urls={page.mediaUrls} />
+                      ) : (
+                        <VideoPlayer url={page.mediaUrls[0]} transcodingStatus={page.transcodingStatus} tokenReady={tokenReady} />
+                      )}
+                    </div>
+                  )}
 
                   {page.content && (
                     <div className="mt-6 text-sm leading-relaxed text-foreground/85 [&_blockquote]:border-l-2 [&_blockquote]:border-foreground/20 [&_blockquote]:pl-3 [&_blockquote]:italic [&_h1]:mb-1 [&_h1]:text-xl [&_h1]:font-semibold [&_h1]:text-foreground [&_h2]:mb-1 [&_h2]:text-lg [&_h2]:font-semibold [&_h3]:font-medium [&_ol]:mt-2 [&_ol]:list-decimal [&_ol]:pl-5 [&_p]:mt-3 [&_strong]:font-semibold [&_ul]:mt-2 [&_ul]:list-disc [&_ul]:pl-5">

@@ -7,9 +7,10 @@ import type { TranscodingStatus } from '@/lib/models/page'
 type Props = {
   url: string
   transcodingStatus?: TranscodingStatus | null
+  tokenReady?: boolean
 }
 
-export function VideoPlayer({ url, transcodingStatus }: Props) {
+export function VideoPlayer({ url, transcodingStatus, tokenReady = true }: Props) {
   const videoRef = useRef<HTMLVideoElement>(null)
   const [error, setError] = useState(false)
 
@@ -37,9 +38,10 @@ export function VideoPlayer({ url, transcodingStatus }: Props) {
     }
 
     if (transcodingStatus !== 'ready') return
+    if (!tokenReady) return
 
     if (Hls.isSupported()) {
-      const hls = new Hls()
+      const hls = new Hls({ xhrSetup: (xhr) => { xhr.withCredentials = true } })
       hls.loadSource(url)
       hls.attachMedia(video)
       hls.on(Hls.Events.ERROR, (_e, data) => {
@@ -47,12 +49,12 @@ export function VideoPlayer({ url, transcodingStatus }: Props) {
       })
       return () => hls.destroy()
     } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-      // Safari native HLS support
+      // Safari native HLS — cookies are sent automatically
       video.src = url
     } else {
       setError(true)
     }
-  }, [url, transcodingStatus])
+  }, [url, transcodingStatus, tokenReady])
 
   if (transcodingStatus === 'pending' || transcodingStatus === 'processing') {
     return (
