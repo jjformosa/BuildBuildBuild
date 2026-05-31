@@ -46,7 +46,7 @@ export default async function EditBookPage({
 
   return (
     <ShareStatusProvider>
-    <main className="flex h-screen flex-col bg-background">
+    <main className="flex flex-col min-h-dvh md:h-dvh overflow-x-hidden bg-background">
       <header className="flex flex-none items-center justify-between border-b border-foreground/10 px-4 sm:px-6 py-3 sm:py-4">
         <div className="flex min-w-0 items-center gap-2 sm:gap-3">
           <Link

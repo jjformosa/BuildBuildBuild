@@ -90,7 +90,7 @@ function SortablePageItem({
         </button>
         <button
           onClick={(e) => { e.stopPropagation(); onDelete() }}
-          className="flex-none opacity-0 group-hover:opacity-100 text-foreground/25 hover:text-red-400 transition-opacity text-xs px-1"
+          className="flex-none opacity-100 md:opacity-0 md:group-hover:opacity-100 text-foreground/25 hover:text-red-400 transition-opacity text-xs px-2 py-1"
           title="刪除頁面"
         >
           ✕
@@ -117,9 +117,18 @@ export function BookEditorClient({
   const [saveState, setSaveState] = useState<'saved' | 'saving' | 'unsaved'>('saved')
   const [addingType, setAddingType] = useState<'carousel' | 'video' | null>(null)
   const [showTagModal, setShowTagModal] = useState(false)
+  const [isMobile, setIsMobile] = useState(false)
   const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const selectedPage = pages.find((p) => p._id === selectedId) ?? null
+
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 767px)')
+    setIsMobile(mq.matches)
+    const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches)
+    mq.addEventListener('change', handler)
+    return () => mq.removeEventListener('change', handler)
+  }, [])
 
   // Warn on page unload when there are unsaved changes
   useEffect(() => {
@@ -252,7 +261,7 @@ export function BookEditorClient({
   }
 
   return (
-    <div className="flex flex-1 overflow-hidden">
+    <div className="flex flex-1 min-w-0 md:overflow-hidden">
       {/* Sidebar — desktop only */}
       <aside className="hidden md:flex w-52 flex-none flex-col overflow-y-auto border-r border-foreground/10">
         <div className="flex-none border-b border-foreground/10 px-4 py-3">
@@ -329,16 +338,16 @@ export function BookEditorClient({
       </aside>
 
       {/* Editor area */}
-      <section className="flex flex-1 flex-col overflow-hidden">
+      <section className="flex flex-1 flex-col w-full min-w-0 md:overflow-hidden">
         {/* Mobile page selector — horizontal scrollable strip, hidden on desktop */}
         <div className="flex md:hidden flex-none items-center border-b border-foreground/10">
           {/* Scrollable page tabs */}
-          <div className="flex flex-1 overflow-x-auto gap-1 px-2 py-1.5">
+          <div className="flex flex-1 overflow-x-auto gap-1 px-2 py-0.5">
             {pages.map((page, i) => (
               <button
                 key={page._id}
                 onClick={() => selectPage(page._id)}
-                className={`flex-none rounded px-2.5 py-1 text-xs whitespace-nowrap transition-colors ${
+                className={`flex-none rounded px-2.5 text-xs whitespace-nowrap transition-colors min-h-[44px] ${
                   selectedId === page._id
                     ? 'bg-foreground/10 text-foreground'
                     : 'text-foreground/50 hover:bg-foreground/5'
@@ -349,7 +358,7 @@ export function BookEditorClient({
             ))}
           </div>
           {/* Add-page buttons — always visible on the right */}
-          <div className="flex flex-none gap-1 border-l border-foreground/10 px-2 py-1.5">
+          <div className="flex flex-none gap-1 border-l border-foreground/10 px-2 py-0.5">
             {pages.length >= PAGE_LIMIT ? (
               <span className="text-xs text-foreground/40 px-2 py-1">已達上限</span>
             ) : (
@@ -358,7 +367,7 @@ export function BookEditorClient({
                   key={type}
                   onClick={() => handleAddPage(type)}
                   disabled={addingType !== null}
-                  className="btn-outline-xs flex-none"
+                  className="btn-outline-xs flex-none min-h-[44px]"
                 >
                   {addingType === type ? '…' : type === 'carousel' ? '+ 輪播' : '+ 影片'}
                 </button>
@@ -377,14 +386,13 @@ export function BookEditorClient({
                 {saveState === 'saving' ? '儲存中…' : saveState === 'unsaved' ? '未儲存' : '已儲存'}
               </span>
             </div>
-            <div className="flex-1 overflow-auto p-6 space-y-6">
-              <div data-color-mode="light">
-                <p className="mb-2 text-xs text-foreground/50">說明文字（Markdown）</p>
+            <div className="flex-1 overflow-auto p-4 md:p-6 space-y-6">
+              <div data-color-mode="light" suppressHydrationWarning>
                 <MDEditor
                   value={selectedPage.content ?? ''}
                   onChange={handleContentChange}
                   height={300}
-                  preview="live"
+                  preview={isMobile ? 'edit' : 'live'}
                   commands={getCommands().filter((cmd) => cmd.name !== 'image')}
                   extraCommands={getExtraCommands()}
                 />
