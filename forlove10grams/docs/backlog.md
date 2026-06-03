@@ -164,13 +164,13 @@
 
 ## 技術改善（不影響功能，但值得處理）
 
-### S3 / CloudFront 存取控制
+### ~~S3 / CloudFront 存取控制~~ ✅ 已完成
 
-**問題**：CloudFront URL 目前公開，知道連結就能讀取媒體資源。影片（HLS）尤其直接暴露在 client 端。
+**原問題**：CloudFront URL 公開，知道連結就能讀取媒體資源。影片（HLS）全部 segment URL 暴露在 client 端。
 
-**選定方向**：CloudFront Signed Cookies，scoped 到 `books/{bookId}/*`，有效期 4 小時。圖片透過 next/image 已有保護，首要目標是 HLS 影片串流。
+**實際實作**：影片以 CloudFront Signed Cookie（custom policy，wildcard `books/{bookId}/*`，4 小時有效）保護；圖片以 CloudFront Signed URL（canned policy，stable UTC 午夜 expiry）保護。兩者皆在 CloudFront behavior 啟用 Restrict Viewer Access，直接存取 CF URL 回傳 403。已合併至 `refactor-2026-with-claude`。
 
-**詳細設計**：[docs/s3-access-control-memo.md](s3-access-control-memo.md)
+**詳細設計與實作決策**：[docs/s3-access-control-memo.md](s3-access-control-memo.md)
 
 ---
 

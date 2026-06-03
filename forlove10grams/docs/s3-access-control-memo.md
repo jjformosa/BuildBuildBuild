@@ -1,81 +1,97 @@
 # S3 / CloudFront 存取控制備忘
 
 > 目標：讓 S3 資源只有授權帳戶能讀取，而不是任何知道 URL 的人都能存取。
+>
+> **狀態：已完成（2026-05-30）**
 
 ---
 
-## 現況
+## 最終實作
 
-- S3 bucket 搭配 CloudFront CDN，目前 CloudFront URL 是公開的
+兩種媒體用不同機制保護，原因在於路徑到瀏覽器的方式不同：
+
+| 媒體 | 機制 | 原因 |
+|------|------|------|
+| 圖片（carousel）| **CloudFront Signed URL**（query param 簽章，canned policy） | next/image 是 server-side fetch，無法帶 cookie；URL query param 簽章不受此限 |
+| 影片 HLS（.m3u8 + .ts）| **CloudFront Signed Cookie**（custom policy，wildcard URL） | hls.js 直接在瀏覽器 fetch，cookie 跟著每個 segment 自動送出 |
+
+兩者都需要 CloudFront 對應路徑啟用「Restrict Viewer Access」；IAM user 保留 S3 直讀權限，供 next/image server fetch 使用。
+
+---
+
+## 原始分析（設計階段）
+
+- S3 bucket 搭配 CloudFront CDN，原本 CloudFront URL 是公開的
 - **寫入**：已有保護（presigned PutObject URL 只有通過 `canEditBook()` 才拿得到）
 - **讀取**：無保護，知道 CloudFront URL 就能讀
 
-## 媒體類型分析
-
-| 媒體 | 到達瀏覽器的路徑 | 風險 |
-|------|----------------|------|
-| 圖片（carousel、封面）| 瀏覽器 → `/_next/image` → Next.js server fetch → 瀏覽器 | **低**：CF URL 不直接到瀏覽器，next/image 已有 session 把關 |
-| 影片 HLS（.m3u8 + .ts）| hls.js 直接 fetch CloudFront | **高**：所有 segment URL 都在 client，完全公開 |
-
-→ **首要目標**：保護 HLS 影片。圖片次之（next/image 已有一定程度的保護）。
+→ 首要目標：HLS 影片（全部 segment URL 暴露在 client）。圖片次之（next/image 已有 session 把關但 URL 仍可被直接存取）。
 
 ---
 
-## 選定方案：CloudFront Signed Cookies
+## AWS 設定（已完成）
 
-### 為什麼選這個
-
-- 不需要對每個 resource 個別簽章（不需要改 DB 結構或 URL）
-- HLS 串流天然運作：cookie 跟著每個 `.ts` segment 請求自動發出
-- CloudFront 內建功能，無額外 AWS 費用
-
-### 方案不選的原因
-
-| 方案 | 放棄原因 |
-|------|---------|
-| Presigned URL per resource | HLS m3u8 playlist 內的 segment URL 需全部重寫並簽章，非常複雜 |
-| Next.js API Proxy | 所有頻寬走 server，失去 CDN，影片串流延遲高、成本高 |
-
----
-
-## 需要做的事情
-
-### AWS 設定（一次性）
-
-1. **S3 Block Public Access**：確認 bucket 已關閉公開存取（通常已設定）
+1. **S3 Block Public Access**：確認 bucket 已關閉公開存取
 2. **CloudFront OAC（Origin Access Control）**：
-   - 在 CloudFront 建立 OAC，取代舊的 OAI（如有）
-   - 更新 S3 bucket policy，允許 CloudFront OAC principal 的 `s3:GetObject`
-   - **保留** IAM user（`AWS_ACCESS_KEY_ID`）的 `s3:GetObject` 權限，供 next/image server-side fetch 使用
+   - CloudFront OAC 已設定，S3 bucket policy 允許 OAC principal 的 `s3:GetObject`
+   - IAM user（`AWS_ACCESS_KEY_ID`）保留 `s3:GetObject`，供 next/image server-side fetch 使用
 3. **CloudFront Key Group**：
-   - 產生 RSA 2048-bit key pair（`openssl genrsa 2048`）
-   - Public key 上傳至 CloudFront → 建立 Key Group
+   - RSA 2048-bit key pair 已產生，Public key 上傳至 CloudFront
+   - Key Pair ID：`KKMT4QYPYOE5W`，Key Group：`forlove10grams-key-group`
    - Private key 存入環境變數（`CLOUDFRONT_PRIVATE_KEY`、`CLOUDFRONT_KEY_PAIR_ID`）
-4. **CloudFront Distribution 設定**：
-   - 對影片路徑（`/books/*/pages/*/video-hls/*`）啟用「Restrict Viewer Access」→ Trusted Key Groups
-   - 圖片路徑（`/books/*/pages/*/carousel/*`、`/books/*/cover*`）**暫時不限制**（next/image 已保護）
+4. **CloudFront Distribution Behaviors**（`media-keep-album.tsaipanmwws.name`）：
+   - `/books/*/pages/*/video-hls/*` → Restrict Viewer Access：Trusted Key Groups
+   - `/books/*/pages/*/carousel/*` → Restrict Viewer Access：Trusted Key Groups
+5. **自訂網域**：
+   - 使用 `media-keep-album.tsaipanmwws.name`（直接子網域），而非 `media.keep-album.tsaipanmwws.name`
+   - 原因：`keep-album.tsaipanmwws.name` 的 CAA 記錄不含 `amazon.com`；直接子網域繼承 `tsaipanmwws.name` 的 CAA（含 `amazon.com`），同時可使用既有 `*.tsaipanmwws.name` 萬用憑證
 
-### Next.js 程式碼
+---
 
-1. **新增 API endpoint**：`GET /api/books/[bookId]/read-token`
-   - 驗 session + `canReadBook()`
-   - 使用 `@aws-sdk/cloudfront-signer` 產生 signed cookie
-   - Cookie policy：`Resource: https://<CF_DOMAIN>/books/<bookId>/*`，有效期 4 小時
-   - `Set-Cookie` 三個 header：`CloudFront-Policy`、`CloudFront-Signature`、`CloudFront-Key-Pair-Id`
-   - Cookie 設定：`HttpOnly; Secure; SameSite=None; Path=/`
+## Next.js 程式碼（已完成）
 
-2. **Read page**：頁面載入時呼叫 read-token API，cookie 設好後再初始化 hls.js
+### 影片：Signed Cookie
 
-3. **hls.js config**：
-   ```ts
-   new Hls({ xhrSetup: (xhr) => { xhr.withCredentials = true } })
-   ```
+**`app/api/books/[bookId]/read-token/route.ts`**
 
-4. **環境變數新增**：
-   ```
-   CLOUDFRONT_PRIVATE_KEY=<RSA private key PEM>
-   CLOUDFRONT_KEY_PAIR_ID=<CloudFront key pair ID>
-   ```
+- 驗 session + `canReadBook()`
+- 使用 `@aws-sdk/cloudfront-signer` 的 `getSignedCookies`，帶入明確的 `policy` JSON（custom policy，wildcard：`${CLOUDFRONT_MEDIA_URL}/books/${bookId}/*`）
+- 有效期 4 小時
+- Set-Cookie 三個 header：`CloudFront-Policy`、`CloudFront-Signature`、`CloudFront-Key-Pair-Id`
+- Cookie 設定：`HttpOnly; Secure; SameSite=None; Path=/; Domain=.tsaipanmwws.name`（共享父域，讓 keep-album app 與 media CF domain 都能用）
+
+**`components/read-page-client.tsx`**
+
+- mount 時 fetch `read-token` API，`tokenReady` state 設為 true 後才初始化 hls.js
+
+**`components/video-player.tsx`**
+
+```ts
+new Hls({ xhrSetup: (xhr) => { xhr.withCredentials = true } })
+```
+
+### 圖片：Signed URL
+
+**`lib/sign-media.ts`**
+
+- 使用 `@aws-sdk/cloudfront-signer` 的 `getSignedUrl`（canned policy）
+- expiry 對齊下一個 UTC 午夜（stable expiry），讓 next/image 快取有效命中（相同 URL = 快取 hit）
+- 環境變數缺失時 fallback 回原始 URL（graceful degradation）
+
+**`app/read/[bookId]/page.tsx`** 與 **`app/api/books/[bookId]/pages/route.ts`**
+
+- carousel 頁的 `mediaUrls` 在回傳前一律 `p.mediaUrls.map(signImageUrl)`
+
+### 環境變數
+
+```
+CLOUDFRONT_MEDIA_URL=https://media-keep-album.tsaipanmwws.name
+CLOUDFRONT_KEY_PAIR_ID=KKMT4QYPYOE5W
+CLOUDFRONT_PRIVATE_KEY=-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----\n
+CLOUDFRONT_COOKIE_DOMAIN=.tsaipanmwws.name
+```
+
+> `CLOUDFRONT_PRIVATE_KEY` 存入時換行以 `\n` 表示（單行字串），`sign-media.ts` 與 `read-token/route.ts` 讀取時再 `.replace(/\\n/g, '\n')` 還原。
 
 ### 套件
 
@@ -85,8 +101,19 @@ npm install @aws-sdk/cloudfront-signer
 
 ---
 
-## 後續考慮（未決）
+## 已解決的設計問題
 
-- **圖片是否也要鎖**：目前 next/image 保護了大多數情境，但直接知道 CF URL 的人還是能讀。若要完全鎖，可對所有路徑都啟用 Signed Cookie，但需要確認 next/image server-side fetch 的行為（需要讓 server 用 IAM 直接讀 S3，而不是走 CloudFront）。
-- **Cookie SameSite**：若 CloudFront domain 與 Next.js domain 不同（subdomain），需要確認 `SameSite=None` 搭配 HTTPS 是否在所有瀏覽器正常運作。
-- **Editor 寫入**：目前 presigned PutObject URL 機制已足夠，暫不需要改動。
+| 問題 | 解法 |
+|------|------|
+| next/image 無法帶 cookie → Signed Cookie 對圖片無效 | 改用 Signed URL（query param），server 簽好後直接給 next/image |
+| Signed URL 每次不同 → next/image 快取失效 | stable expiry 對齊 UTC 午夜，同一天內同一圖片 URL 相同 |
+| 圖片 MongoDB ObjectID URL 夠隨機不怕猜測嗎 | ObjectID 有 96 bit entropy，隨機猜中機率可忽略；Signed URL 防的是「知道 URL 的人繞過 auth」 |
+| Cookie domain 跨域（app domain ≠ media CF domain） | 兩者都是 `*.tsaipanmwws.name` 的子網域；設 `Domain=.tsaipanmwws.name` 共享 cookie |
+| CAA 記錄導致 ACM 憑證申請失敗 | 改用直接子網域 `media-keep-album.tsaipanmwws.name`，繼承正確的 CAA |
+
+---
+
+## 未處理（已知）
+
+- **封面圖**（`/books/*/cover*`）：目前未在 CloudFront behavior 中限制。封面僅在 dashboard 顯示，context 為已登入使用者，風險低；如需保護，補一條 behavior 並在封面讀取路徑加 `signImageUrl` 即可。
+- **Editor 寫入**：presigned PutObject URL 機制已足夠，不需要改動。
