@@ -6,7 +6,7 @@ import remarkGfm from 'remark-gfm'
 import { motion } from 'framer-motion'
 import { signOut } from 'next-auth/react'
 import { Toc, type TocPage } from '@/components/toc'
-import { Carousel } from '@/components/carousel'
+import { PolaroidCarousel } from '@/components/polaroid-carousel'
 import { VideoPlayer } from '@/components/video-player'
 import { useReadProgress } from '@/hooks/use-read-progress'
 import { useInfiniteScroll } from '@/hooks/use-infinite-scroll'
@@ -299,7 +299,7 @@ export function ReadPageClient({
                   {page.mediaUrls.length > 0 && (
                     <div className="-mx-4 sm:mx-0">
                       {page.type === 'carousel' ? (
-                        <Carousel urls={page.mediaUrls} />
+                        <PolaroidCarousel urls={page.mediaUrls} />
                       ) : (
                         <VideoPlayer url={page.mediaUrls[0]} transcodingStatus={page.transcodingStatus} tokenReady={tokenReady} />
                       )}
