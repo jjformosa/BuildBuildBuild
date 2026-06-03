@@ -4,6 +4,7 @@ import { auth } from '@/auth'
 import { dbConnect } from '@/lib/mongoose'
 import Book from '@/lib/models/book'
 import Page from '@/lib/models/page'
+import { signImageUrl } from '@/lib/sign-media'
 import { ShareButton } from '@/components/share-button'
 import { CoverImageButton } from '@/components/cover-image-button'
 import { BookEditorClient, type PageData } from '@/components/book-editor-client'
@@ -37,12 +38,12 @@ export default async function EditBookPage({
     _id: p._id.toString(),
     type: p.type,
     content: p.content,
-    mediaUrls: p.mediaUrls,
+    mediaUrls: p.type === 'carousel' ? p.mediaUrls.map(signImageUrl) : p.mediaUrls,
   }))
 
   const carouselImages = rawPages
     .filter((p) => p.type === 'carousel')
-    .flatMap((p) => p.mediaUrls)
+    .flatMap((p) => p.mediaUrls.map(signImageUrl))
 
   return (
     <ShareStatusProvider>
