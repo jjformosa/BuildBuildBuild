@@ -102,7 +102,7 @@ export function MediaUploader({ bookId, pageId, fileType, mediaUrls, onUrlsChang
       setProgress(null)
       return currentUrls
     }
-    const { presignedUrl, s3Url } = await presignRes.json()
+    const { presignedUrl, s3Url, signedUrl } = await presignRes.json()
 
     try {
       await new Promise<void>((resolve, reject) => {
@@ -131,7 +131,7 @@ export function MediaUploader({ bookId, pageId, fileType, mediaUrls, onUrlsChang
       pollTranscoding()
       return currentUrls
     } else {
-      const newUrls = [...currentUrls, s3Url]
+      const newUrls = [...currentUrls, signedUrl || s3Url]
       await fetch(`/api/books/${bookId}/pages/${pageId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
