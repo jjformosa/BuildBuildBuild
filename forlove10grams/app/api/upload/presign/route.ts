@@ -1,3 +1,4 @@
+import { randomUUID } from 'crypto'
 import type { NextRequest } from 'next/server'
 import { z } from 'zod'
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3'
@@ -7,6 +8,7 @@ import { dbConnect } from '@/lib/mongoose'
 import Book from '@/lib/models/book'
 import Page from '@/lib/models/page'
 import { canEditBook } from '@/lib/access'
+import { signImageUrl } from '@/lib/sign-media'
 
 const s3 = new S3Client({
   region: process.env.AWS_REGION!,
@@ -71,7 +73,7 @@ export async function POST(req: NextRequest) {
     if (!pageId) return Response.json({ error: 'pageId required for video' }, { status: 400 })
     s3Key = `books/${bookId}/pages/${pageId}/video-raw.${ext}`
   } else {
-    s3Key = `books/${bookId}/pages/${pageId}/carousel/image-${index}.${ext}`
+    s3Key = `books/${bookId}/pages/${pageId}/carousel/${randomUUID().slice(0, 8)}-image.${ext}`
   }
 
   const command = new PutObjectCommand({
@@ -88,5 +90,5 @@ export async function POST(req: NextRequest) {
     await Page.findByIdAndUpdate(pageId, { transcodingStatus: 'pending', mediaUrls: [] })
   }
 
-  return Response.json({ presignedUrl, s3Key, s3Url })
+  return Response.json({ presignedUrl, s3Key, s3Url, signedUrl: signImageUrl(s3Url) })
 }
