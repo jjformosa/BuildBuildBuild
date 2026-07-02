@@ -554,6 +554,7 @@ export function DashboardShell({
   editorBooks,
   readerBooks,
   createButton,
+  quickCapture,
 }: {
   isAdmin: boolean
   ownerBooks: DashboardBook[]
@@ -561,6 +562,7 @@ export function DashboardShell({
   editorBooks: DashboardBook[]
   readerBooks: ReaderBookItem[]
   createButton: React.ReactNode
+  quickCapture?: React.ReactNode
 }) {
   const [query, setQuery] = useState('')
   const [debouncedSearch, setDebouncedSearch] = useState('')
@@ -607,6 +609,8 @@ export function DashboardShell({
           )}
         </div>
       </form>
+
+      {quickCapture && <div className="-mt-4">{quickCapture}</div>}
 
       {/* Admin: owner books */}
       {isAdmin && (

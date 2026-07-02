@@ -7,6 +7,7 @@ import '@/lib/models/user'
 import Image from 'next/image'
 import logo from '@/public/logo.png'
 import { CreateBookButton } from '@/components/create-book-button'
+import { QuickCaptureBar } from '@/components/quick-capture-bar'
 import {
   DashboardShell,
   type DashboardBook,
@@ -148,6 +149,7 @@ export default async function DashboardPage() {
             editorBooks={editorBooks}
             readerBooks={readerBooks}
             createButton={<CreateBookButton />}
+            quickCapture={isAdmin ? <QuickCaptureBar /> : null}
           />
         ) : (
           <div className="py-24 text-center">
