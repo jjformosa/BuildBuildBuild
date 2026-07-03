@@ -8,6 +8,7 @@ export interface IPage extends Document {
   content?: string
   mediaUrls: string[]
   transcodingStatus?: TranscodingStatus
+  happenedAt?: Date
 }
 
 const PageSchema = new Schema<IPage>(
@@ -20,6 +21,7 @@ const PageSchema = new Schema<IPage>(
       type: String,
       enum: ['pending', 'processing', 'ready', 'error'],
     },
+    happenedAt: { type: Date },
   },
   { timestamps: true }
 )

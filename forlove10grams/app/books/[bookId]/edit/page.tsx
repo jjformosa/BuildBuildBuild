@@ -45,6 +45,7 @@ export default async function EditBookPage({
     type: p.type,
     content: p.content,
     mediaUrls: p.type === 'carousel' ? p.mediaUrls.map(signImageUrl) : p.mediaUrls,
+    happenedAt: p.happenedAt ? p.happenedAt.toISOString().slice(0, 10) : null,
   }))
 
   const carouselImages = rawPages

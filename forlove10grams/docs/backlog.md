@@ -6,7 +6,7 @@
 ---
 
 ## 高優先（已在 product-brief 確認）
-
+### 如果有需要恢復session做修正 claude --resume 4cbd5cd1-eeb8-4054-b8ec-d083e3b85d56
 ### 快速記錄入口
 
 **問題**：建書流程太重。結束一頓飯或一次潛水後，使用者需要：建書 → 填標題 → 新增頁面 → 選類型 → 才能上傳。這個摩擦足以讓人放棄。
@@ -89,21 +89,27 @@
 
 **實際實作**：以自訂 `FullscreenGallery` 元件取代 `yet-another-react-lightbox`，純 CSS fixed overlay 黑底全屏，支援左右箭頭（首末張自動隱藏）、dot indicators、觸控 swipe、鍵盤 Escape / ← / →、圖片載入 pulse placeholder。移除 `yet-another-react-lightbox` 套件。已合併至 `improve-ux`。
 
-### 手機上傳體驗
+### ~~手機上傳體驗~~ ✅ 已完成
 
-**問題**：目前的媒體上傳流程未針對手機優化（相機直拍、多選、壓縮）。
+**原問題**：目前的媒體上傳流程未針對手機優化（相機直拍、多選、壓縮）。
 
-**方向**：`<input type="file" accept="image/*" capture="environment">` 直接開啟相機，多檔上傳支援，上傳前 client-side 壓縮。
+**實際實作**：`MediaUploader` 的單一上傳按鈕拆成「拍照／拍攝影片」（`capture="environment"`，直接開相機）與「相簿／選擇影片」（原行為，多選）兩個按鈕，圖片與影片頁皆適用；多選與 client-side 壓縮原本就已具備，不需額外處理。上傳中的百分比文字改顯示在進度條旁，不再擠在按鈕上。順帶拿掉 `QuickCaptureBar` 的「影片」入口（只留「照片」「文字」），因為實際錄影動作仍要到編輯頁才發生，這個按鈕沒有帶來額外速度。已合併至 `refactor-2026-with-claude`。
+
+**詳細設計**：[docs/superpowers/specs/2026-07-03-mobile-upload-experience-design.md](superpowers/specs/2026-07-03-mobile-upload-experience-design.md)
 
 ---
 
 ## 新功能方向（2026-05-28 探索）
 
-### 頁面日期 / 時間軸
+### ~~頁面日期 / 時間軸~~ ✅ 部分完成
 
-**問題**：頁面沒有「這件事發生在什麼時候」的欄位，但記憶本的本質是時間性的。
+**原問題**：頁面沒有「這件事發生在什麼時候」的欄位，但記憶本的本質是時間性的。
 
-**方向**：每頁可選填 `happenedAt` 日期欄位。書的封面可顯示時間範圍（例如「2024年11月」）。為未來「N 年前的今天」功能打底層基礎。
+**實際實作**：`Page` 新增 `happenedAt`（optional，完整日期）欄位，編輯頁頂部列（頁型徽章旁）可設定/清除，選了立即儲存（不經過 debounce）。已合併至 `refactor-2026-with-claude`。
+
+**尚未做**：書封面時間範圍顯示、「N 年前的今天」功能——這兩項當初就決定留到 `happenedAt` 資料開始累積後再做，詳見設計文件的「後續演進」。
+
+**詳細設計**：[docs/superpowers/specs/2026-07-03-page-happened-at-design.md](superpowers/specs/2026-07-03-page-happened-at-design.md)
 
 ---
 
