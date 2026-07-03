@@ -26,7 +26,7 @@
 **Interfaces:**
 - Produces: `IPage.happenedAt?: Date` — later tasks read/write this field by name.
 
-- [ ] **Step 1: Add the field to the interface and schema**
+- [x] **Step 1: Add the field to the interface and schema**
 
 In `forlove10grams/lib/models/page.ts`, find:
 
@@ -78,12 +78,12 @@ Replace with:
 )
 ```
 
-- [ ] **Step 2: Typecheck**
+- [x] **Step 2: Typecheck**
 
 Run: `cd forlove10grams && npx tsc --noEmit`
 Expected: no errors related to `lib/models/page.ts`.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add forlove10grams/lib/models/page.ts
@@ -101,7 +101,7 @@ git commit -m "feat: add happenedAt field to Page model"
 - Consumes: `IPage.happenedAt` from Task 1.
 - Produces: `PATCH /api/books/[bookId]/pages/[pageId]` now accepts an optional `happenedAt: string | null` in the request body.
 
-- [ ] **Step 1: Extend `PatchPageBody`**
+- [x] **Step 1: Extend `PatchPageBody`**
 
 Find:
 
@@ -124,12 +124,12 @@ const PatchPageBody = z.object({
 
 No other change needed in this file — `Object.assign(page, parsed.data)` (already present in the `PATCH` handler) assigns `happenedAt` the same way it assigns `content`/`mediaUrls` today; Mongoose casts the `"YYYY-MM-DD"` string to `Date` on assignment for a `Date`-typed schema path, and assigning `null` clears it.
 
-- [ ] **Step 2: Typecheck**
+- [x] **Step 2: Typecheck**
 
 Run: `cd forlove10grams && npx tsc --noEmit`
 Expected: no errors related to this route file.
 
-- [ ] **Step 3: Lint**
+- [x] **Step 3: Lint**
 
 Run: `cd forlove10grams && npm run lint`
 Expected: no errors related to this route file.
@@ -160,7 +160,7 @@ fetch(`/api/books/<bookId>/pages/<pageId>`, {
 
 Expected: response JSON has `"happenedAt":null` (or the key absent).
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add "forlove10grams/app/api/books/[bookId]/pages/[pageId]/route.ts"
@@ -178,7 +178,7 @@ git commit -m "feat: accept happenedAt in page PATCH endpoint"
 - Consumes: `IPage.happenedAt` from Task 1.
 - Produces: `PageData.happenedAt: string | null` populated for `BookEditorClient` (the `PageData` type itself is updated in Task 4; this task supplies the value).
 
-- [ ] **Step 1: Add `happenedAt` when mapping `rawPages` to `PageData[]`**
+- [x] **Step 1: Add `happenedAt` when mapping `rawPages` to `PageData[]`**
 
 Find:
 
@@ -205,7 +205,7 @@ Replace with:
 
 This will not typecheck until Task 4 adds `happenedAt` to the `PageData` type — that's expected, do Task 4 immediately after this step before running the typecheck below.
 
-- [ ] **Step 2: Commit together with Task 4**
+- [x] **Step 2: Commit together with Task 4**
 
 Do not commit this task in isolation — `npx tsc --noEmit` will fail until `PageData` (Task 4) has the matching field. Proceed directly to Task 4, then typecheck and commit both files together.
 
@@ -220,7 +220,7 @@ Do not commit this task in isolation — `npx tsc --noEmit` will fail until `Pag
 - Consumes: `PageData.happenedAt` populated by Task 3.
 - Produces: `PageData.happenedAt?: string | null` (type), `handleHappenedAtChange(value: string): void` (local function, not exported).
 
-- [ ] **Step 1: Add `happenedAt` to the `PageData` type**
+- [x] **Step 1: Add `happenedAt` to the `PageData` type**
 
 Find:
 
@@ -245,7 +245,7 @@ export type PageData = {
 }
 ```
 
-- [ ] **Step 2: Normalize `happenedAt` when a new page is created**
+- [x] **Step 2: Normalize `happenedAt` when a new page is created**
 
 Find (inside `handleAddPage`):
 
@@ -270,7 +270,7 @@ Replace with:
         }
 ```
 
-- [ ] **Step 3: Add `handleHappenedAtChange`**
+- [x] **Step 3: Add `handleHappenedAtChange`**
 
 Find `handleDeletePage` (it comes right after `handleContentChange`):
 
@@ -296,7 +296,7 @@ Insert the new function immediately before it:
   async function handleDeletePage(pageId: string) {
 ```
 
-- [ ] **Step 4: Add the date input to the top bar**
+- [x] **Step 4: Add the date input to the top bar**
 
 Find:
 
@@ -341,17 +341,17 @@ Replace with:
             </div>
 ```
 
-- [ ] **Step 5: Typecheck (covers Task 3 + Task 4 together)**
+- [x] **Step 5: Typecheck (covers Task 3 + Task 4 together)**
 
 Run: `cd forlove10grams && npx tsc --noEmit`
 Expected: no errors related to `book-editor-client.tsx` or `app/books/[bookId]/edit/page.tsx`.
 
-- [ ] **Step 6: Lint**
+- [x] **Step 6: Lint**
 
 Run: `cd forlove10grams && npm run lint`
 Expected: no errors related to either file.
 
-- [ ] **Step 7: Commit Task 3 + Task 4 together**
+- [x] **Step 7: Commit Task 3 + Task 4 together**
 
 ```bash
 git add "forlove10grams/app/books/[bookId]/edit/page.tsx" forlove10grams/components/book-editor-client.tsx

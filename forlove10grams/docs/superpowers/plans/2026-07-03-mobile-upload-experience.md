@@ -26,7 +26,7 @@
 - Consumes: nothing new — `Props`, `handleFiles`, `progress`, `atImageLimit`, `isTranscoding` all already exist in this file (lines 7–151 of the current version).
 - Produces: no new exports; `MediaUploader`'s public `Props` type is unchanged.
 
-- [ ] **Step 1: Replace the single `inputRef` with two refs**
+- [x] **Step 1: Replace the single `inputRef` with two refs**
 
 In `forlove10grams/components/media-uploader.tsx`, find:
 
@@ -41,7 +41,7 @@ Replace with:
   const galleryInputRef = useRef<HTMLInputElement>(null)
 ```
 
-- [ ] **Step 2: Replace the single input+button block with two inputs + two buttons + a shared progress label**
+- [x] **Step 2: Replace the single input+button block with two inputs + two buttons + a shared progress label**
 
 Find this block (the `<>` fragment inside the `atImageLimit ? ... : (...)` branch):
 
@@ -106,7 +106,7 @@ Replace with:
 
 Note: the upload-percentage text that used to live inside the button label (`` `上傳中 ${progress}%` ``) moves to sit next to the progress bar instead (Step 3), since there are now two buttons and duplicating/splitting the percentage across both would be confusing.
 
-- [ ] **Step 3: Add the percentage label next to the progress bar**
+- [x] **Step 3: Add the percentage label next to the progress bar**
 
 Find:
 
@@ -139,17 +139,17 @@ Replace with:
           )}
 ```
 
-- [ ] **Step 4: Typecheck**
+- [x] **Step 4: Typecheck**
 
 Run: `cd forlove10grams && npx tsc --noEmit`
 Expected: no errors related to `media-uploader.tsx`.
 
-- [ ] **Step 5: Lint**
+- [x] **Step 5: Lint**
 
 Run: `cd forlove10grams && npm run lint`
 Expected: no errors related to `media-uploader.tsx`.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add forlove10grams/components/media-uploader.tsx
@@ -167,7 +167,7 @@ git commit -m "feat: split media uploader into camera and gallery buttons"
 - Consumes: `QuickCaptureMode` from `@/lib/quick-capture` (unchanged — `'video'` stays a valid mode in the type and in `POST /api/books/quick`, only the UI entry is removed).
 - Produces: nothing new.
 
-- [ ] **Step 1: Remove the `video` entry from `OPTIONS`**
+- [x] **Step 1: Remove the `video` entry from `OPTIONS`**
 
 In `forlove10grams/components/quick-capture-bar.tsx`, find:
 
@@ -190,17 +190,17 @@ const OPTIONS: Array<{ mode: QuickCaptureMode; label: string }> = [
 
 Do not touch `lib/quick-capture.ts`, `app/api/books/quick/route.ts`, or `book-editor-client.tsx` — `'video'` remains a valid mode everywhere else, per the design spec's decision to only remove the entry point, not the capability.
 
-- [ ] **Step 2: Typecheck**
+- [x] **Step 2: Typecheck**
 
 Run: `cd forlove10grams && npx tsc --noEmit`
 Expected: no errors related to `quick-capture-bar.tsx`.
 
-- [ ] **Step 3: Lint**
+- [x] **Step 3: Lint**
 
 Run: `cd forlove10grams && npm run lint`
 Expected: no errors related to `quick-capture-bar.tsx`.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add forlove10grams/components/quick-capture-bar.tsx
