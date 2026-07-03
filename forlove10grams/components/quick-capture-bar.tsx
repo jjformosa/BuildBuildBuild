@@ -7,6 +7,8 @@ import type { QuickCaptureMode } from '@/lib/quick-capture'
 
 type Status = 'idle' | 'loading' | 'error'
 
+class QuickCaptureRequestError extends Error {}
+
 const OPTIONS: Array<{ mode: QuickCaptureMode; label: string }> = [
   { mode: 'photo', label: '照片' },
   { mode: 'video', label: '影片' },
@@ -29,15 +31,17 @@ export function QuickCaptureBar() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ mode }),
       })
-      const data = await res.json()
-      if (!res.ok || typeof data.redirectTo !== 'string') {
-        throw new Error(data.error ?? '建立失敗，請再試一次')
+      const data = await res.json().catch(() => null)
+      if (!res.ok || !data || typeof data.redirectTo !== 'string') {
+        throw new QuickCaptureRequestError(data?.error ?? '建立失敗，請再試一次')
       }
       router.push(data.redirectTo)
     } catch (err) {
       setStatus('error')
       setLoadingMode(null)
-      setError(err instanceof Error ? err.message : '建立失敗，請再試一次')
+      setError(
+        err instanceof QuickCaptureRequestError ? err.message : '建立失敗，請再試一次',
+      )
     }
   }
 
