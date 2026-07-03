@@ -33,6 +33,7 @@ export type PageData = {
   type: 'carousel' | 'video'
   content?: string
   mediaUrls: string[]
+  happenedAt?: string | null
 }
 
 function SortablePageItem({
@@ -237,6 +238,18 @@ export function BookEditorClient({
     }, 800)
   }
 
+  function handleHappenedAtChange(value: string) {
+    const currentId = selectedId
+    if (!currentId) return
+    const happenedAt = value || null
+    setPages((prev) => prev.map((p) => (p._id === currentId ? { ...p, happenedAt } : p)))
+    fetch(`/api/books/${bookId}/pages/${currentId}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ happenedAt }),
+    })
+  }
+
   async function handleDeletePage(pageId: string) {
     await fetch(`/api/books/${bookId}/pages/${pageId}`, { method: 'DELETE' })
     const remaining = pages.filter((p) => p._id !== pageId)
@@ -264,6 +277,7 @@ export function BookEditorClient({
           type: raw.type,
           content: raw.content,
           mediaUrls: raw.mediaUrls ?? [],
+          happenedAt: raw.happenedAt ?? null,
         }
         setPages((prev) => [...prev, newPage])
         setSelectedId(newPage._id)
@@ -419,9 +433,26 @@ export function BookEditorClient({
         {selectedPage ? (
           <>
             <div className="flex-none border-b border-foreground/10 px-6 py-3 flex items-center justify-between">
-              <span className="rounded bg-foreground/8 px-2 py-0.5 text-xs text-foreground/60">
-                {selectedPage.type === 'carousel' ? '輪播頁' : '影片頁'}
-              </span>
+              <div className="flex items-center gap-2">
+                <span className="rounded bg-foreground/8 px-2 py-0.5 text-xs text-foreground/60">
+                  {selectedPage.type === 'carousel' ? '輪播頁' : '影片頁'}
+                </span>
+                <input
+                  type="date"
+                  value={selectedPage.happenedAt ?? ''}
+                  onChange={(e) => handleHappenedAtChange(e.target.value)}
+                  className="rounded border border-foreground/15 bg-transparent px-1.5 py-0.5 text-xs text-foreground/60"
+                />
+                {selectedPage.happenedAt && (
+                  <button
+                    onClick={() => handleHappenedAtChange('')}
+                    className="text-xs text-foreground/30 hover:text-foreground/60"
+                    title="清除日期"
+                  >
+                    ✕
+                  </button>
+                )}
+              </div>
               <span className="text-xs text-foreground/35">
                 {saveState === 'saving' ? '儲存中…' : saveState === 'unsaved' ? '未儲存' : '已儲存'}
               </span>
