@@ -14,7 +14,8 @@ type Props = {
 }
 
 export function MediaUploader({ bookId, pageId, fileType, mediaUrls, onUrlsChange, onTranscodingReady }: Props) {
-  const inputRef = useRef<HTMLInputElement>(null)
+  const cameraInputRef = useRef<HTMLInputElement>(null)
+  const galleryInputRef = useRef<HTMLInputElement>(null)
   const pollIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const [progress, setProgress] = useState<number | null>(null)
   const [error, setError] = useState<string | null>(null)
@@ -206,30 +207,50 @@ export function MediaUploader({ bookId, pageId, fileType, mediaUrls, onUrlsChang
           ) : (
             <>
               <input
-                ref={inputRef}
+                ref={cameraInputRef}
+                type="file"
+                accept={accept}
+                capture="environment"
+                className="hidden"
+                onChange={(e) => e.target.files && handleFiles(e.target.files)}
+              />
+              <input
+                ref={galleryInputRef}
                 type="file"
                 accept={accept}
                 multiple={multiple}
                 className="hidden"
                 onChange={(e) => e.target.files && handleFiles(e.target.files)}
               />
-              <button
-                onClick={() => inputRef.current?.click()}
-                disabled={progress !== null}
-                className="btn-outline-xs"
-              >
-                {progress !== null ? `上傳中 ${progress}%` : fileType === 'carousel' ? '+ 新增圖片' : '+ 上傳影片'}
-              </button>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => cameraInputRef.current?.click()}
+                  disabled={progress !== null}
+                  className="btn-outline-xs"
+                >
+                  {fileType === 'carousel' ? '+ 拍照' : '+ 拍攝影片'}
+                </button>
+                <button
+                  onClick={() => galleryInputRef.current?.click()}
+                  disabled={progress !== null}
+                  className="btn-outline-xs"
+                >
+                  {fileType === 'carousel' ? '+ 相簿' : '+ 選擇影片'}
+                </button>
+              </div>
             </>
           )}
 
           {/* Progress bar */}
           {progress !== null && (
-            <div className="mt-2 h-1.5 w-full rounded-full bg-foreground/10">
-              <div
-                className="h-1.5 rounded-full bg-foreground/50 transition-all"
-                style={{ width: `${progress}%` }}
-              />
+            <div className="mt-2">
+              <p className="text-xs text-foreground/50">上傳中 {progress}%</p>
+              <div className="mt-1 h-1.5 w-full rounded-full bg-foreground/10">
+                <div
+                  className="h-1.5 rounded-full bg-foreground/50 transition-all"
+                  style={{ width: `${progress}%` }}
+                />
+              </div>
             </div>
           )}
 
