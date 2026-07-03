@@ -167,7 +167,7 @@ export function BookEditorClient({
 
     const timer = window.setTimeout(() => setQuickHighlight(null), 1600)
     return () => window.clearTimeout(timer)
-  }, [quickMode, selectedPage])
+  }, [quickMode, selectedId])
 
   // Warn on page unload when there are unsaved changes
   useEffect(() => {
