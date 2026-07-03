@@ -11,16 +11,22 @@ import { BookEditorClient, type PageData } from '@/components/book-editor-client
 import { ShareStatusProvider } from '@/lib/contexts/share-status-context'
 import { ShareLinkManager } from '@/components/share-link-manager'
 import { ReaderList } from '@/components/reader-list'
+import { isQuickCaptureMode, type QuickCaptureMode } from '@/lib/quick-capture'
 
 export default async function EditBookPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ bookId: string }>
+  searchParams: Promise<{ quick?: string | string[] }>
 }) {
   const session = await auth()
   if (!session?.user?.id) redirect('/login')
   const { bookId } = await params
   const userId = session.user.id
+  const { quick } = await searchParams
+  const quickMode: QuickCaptureMode | null =
+    typeof quick === 'string' && isQuickCaptureMode(quick) ? quick : null
 
   await dbConnect()
   const book = await Book.findById(bookId)
@@ -76,7 +82,12 @@ export default async function EditBookPage({
         </div>
       </header>
 
-      <BookEditorClient bookId={bookId} initialPages={pages} initialTags={book.tags ?? []} />
+      <BookEditorClient
+        bookId={bookId}
+        initialPages={pages}
+        initialTags={book.tags ?? []}
+        quickMode={quickMode}
+      />
       <section className="flex-none border-t border-foreground/10 bg-background px-4 sm:px-6 py-4 space-y-6">
         {(isOwner || isEditor) && <ShareLinkManager bookId={bookId} />}
         {(isOwner || isEditor) && (
