@@ -38,6 +38,7 @@ export async function GET(
 const PatchPageBody = z.object({
   content: z.string().optional(),
   mediaUrls: z.array(z.string()).optional(),
+  happenedAt: z.string().nullable().optional(),
 })
 
 export async function PATCH(
