@@ -34,9 +34,11 @@ export async function POST(
   const existing = await BookLike.findOne({ bookId: book._id, userId })
   if (existing) {
     await existing.deleteOne()
-    return Response.json({ liked: false })
+    const likeCount = await BookLike.countDocuments({ bookId: book._id })
+    return Response.json({ liked: false, likeCount })
   }
 
   await BookLike.create({ bookId: book._id, userId })
-  return Response.json({ liked: true })
+  const likeCount = await BookLike.countDocuments({ bookId: book._id })
+  return Response.json({ liked: true, likeCount })
 }

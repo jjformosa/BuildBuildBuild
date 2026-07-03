@@ -31,6 +31,7 @@ export default async function ReadBookPage({
   }
 
   const hasLiked = !!(await BookLike.exists({ bookId: book._id, userId }))
+  const likeCount = await BookLike.countDocuments({ bookId: book._id })
 
   const isEditor = book.editorId?.toString() === userId
 
@@ -71,6 +72,7 @@ export default async function ReadBookPage({
       viewerNickname={viewerNickname}
       viewerMyNickname={viewerMyNickname}
       hasLiked={hasLiked}
+      likeCount={likeCount}
       isEditor={isEditor}
       editorLetter={book.editorLetter ?? null}
       creatorName={creatorName}

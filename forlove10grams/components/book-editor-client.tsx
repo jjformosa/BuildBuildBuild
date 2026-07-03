@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, type RefObject } from 'react'
 import dynamic from 'next/dynamic'
 import {
   DndContext,
@@ -22,6 +22,7 @@ import { CSS } from '@dnd-kit/utilities'
 import '@uiw/react-md-editor/markdown-editor.css'
 import { MediaUploader } from '@/components/media-uploader'
 import TagManagerModal from '@/components/tag-manager-modal'
+import type { QuickCaptureMode } from '@/lib/quick-capture'
 
 import { getCommands, getExtraCommands } from '@uiw/react-md-editor'
 
@@ -100,14 +101,33 @@ function SortablePageItem({
   )
 }
 
+function scrollToQuickTarget(
+  targetRef: RefObject<HTMLDivElement | null>,
+  shouldFocusText: boolean,
+) {
+  const target = targetRef.current
+  if (!target) return
+
+  target.scrollIntoView({ behavior: 'smooth', block: 'center' })
+
+  if (shouldFocusText) {
+    window.setTimeout(() => {
+      const textarea = target.querySelector('textarea')
+      if (textarea instanceof HTMLTextAreaElement) textarea.focus()
+    }, 150)
+  }
+}
+
 export function BookEditorClient({
   bookId,
   initialPages,
   initialTags,
+  quickMode,
 }: {
   bookId: string
   initialPages: PageData[]
   initialTags: string[]
+  quickMode?: QuickCaptureMode | null
 }) {
   const [pages, setPages] = useState<PageData[]>(initialPages)
   const [tags, setTags] = useState<string[]>(initialTags)
@@ -119,6 +139,10 @@ export function BookEditorClient({
   const [showTagModal, setShowTagModal] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
   const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const quickHandledRef = useRef(false)
+  const editorSectionRef = useRef<HTMLDivElement | null>(null)
+  const mediaSectionRef = useRef<HTMLDivElement | null>(null)
+  const [quickHighlight, setQuickHighlight] = useState<'editor' | 'media' | null>(null)
 
   const selectedPage = pages.find((p) => p._id === selectedId) ?? null
 
@@ -129,6 +153,22 @@ export function BookEditorClient({
     mq.addEventListener('change', handler)
     return () => mq.removeEventListener('change', handler)
   }, [])
+
+  useEffect(() => {
+    if (!quickMode || !selectedPage || quickHandledRef.current) return
+    quickHandledRef.current = true
+
+    const targetKind = quickMode === 'text' ? 'editor' : 'media'
+    setQuickHighlight(targetKind)
+    scrollToQuickTarget(
+      targetKind === 'editor' ? editorSectionRef : mediaSectionRef,
+      targetKind === 'editor',
+    )
+
+    const timer = window.setTimeout(() => setQuickHighlight(null), 1600)
+    return () => window.clearTimeout(timer)
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- selectedPage intentionally omitted: it is a new object on every keystroke (via handleContentChange), and including it here reintroduces the highlight-stuck-on bug (the un-highlight timer gets cancelled and never rescheduled). quickHandledRef already prevents any re-execution after the first run.
+  }, [quickMode, selectedId])
 
   // Warn on page unload when there are unsaved changes
   useEffect(() => {
@@ -387,7 +427,14 @@ export function BookEditorClient({
               </span>
             </div>
             <div className="flex-1 overflow-auto p-4 md:p-6 space-y-6">
-              <div data-color-mode="light" suppressHydrationWarning>
+              <div
+                ref={editorSectionRef}
+                data-color-mode="light"
+                suppressHydrationWarning
+                className={`rounded-xl transition-all duration-300 ${
+                  quickHighlight === 'editor' ? 'ring-2 ring-primary/30 ring-offset-4 ring-offset-background' : ''
+                }`}
+              >
                 <MDEditor
                   value={selectedPage.content ?? ''}
                   onChange={handleContentChange}
@@ -397,7 +444,14 @@ export function BookEditorClient({
                   extraCommands={getExtraCommands()}
                 />
               </div>
-              <div>
+              <div
+                ref={mediaSectionRef}
+                className={`rounded-xl transition-all duration-300 ${
+                  quickHighlight === 'media'
+                    ? 'bg-primary/5 ring-2 ring-primary/25 ring-offset-4 ring-offset-background p-3'
+                    : ''
+                }`}
+              >
                 <p className="mb-2 text-xs text-foreground/50">
                   {selectedPage.type === 'carousel' ? '圖片（可多張）' : '影片'}
                 </p>

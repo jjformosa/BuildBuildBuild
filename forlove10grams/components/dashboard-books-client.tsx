@@ -35,9 +35,16 @@ type Status = 'all' | 'published' | 'unpublished'
 function HeartIcon() {
   return (
     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+      <path d="M4 7h16" />
+      <path d="M12 7v4" />
+      <path d="M7 21h10a3 3 0 0 0 3-3v-4a8 8 0 0 0-16 0v4a3 3 0 0 0 3 3Z" />
+      <path d="M9 16a3 3 0 0 0 6 0" />
     </svg>
   )
+}
+
+function formatGramCount(count: number) {
+  return count >= 10 ? '10g+' : `${count}g`
 }
 
 function StatusBadge({ status }: { status: DashboardBook['shareStatus'] }) {
@@ -181,7 +188,7 @@ function BookCard({
       <div className="mt-3 pt-3 border-t border-border/50 flex flex-wrap items-center gap-x-3 gap-y-1.5">
         {book.likeCount > 0 && (
           <span className="flex items-center gap-1 text-xs text-muted-foreground">
-            <HeartIcon /> {book.likeCount}
+            <HeartIcon /> 心意 {formatGramCount(book.likeCount)}
           </span>
         )}
         <StatusBadge status={book.shareStatus} />
@@ -547,6 +554,7 @@ export function DashboardShell({
   editorBooks,
   readerBooks,
   createButton,
+  quickCapture,
 }: {
   isAdmin: boolean
   ownerBooks: DashboardBook[]
@@ -554,6 +562,7 @@ export function DashboardShell({
   editorBooks: DashboardBook[]
   readerBooks: ReaderBookItem[]
   createButton: React.ReactNode
+  quickCapture?: React.ReactNode
 }) {
   const [query, setQuery] = useState('')
   const [debouncedSearch, setDebouncedSearch] = useState('')
@@ -600,6 +609,8 @@ export function DashboardShell({
           )}
         </div>
       </form>
+
+      {quickCapture && <div className="-mt-4">{quickCapture}</div>}
 
       {/* Admin: owner books */}
       {isAdmin && (
