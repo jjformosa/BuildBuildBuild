@@ -53,10 +53,15 @@ export async function POST(req: NextRequest) {
       },
       { status: 201 },
     )
-  } catch {
+  } catch (err) {
+    console.error('POST /api/books/quick failed:', err)
     if (createdBookId) {
-      await Page.deleteMany({ bookId: createdBookId }).catch(() => undefined)
-      await Book.deleteOne({ _id: createdBookId }).catch(() => undefined)
+      await Page.deleteMany({ bookId: createdBookId }).catch((cleanupErr) => {
+        console.error('POST /api/books/quick: failed to clean up orphaned pages for book', createdBookId, cleanupErr)
+      })
+      await Book.deleteOne({ _id: createdBookId }).catch((cleanupErr) => {
+        console.error('POST /api/books/quick: failed to clean up orphaned book', createdBookId, cleanupErr)
+      })
     }
     return Response.json({ error: '建立失敗，請再試一次' }, { status: 500 })
   }

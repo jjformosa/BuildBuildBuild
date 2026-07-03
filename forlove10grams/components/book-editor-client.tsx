@@ -167,6 +167,7 @@ export function BookEditorClient({
 
     const timer = window.setTimeout(() => setQuickHighlight(null), 1600)
     return () => window.clearTimeout(timer)
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- selectedPage intentionally omitted: it is a new object on every keystroke (via handleContentChange), and including it here reintroduces the highlight-stuck-on bug (the un-highlight timer gets cancelled and never rescheduled). quickHandledRef already prevents any re-execution after the first run.
   }, [quickMode, selectedId])
 
   // Warn on page unload when there are unsaved changes
