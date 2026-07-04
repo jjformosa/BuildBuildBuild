@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>書封男生頭像 — 側臉配色比較</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --page: #ecebf4;
+    --ink: #2d3848;
+    --muted: rgba(45, 56, 72, .58);
+    --border: #c8c4e0;
+    --cover-high: #244f67;
+    --cover: #173449;
+    --cover-low: #0d1d2b;
+    --cream: #e9e7f3;
+    --rose: #c4788a;
+    --gold: #b4945a;
+  }
+
+  html, body { min-height: 100%; background: var(--page); color: var(--ink); }
+  body {
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    padding: 64px 22px;
+    font-family: ui-serif, Georgia, "Noto Serif TC", serif;
+  }
+
+  .study {
+    width: min(980px, 100%);
+  }
+
+  .title {
+    text-align: center;
+    margin-bottom: 34px;
+  }
+
+  .title h1 {
+    font-size: clamp(20px, 4vw, 30px);
+    font-weight: 600;
+    letter-spacing: .04em;
+  }
+
+  .title p {
+    margin-top: 8px;
+    font-family: system-ui, -apple-system, "Noto Sans TC", sans-serif;
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--muted);
+  }
+
+  .variants {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 28px;
+  }
+
+  .variant {
+    display: grid;
+    gap: 14px;
+    justify-items: center;
+  }
+
+  .cover {
+    position: relative;
+    width: min(100%, 246px);
+    aspect-ratio: 0.56;
+    border-radius: 20px 5px 5px 20px;
+    overflow: hidden;
+    background:
+      radial-gradient(circle at 38% 20%, rgba(255,255,255,.09), transparent 30%),
+      linear-gradient(142deg, var(--cover-high), var(--cover) 48%, var(--cover-low));
+    box-shadow:
+      inset 0 0 0 1px rgba(255,255,255,.08),
+      inset -22px 0 34px -22px rgba(0,0,0,.72),
+      inset 0 0 80px rgba(0,0,0,.23),
+      0 22px 42px rgba(18, 31, 45, .3);
+  }
+
+  .cover::before {
+    content: "";
+    position: absolute;
+    inset: 14px 12px;
+    border: 1px solid rgba(233, 231, 243, .22);
+    border-right-color: rgba(180, 148, 90, .32);
+    border-radius: 15px 3px 3px 15px;
+  }
+
+  .cover::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      repeating-linear-gradient(
+        100deg,
+        rgba(255,255,255,.027) 0,
+        rgba(255,255,255,.027) 1px,
+        transparent 1px,
+        transparent 7px
+      );
+    pointer-events: none;
+  }
+
+  .spine {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 12px;
+    background:
+      linear-gradient(to left, rgba(0,0,0,.38), transparent),
+      linear-gradient(to bottom, transparent, rgba(180,148,90,.42), transparent);
+  }
+
+  .portrait {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 68%;
+    transform: translate(-50%, -50%);
+    z-index: 1;
+    overflow: visible;
+  }
+
+  .solid .profile { fill: var(--figure); stroke: none; }
+  .solid .detail-fill { fill: var(--cover); stroke: none; }
+  .solid .detail-line {
+    fill: none;
+    stroke: var(--cover);
+    stroke-width: 5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .line .profile,
+  .line .detail-fill {
+    fill: none;
+    stroke: var(--figure);
+    stroke-width: 6;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .line .detail-line {
+    fill: none;
+    stroke: var(--figure);
+    stroke-width: 4.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .caption {
+    display: grid;
+    justify-items: center;
+    gap: 4px;
+    font-family: system-ui, -apple-system, "Noto Sans TC", sans-serif;
+  }
+
+  .caption strong {
+    font-size: 13px;
+    font-weight: 650;
+  }
+
+  .caption span {
+    color: var(--muted);
+    font-size: 12px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .swatch {
+    width: 12px;
+    height: 12px;
+    border-radius: 999px;
+    background: var(--figure);
+    display: inline-block;
+    margin-right: 7px;
+    vertical-align: -1px;
+  }
+
+  .line-variant .swatch {
+    background: transparent;
+    border: 2px solid var(--figure);
+  }
+
+  @media (max-width: 760px) {
+    body { padding-block: 42px; }
+    .variants { grid-template-columns: 1fr; gap: 32px; }
+    .cover { width: min(72vw, 246px); }
+  }
+</style>
+</head>
+<body>
+  <main class="study">
+    <header class="title">
+      <h1>左書封男生頭像</h1>
+      <p>簡化成右向側臉頭像，放在深色左書封上；保留三種材質比較。</p>
+    </header>
+
+    <section class="variants" aria-label="男生頭像配色比較">
+      <article class="variant" style="--figure: var(--cream);">
+        <div class="cover">
+          <div class="spine"></div>
+          <svg class="portrait solid" viewBox="0 0 240 320" aria-hidden="true">
+            <path class="profile" d="M43 270C53 238 78 219 111 212L116 188C98 174 88 151 91 123C95 79 128 50 168 52C193 53 212 68 219 90C224 105 223 119 219 130C228 136 236 143 239 150C242 156 238 161 231 163L221 166C220 174 224 181 220 188C214 199 197 202 181 197C167 193 157 198 151 211L140 234C161 239 184 252 199 270Z"/>
+            <circle class="detail-fill" cx="186" cy="117" r="4.5"/>
+            <path class="detail-line" d="M137 70C126 80 121 93 123 108"/>
+            <path class="detail-line" d="M132 235C145 240 157 251 163 268"/>
+          </svg>
+        </div>
+        <div class="caption">
+          <strong><i class="swatch"></i>實心 · 米白</strong>
+          <span>#e9e7f3</span>
+        </div>
+      </article>
+
+      <article class="variant" style="--figure: var(--rose);">
+        <div class="cover">
+          <div class="spine"></div>
+          <svg class="portrait solid" viewBox="0 0 240 320" aria-hidden="true">
+            <path class="profile" d="M43 270C53 238 78 219 111 212L116 188C98 174 88 151 91 123C95 79 128 50 168 52C193 53 212 68 219 90C224 105 223 119 219 130C228 136 236 143 239 150C242 156 238 161 231 163L221 166C220 174 224 181 220 188C214 199 197 202 181 197C167 193 157 198 151 211L140 234C161 239 184 252 199 270Z"/>
+            <circle class="detail-fill" cx="186" cy="117" r="4.5"/>
+            <path class="detail-line" d="M137 70C126 80 121 93 123 108"/>
+            <path class="detail-line" d="M132 235C145 240 157 251 163 268"/>
+          </svg>
+        </div>
+        <div class="caption">
+          <strong><i class="swatch"></i>實心 · Rose</strong>
+          <span>#c4788a</span>
+        </div>
+      </article>
+
+      <article class="variant line-variant" style="--figure: var(--gold);">
+        <div class="cover">
+          <div class="spine"></div>
+          <svg class="portrait line" viewBox="0 0 240 320" aria-hidden="true">
+            <path class="profile" d="M43 270C53 238 78 219 111 212L116 188C98 174 88 151 91 123C95 79 128 50 168 52C193 53 212 68 219 90C224 105 223 119 219 130C228 136 236 143 239 150C242 156 238 161 231 163L221 166C220 174 224 181 220 188C214 199 197 202 181 197C167 193 157 198 151 211L140 234C161 239 184 252 199 270Z"/>
+            <circle class="detail-fill" cx="186" cy="117" r="4.5"/>
+            <path class="detail-line" d="M137 70C126 80 121 93 123 108"/>
+            <path class="detail-line" d="M132 235C145 240 157 251 163 268"/>
+          </svg>
+        </div>
+        <div class="caption">
+          <strong><i class="swatch"></i>線條 · Gold</strong>
+          <span>#b4945a</span>
+        </div>
+      </article>
+    </section>
+  </main>
+</body>
+</html>

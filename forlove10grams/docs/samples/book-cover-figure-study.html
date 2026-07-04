@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>書封頭像 — 配色比較</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:       #ecebf4;
+    --fg:       #2d3848;
+    --fg-dim:   rgba(45, 56, 72, 0.55);
+    --cover-mid:  #21566f;
+    --cover-base: #173449;
+    --cover-low:  #0f2130;
+  }
+
+  html, body { height: 100%; background: var(--bg); color: var(--fg); }
+  body {
+    font-family: system-ui, -apple-system, 'Noto Sans TC', sans-serif;
+    min-height: 100vh;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 40px;
+    padding: 80px 20px 60px;
+  }
+
+  .page-title { text-align: center; }
+  .page-title h1 { font: 600 16px/1.5 Georgia, 'Noto Serif TC', serif; letter-spacing: .04em; }
+  .page-title p { margin-top: 6px; font-size: 12px; color: var(--fg-dim); }
+
+  .row {
+    display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: center;
+    gap: 36px;
+  }
+
+  .panel { display: flex; flex-direction: column; align-items: center; gap: 14px; }
+
+  .cover {
+    position: relative;
+    width: 220px;
+    height: 420px;
+    border-radius: 18px 4px 4px 18px;
+    background:
+      radial-gradient(circle at 42% 18%, rgba(255,255,255,.08), transparent 28%),
+      linear-gradient(142deg, var(--cover-mid) 0%, var(--cover-base) 46%, var(--cover-low) 100%);
+    box-shadow:
+      inset 0 0 0 1px rgba(255,255,255,.06),
+      inset -18px 0 30px -20px rgba(0,0,0,.55),
+      inset 0 0 60px rgba(0,0,0,.25),
+      0 12px 28px rgba(20, 30, 45, .28);
+    overflow: hidden;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .cover::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: repeating-linear-gradient(
+      100deg, rgba(255,255,255,.025) 0px, rgba(255,255,255,.025) 1px,
+      transparent 1px, transparent 7px
+    );
+  }
+  .cover .spine-edge {
+    position: absolute; top: 0; right: 0; bottom: 0; width: 10px;
+    background: linear-gradient(to left, rgba(0,0,0,.3), transparent);
+  }
+
+  .figure-svg { position: relative; width: 52%; }
+
+  .mode-solid .fill-part { fill: var(--figure-color); }
+  .mode-line .fill-part {
+    fill: none;
+    stroke: var(--figure-color);
+    stroke-width: 3.5;
+    stroke-linejoin: round;
+    stroke-linecap: round;
+  }
+
+  .label { text-align: center; }
+  .label .swatch {
+    display: inline-block; width: 11px; height: 11px; border-radius: 50%;
+    margin-right: 6px; vertical-align: middle;
+    background: var(--figure-color);
+  }
+  .mode-line .label .swatch { background: none; border: 2px solid var(--figure-color); }
+  .label .name { font-size: 12px; font-weight: 600; }
+  .label .hex { font-size: 11px; color: var(--fg-dim); font-variant-numeric: tabular-nums; margin-top: 2px; }
+</style>
+</head>
+<body>
+
+  <div class="page-title">
+    <h1>男生側臉頭像 — 三種配色版本</h1>
+    <p>單一剪影頭像＋肩頸，面向書脊（右側）</p>
+  </div>
+
+  <div class="row">
+
+    <!-- Panel 1: solid cream -->
+    <div class="panel">
+      <div class="cover">
+        <div class="spine-edge"></div>
+        <svg class="figure-svg mode-solid" style="--figure-color:#e9e7f3" viewBox="0 0 240 280">
+          <path class="fill-part" d="
+            M110,20
+            C130,20 146,34 150,52
+            C155,58 158,64 160,66
+            C166,72 172,78 172,82
+            C172,86 166,88 160,90
+            C162,93 163,95 163,96
+            C161,99 158,100 158,101
+            C160,103 161,105 161,106
+            C158,109 154,110 154,112
+            C154,117 152,122 150,124
+            C144,130 136,134 130,140
+            C122,148 116,158 114,170
+            C112,182 112,192 116,200
+            C122,206 132,210 142,214
+            C158,220 172,228 180,240
+            C186,248 188,256 188,264
+            L188,278
+            L46,278
+            L46,262
+            C46,252 50,244 56,238
+            C68,228 82,220 94,214
+            C88,206 84,198 84,190
+            C82,178 84,166 90,156
+            C82,148 76,138 76,126
+            C68,118 62,106 62,94
+            C54,88 48,78 48,66
+            C48,52 56,40 68,32
+            C78,22 92,18 108,20
+            Z
+          "/>
+          <path class="fill-part" d="
+            M148,48
+            C152,36 150,20 138,10
+            C126,2 108,-2 90,4
+            C70,10 56,24 50,44
+            C46,60 46,78 52,94
+            C56,104 62,112 70,118
+            C90,110 110,90 130,70
+            C138,60 144,54 148,48
+            Z
+          "/>
+        </svg>
+      </div>
+      <div class="label">
+        <div><span class="swatch"></span><span class="name">實心 · 米白</span></div>
+        <div class="hex">#e9e7f3 (--background)</div>
+      </div>
+    </div>
+
+    <!-- Panel 2: solid rose -->
+    <div class="panel">
+      <div class="cover">
+        <div class="spine-edge"></div>
+        <svg class="figure-svg mode-solid" style="--figure-color:#c4788a" viewBox="0 0 240 280">
+          <path class="fill-part" d="
+            M110,20
+            C130,20 146,34 150,52
+            C155,58 158,64 160,66
+            C166,72 172,78 172,82
+            C172,86 166,88 160,90
+            C162,93 163,95 163,96
+            C161,99 158,100 158,101
+            C160,103 161,105 161,106
+            C158,109 154,110 154,112
+            C154,117 152,122 150,124
+            C144,130 136,134 130,140
+            C122,148 116,158 114,170
+            C112,182 112,192 116,200
+            C122,206 132,210 142,214
+            C158,220 172,228 180,240
+            C186,248 188,256 188,264
+            L188,278
+            L46,278
+            L46,262
+            C46,252 50,244 56,238
+            C68,228 82,220 94,214
+            C88,206 84,198 84,190
+            C82,178 84,166 90,156
+            C82,148 76,138 76,126
+            C68,118 62,106 62,94
+            C54,88 48,78 48,66
+            C48,52 56,40 68,32
+            C78,22 92,18 108,20
+            Z
+          "/>
+          <path class="fill-part" d="
+            M148,48
+            C152,36 150,20 138,10
+            C126,2 108,-2 90,4
+            C70,10 56,24 50,44
+            C46,60 46,78 52,94
+            C56,104 62,112 70,118
+            C90,110 110,90 130,70
+            C138,60 144,54 148,48
+            Z
+          "/>
+        </svg>
+      </div>
+      <div class="label">
+        <div><span class="swatch"></span><span class="name">實心 · 玫瑰</span></div>
+        <div class="hex">#c4788a (--rose / --accent)</div>
+      </div>
+    </div>
+
+    <!-- Panel 3: gold line art -->
+    <div class="panel">
+      <div class="cover">
+        <div class="spine-edge"></div>
+        <svg class="figure-svg mode-line" style="--figure-color:#b4945a" viewBox="0 0 240 280">
+          <path class="fill-part" d="
+            M110,20
+            C130,20 146,34 150,52
+            C155,58 158,64 160,66
+            C166,72 172,78 172,82
+            C172,86 166,88 160,90
+            C162,93 163,95 163,96
+            C161,99 158,100 158,101
+            C160,103 161,105 161,106
+            C158,109 154,110 154,112
+            C154,117 152,122 150,124
+            C144,130 136,134 130,140
+            C122,148 116,158 114,170
+            C112,182 112,192 116,200
+            C122,206 132,210 142,214
+            C158,220 172,228 180,240
+            C186,248 188,256 188,264
+            L188,278
+            L46,278
+            L46,262
+            C46,252 50,244 56,238
+            C68,228 82,220 94,214
+            C88,206 84,198 84,190
+            C82,178 84,166 90,156
+            C82,148 76,138 76,126
+            C68,118 62,106 62,94
+            C54,88 48,78 48,66
+            C48,52 56,40 68,32
+            C78,22 92,18 108,20
+            Z
+          "/>
+          <path class="fill-part" d="
+            M148,48
+            C152,36 150,20 138,10
+            C126,2 108,-2 90,4
+            C70,10 56,24 50,44
+            C46,60 46,78 52,94
+            C56,104 62,112 70,118
+            C90,110 110,90 130,70
+            C138,60 144,54 148,48
+            Z
+          "/>
+        </svg>
+      </div>
+      <div class="label">
+        <div><span class="swatch"></span><span class="name">線條 · 金</span></div>
+        <div class="hex">#b4945a (--gold)</div>
+      </div>
+    </div>
+
+  </div>
+
+</body>
+</html>
