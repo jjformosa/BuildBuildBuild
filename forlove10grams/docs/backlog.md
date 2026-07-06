@@ -119,7 +119,7 @@
 
 **方向**：新增 `audio` 頁面類型。瀏覽器 `MediaRecorder API` 錄音，存入 S3。可選：接 Whisper API 自動轉錄文字。最符合「捕捉優先於整理」精神，尤其適合手還濕著的潛水上岸場景。
 
-**詳細設計**：[docs/superpowers/specs/2026-07-07-audio-page-design.md](superpowers/specs/2026-07-07-audio-page-design.md)（規劃完成，待實作）
+**詳細設計**：[docs/superpowers/specs/2026-07-07-audio-page-design.md](superpowers/specs/2026-07-07-audio-page-design.md)（已確認——含自動轉錄，待實作）
 
 ---
 
