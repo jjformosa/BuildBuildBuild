@@ -22,7 +22,7 @@ export default function PrivacyPage() {
           <Image src={logo} alt="For Love 10 Grams" width={40} height={40} />
           <h1 className="text-2xl font-semibold tracking-tight">隱私權政策</h1>
         </div>
-        <p className="text-sm text-foreground/50 mb-10">最後更新：2026 年 5 月</p>
+        <p className="text-sm text-foreground/50 mb-10">最後更新：2026 年 7 月</p>
 
         <p className="text-sm leading-relaxed mb-10 text-foreground/80">
           Film Diary（以下簡稱「本服務」）是一個私人記憶書工具，供管理者與受邀朋友共同使用。
@@ -51,6 +51,8 @@ export default function PrivacyPage() {
           <Subsection title="1.3 系統自動記錄">
             <ul>
               <li><strong>閱讀進度</strong>：您最後閱讀到哪一頁、閱讀時間，用於下次自動跳轉</li>
+              <li><strong>讀者記錄</strong>：您首次透過分享連結開啟某本書時，系統會記錄您的閱讀身份與加入時間；該書的管理者（作者與受邀編輯者）可查看讀者名單，並可移除個別讀者</li>
+              <li><strong>喜歡（Like）記錄</strong>：您對書本按下的喜歡會被記錄；作者只會看到總數，不會看到是誰</li>
               <li><strong>登入 Session</strong>：保持您的登入狀態，存放於 HTTP-only Cookie，預設有效期為 30 天</li>
             </ul>
           </Subsection>
@@ -69,6 +71,8 @@ export default function PrivacyPage() {
               <tr><td>Email</td><td>帳號識別、邀請功能</td></tr>
               <tr><td>記憶書與媒體</td><td>呈現您建立或被邀請閱讀的內容</td></tr>
               <tr><td>閱讀進度</td><td>記錄閱讀位置，下次繼續</td></tr>
+              <tr><td>讀者記錄</td><td>讓您之後能從個人頁再次找到這本書；讓管理者管理閱讀權限</td></tr>
+              <tr><td>喜歡記錄</td><td>向作者顯示匿名的喜歡總數</td></tr>
               <tr><td>Session</td><td>維持登入狀態，避免重複驗證</td></tr>
             </tbody>
           </table>
@@ -85,8 +89,12 @@ export default function PrivacyPage() {
             本服務的內容預設為<strong>私人</strong>，僅管理者與被邀請的成員可存取。
           </p>
           <p>
-            若管理者啟用「分享連結」功能，持有連結的任何人可透過瀏覽器閱讀該記憶書，無需登入。
-            停用分享連結後，公開存取隨即失效。
+            若管理者產生「分享連結」，持有連結的人<strong>登入後</strong>即可閱讀該記憶書。
+            分享連結預設 7 天後到期（可由管理者延長）；連結到期或被撤銷後，將無法再透過連結進入。
+            已透過連結進入的讀者會留下讀者記錄（見 1.3），管理者可隨時移除個別讀者的閱讀權限。
+          </p>
+          <p>
+            若管理者將書本設為<strong>公開</strong>，持有連結的任何人無需登入即可閱讀。
           </p>
         </Section>
 
@@ -165,6 +173,8 @@ export default function PrivacyPage() {
               <tr><td>帳號資料</td><td>帳號存續期間</td></tr>
               <tr><td>記憶書與媒體</td><td>存續至管理者刪除</td></tr>
               <tr><td>閱讀進度</td><td>存續至帳號刪除</td></tr>
+              <tr><td>讀者記錄</td><td>存續至被管理者移除，或帳號刪除</td></tr>
+              <tr><td>喜歡記錄</td><td>存續至您取消喜歡，或帳號刪除</td></tr>
             </tbody>
           </table>
         </Section>
