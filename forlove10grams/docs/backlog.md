@@ -150,7 +150,7 @@
 - **Reader 私訊** ✅ 選定：讀完可留一句話給 creator（不公開，creator 在 dashboard 看到）；打破 Like 匿名性，但帶來情感回應
 - **無需改動**：保持現狀，現有 Like + HandoverLetter 已足夠
 
-**詳細設計**：[docs/superpowers/specs/2026-07-07-reader-message-design.md](superpowers/specs/2026-07-07-reader-message-design.md)（規劃完成，待實作）
+**詳細設計**：[docs/superpowers/specs/2026-07-07-reader-message-design.md](superpowers/specs/2026-07-07-reader-message-design.md)（已確認——可見性採「誰分享的，誰能看到」，待實作）
 
 ---
 
