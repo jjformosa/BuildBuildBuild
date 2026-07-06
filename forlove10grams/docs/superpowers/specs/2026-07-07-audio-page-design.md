@@ -1,6 +1,6 @@
 # 設計規格 — 語音備忘錄頁面（audio page）
 
-> 狀態：規劃完成，待討論確認
+> 狀態：已確認（2026-07-07 討論後將自動轉錄納入本次範圍），待實作
 > 日期：2026-07-07
 
 ---
@@ -11,18 +11,21 @@
 
 這是「捕捉優先於整理」精神的延伸：潛水上岸手還濕著、走在路上不方便打字的場景，語音是摩擦最低的記錄方式。
 
+**產品定調（2026-07-07 討論結論）**：這個功能同時滿足兩個心智模型——「錄音是內容」（聲音本身是記憶：語氣、喘氣、背景的海浪聲，鍵盤聽寫給不了）與「錄音是輸入法」（開口代替打字，快速記錄）。做法是合流：**聲音保留下來成為頁面內容，同時自動轉錄成文字草稿填入 `content` 供修剪**。記錄者得到速度，讀者得到可讀可略讀的文字，聲音還在。
+
 **本次包含：**
 - `Page.type` 新增 `'audio'` 頁型
 - 編輯頁的錄音介面（瀏覽器 `MediaRecorder API`）：錄音、試聽、重錄、上傳
 - 音檔存入 S3，沿用既有 presign 上傳流程與 CloudFront Signed URL 保護
+- **上傳完成後自動轉錄**（OpenAI Whisper 系列 API）：結果寫入 `content` 成為可編輯草稿；繁體處理（prompt 提示 + OpenCC 保險）；轉錄狀態與失敗重試
 - 閱讀頁的音訊播放器
 - `AddPageButton` 新增「+ 錄音」、`QuickCaptureBar` 新增「語音」入口
 
 **不包含：**
-- Whisper / 語音轉文字（留到後續演進）
+- 邊錄邊轉（裝置內建聽寫 / Web Speech API）——已評估並否決，理由見「方案取捨：轉錄路徑」
 - 音訊波形視覺化（先用原生播放器樣式）
 - 上傳既有音檔（只做「當場錄」；從檔案挑音檔留到有需求再說）
-- MediaConvert 音訊轉檔管道（見「方案取捨」）
+- MediaConvert 音訊轉檔管道（見「方案取捨：錄音格式」）
 
 ---
 
@@ -30,6 +33,8 @@
 
 - 作為 creator，我剛結束一段經歷（潛水上岸、飯局散場），想直接對手機說話記下當下的想法，不需要打字
 - 作為 creator，我想在錄完後先試聽，不滿意可以重錄，滿意才存進書裡
+- 作為 creator，我錄完上傳後，幾秒內看到系統轉錄出的文字草稿出現在說明欄，我只需要修剪口語贅字，不用從零打字
+- 作為 creator，轉錄失敗時我想按一下重試，而不是重錄一次
 - 作為 creator，我想在語音頁附一段文字說明（optional），讓之後翻到時知道這段錄音的脈絡
 - 作為 editor，我想在受邀的書裡用語音補充我的記憶，跟照片、影片頁一樣自然
 - 作為 reader，我讀到語音頁時，可以按播放聽到作者當時的聲音，感受文字傳達不了的語氣
@@ -43,7 +48,8 @@
 3. 錄音中顯示計時（mm:ss）與「■ 停止」按鈕；達 10 分鐘上限自動停止
 4. 停止後顯示試聽播放器 + 「重錄」「使用這段錄音」兩個按鈕
 5. 點「使用這段錄音」→ 走 presign 上傳 → 進度條 → 完成後頁面顯示正式播放器
-6. 已有錄音的頁面顯示播放器 + 「重新錄製」按鈕（覆蓋原檔需確認）
+6. 上傳完成後自動開始轉錄：文字說明欄顯示「轉錄中…」，數秒後轉錄草稿出現在 `content` textarea，游標可直接修剪；轉錄失敗顯示「轉錄失敗，重試」按鈕，不影響已存好的錄音
+7. 已有錄音的頁面顯示播放器 + 「重新錄製」按鈕（覆蓋原檔需確認；重錄後重新轉錄，覆蓋規則見 API 節）
 
 ### UC-2：快速記錄（語音）
 1. Dashboard 的 `QuickCaptureBar` 點「語音」→ 建立當日快速記錄書（沿用 quick-capture 邏輯）+ 一個 audio page，直接落在編輯頁的錄音介面
@@ -57,7 +63,22 @@
 
 ## 方案取捨
 
-錄音格式與相容性是本功能唯一的技術風險。三個方案：
+### 轉錄路徑（2026-07-07 討論結論）
+
+想同時得到「錄音檔＋文字」，網頁載具上只有一條穩的路：**先錄完，再送 API 轉錄**。裝置內建方案已評估並否決：
+
+| 路徑 | 為什麼不行 / 為什麼行 |
+|------|----------------------|
+| 鍵盤聽寫（iOS 鍵盤 / Gboard 麥克風鍵） | OS 層執行，網頁只收得到文字、**永遠拿不到音檔**；聽寫進行中 OS 佔用麥克風，`MediaRecorder` 同時開會搶輸。它是「使用者懶得打字」的既有解，與本功能互補而非競爭 |
+| Web Speech API（`SpeechRecognition`） | 與 `MediaRecorder` 在手機上搶麥克風，同時開極不可靠（尤其 Android Chrome）；遇停頓自動結束、iOS Safari 行為不一致。等於把功能建在最脆弱的瀏覽器 API 上 |
+| **錄完後送轉錄 API（採用）** | 音檔已在 S3，server 端呼叫 OpenAI Whisper 系列轉錄，寫回 `content`。穩定、幾秒完成 |
+| 自架 whisper.cpp | 隱私最佳（音檔不出門）但要多養一個服務，對個人工具不成比例；列為隱私考量升高時的替代路徑 |
+
+**成本**：whisper-1 為 $0.006/分鐘——每月 30 則 × 3 分鐘 ≈ US$0.54，可忽略。**已知代價**：(1) 隱私——音檔會送到 OpenAI（API 資料預設不用於訓練，已權衡接受）；(2) Whisper 對國語常輸出簡體——request 帶繁體 prompt 提示＋OpenCC `s2twp` 轉換雙保險；(3) 口語轉出來是流水帳——所以轉錄結果定位是**可編輯草稿**，不是成品。
+
+### 錄音格式
+
+錄音格式與相容性是本功能另一個技術風險。三個方案：
 
 | 方案 | 說明 | 取捨 |
 |------|------|------|
@@ -82,17 +103,21 @@ export interface IPage extends Document {
   transcodingStatus?: TranscodingStatus  // audio 頁不使用（方案 A 不轉檔）
   happenedAt?: Date
   durationSec?: number                   // 新增：錄音長度（秒），錄完由前端帶入
+  transcriptionStatus?: 'pending' | 'done' | 'error'  // 新增：轉錄狀態（audio 頁專用）
 }
 ```
 
 ```ts
 type: { type: String, enum: ['carousel', 'video', 'audio'], required: true },
 durationSec: { type: Number },
+transcriptionStatus: { type: String, enum: ['pending', 'done', 'error'] },
 ```
 
 - 不需要 migration：既有頁面不受影響
 - `durationSec` 讓清單與播放器能顯示時長，不用先下載音檔才知道
 - 一頁一段錄音（`mediaUrls[0]`）。「一頁多段錄音」沒有對應的使用場景，不做
+- 轉錄文字**直接寫入既有的 `content` 欄位**，不另設 transcript 欄位——轉錄結果就是草稿，使用者修剪後它就是頁面文字，沒有「原始逐字稿要另外保存」的需求（要重聽有音檔在）
+- `transcriptionStatus` 與影片的 `transcodingStatus` 是兩件事，刻意分開命名；讓重新整理頁面後仍能顯示「轉錄中／失敗重試」
 
 ## API 設計
 
@@ -120,6 +145,18 @@ S3 key 沿用 `books/{bookId}/...` 前綴，自動被既有 CloudFront 行為保
 - `PATCH /api/books/[bookId]/pages/[pageId]`：`PatchPageBody` 新增 `durationSec: z.number().optional()`；`mediaUrls` 沿用既有欄位寫入音檔 URL
 - Quick capture（`lib/quick-capture.ts` + `POST /api/books/quick`）：`QUICK_CAPTURE_MODES` 新增 `'audio'`，`pageTypeForMode` 回傳 `'audio'`
 
+### 轉錄（新）
+
+`POST /api/books/[bookId]/pages/[pageId]/transcribe`：
+
+- 權限：creator / editor（同頁面編輯權）
+- 前置：該頁 `type === 'audio'` 且 `mediaUrls[0]` 存在，否則 400
+- 行為：設 `transcriptionStatus = 'pending'` → 從 S3 讀音檔 → 呼叫 OpenAI 轉錄（`whisper-1` 起步，帶繁體中文 prompt）→ OpenCC `s2twp` 轉換 → 寫入 `content` → `transcriptionStatus = 'done'`。失敗設 `'error'` 並回 5xx
+- **`content` 覆蓋規則**：`content` 為空時直接寫入；已有文字時**附加在既有文字之後**（隔一空行）——使用者先打了幾個字再錄音的場景不該被轉錄覆蓋
+- 音檔只有幾分鐘、轉錄數秒完成，route 內同步 await 即可，不需要 webhook / queue；client 端 await 這支 API 的回應來更新 textarea
+- 重試 = 前端再打一次同一支 API（狀態為 `'error'` 時 UI 露出重試按鈕）
+- 新增環境變數：`OPENAI_API_KEY`；新增依賴：`openai`、`opencc-js`
+
 ### 播放授權（沿用既有）
 
 音檔是單一檔案（非 HLS 分段），比照圖片以 `signImageUrl`（canned policy Signed URL）在 server 端簽章後交給前端 `<audio>`，不需要 Signed Cookie。`lib/sign-media.ts` 的 `signImageUrl` 改名或加一個語意化 alias（`signMediaUrl`）皆可，簽章邏輯不變。
@@ -134,6 +171,7 @@ S3 key 沿用 `books/{bookId}/...` 前綴，自動被既有 CloudFront 行為保
 - `MediaRecorder` mimeType 偵測：`MediaRecorder.isTypeSupported('audio/mp4')` 優先，退 `'audio/webm'`
 - 錄音上限 10 分鐘（`setTimeout` 自動 stop）；Opus/AAC 語音 10 分鐘約 2–10MB，遠低於影片
 - preview 階段以 blob URL 試聽；「使用這段錄音」才 presign + PUT 上傳，成功後 PATCH `mediaUrls` + `durationSec`（比照 `MediaUploader` 的 fire-and-forget）
+- 上傳成功後緊接著呼叫 `POST .../transcribe` 並 await：等待期間 content textarea 上方顯示「轉錄中…」，成功後把回傳文字塞入 textarea（走既有 debounce 儲存已不需要——server 已寫入，前端只同步顯示）；失敗顯示「轉錄失敗，重試」按鈕。錄音本身的成功與否**不受轉錄影響**——轉錄壞了音檔還是好好的
 - 麥克風權限被拒時顯示引導文字（「請在瀏覽器設定允許麥克風」），不 crash
 
 ### `AudioPlayer`（新元件 `components/audio-player.tsx`）
@@ -172,15 +210,21 @@ S3 key 沿用 `books/{bookId}/...` 前綴，自動被既有 CloudFront 行為保
 - Quick capture「語音」→ 落在錄音介面，書名為當日預設名
 - Reader 開分享連結可播放；直接複製音檔 URL 貼到無痕視窗 → 403
 - audio 頁可設定 `happenedAt`、可拖曳排序、可刪除（與其他頁型一致）
+- 錄一段國語 → 轉錄結果為繁體中文，數秒內出現在 textarea
+- content 已有文字時錄音 → 轉錄結果附加在原文之後，不覆蓋
+- 中斷網路讓轉錄失敗 → 顯示重試按鈕，音檔仍可播放；按重試成功補上文字
+- 轉錄中重新整理頁面 → 依 `transcriptionStatus` 正確顯示狀態，不卡在假的「轉錄中」
 
 ---
 
 ## File Map
 
-- `lib/models/page.ts`：`type` enum 加 `'audio'`、新增 `durationSec`
+- `lib/models/page.ts`：`type` enum 加 `'audio'`、新增 `durationSec`、`transcriptionStatus`
 - `app/api/upload/presign/route.ts`：`fileType` enum、contentType map
 - `app/api/books/[bookId]/pages/route.ts`：`type` 驗證加 `'audio'`
 - `app/api/books/[bookId]/pages/[pageId]/route.ts`：`PatchPageBody` 加 `durationSec`
+- `app/api/books/[bookId]/pages/[pageId]/transcribe/route.ts`（新）：轉錄
+- `lib/transcribe.ts`（新）：OpenAI 呼叫 + 繁體 prompt + OpenCC 轉換
 - `lib/quick-capture.ts`、`app/api/books/quick/route.ts`：mode 加 `'audio'`
 - `components/audio-recorder.tsx`（新）、`components/audio-player.tsx`（新）
 - `components/add-page-button.tsx`、`components/quick-capture-bar.tsx`
@@ -190,6 +234,7 @@ S3 key 沿用 `books/{bookId}/...` 前綴，自動被既有 CloudFront 行為保
 
 ## 後續演進
 
-- **Whisper 自動轉錄**：錄音上傳後呼叫轉錄 API，結果填入 `content` 供編輯——讓語音備忘錄能被搜尋（標題/標籤搜尋之外的全文脈絡）
 - **波形視覺化**：以 Web Audio API 畫靜態波形取代素進度條，強化「聲音的樣子」
 - **MediaConvert 統一轉 AAC**：若相容性實測出問題，走方案 B 升級，`transcodingStatus` 欄位與 Lambda 管道皆現成
+- **自架 whisper.cpp**：若對「音檔送第三方」的隱私權衡改變，轉錄可換成自架服務，API 介面不變
+- **轉錄服務比價**：`gpt-4o-mini-transcribe`（約半價）或 Groq（更低），起步用 `whisper-1` 是為了文件與生態最省事，量大再換
