@@ -198,6 +198,29 @@ S3 key 沿用 `books/{bookId}/...` 前綴，自動被既有 CloudFront 行為保
 
 ---
 
+## 隱私與合規（實作的必要條件）
+
+轉錄會把使用者的語音傳送至外部 API，牴觸現行隱私權政策（`app/privacy/page.tsx`）「未獲授權下不分享給第三方」的承諾邊界。**政策更新與功能實作必須同批上線**，缺一不可：
+
+### 隱私權政策必須更新的內容
+
+- **1.2 您主動提供的資料**：媒體檔案清單加入「語音錄音」
+- **新增「第三方資料處理」章節**：聲明語音錄音會傳送至外部轉錄服務（目前為 OpenAI），僅為「語音轉文字」單一目的；依 OpenAI API 資料政策，API 輸入**不用於模型訓練**，僅短期保留（最長 30 天，用於濫用偵測）後刪除，並附其隱私政策連結（比照第五節第三方登入的表格格式）
+- **四、資料存放位置**：表格加一列（OpenAI API／語音轉錄／美國）
+- 更新「最後更新」日期
+
+### 服務選擇原則（寫進政策，也約束未來實作）
+
+**只使用明確聲明「API 資料不用於模型訓練」的轉錄服務。** OpenAI API 與 Groq 目前皆有此聲明；日後切換服務（含「後續演進」的比價選項）此原則不變——這讓政策第二節「不會用您的內容訓練 AI 模型」的既有承諾持續成立。若某候選服務無此聲明，即使更便宜也不採用。
+
+### 介面上的知情揭露
+
+錄音介面（`AudioRecorder`）在錄音按鈕附近放一行小字：「錄音會傳送至外部服務進行轉錄」，連結至 `/privacy`。使用者按下錄音前就知道這件事，不是埋在政策頁裡才找得到。
+
+### 順帶盤點（本功能之外的既有政策落差，另行處理）
+
+檢查政策時發現兩處與現況不符，與 audio 無關但應一併修：(1) 第三節仍描述「連結免登入可讀」的舊行為——現行 `shared` 需登入且連結 7 天到期，僅 `public` 免登入；(2) `BookReader` 讀者追蹤（誰、何時讀了哪本書，管理者可見名單）與 like 記錄未列入 1.3 蒐集清單。
+
 ## 權限
 
 沿用頁面既有規則，無新增權限概念：
@@ -226,6 +249,7 @@ S3 key 沿用 `books/{bookId}/...` 前綴，自動被既有 CloudFront 行為保
 - 轉錄中重新整理頁面 → 依 `transcriptionStatus` 正確顯示狀態，不卡在假的「轉錄中」
 - 錄滿 10 分鐘上限的音檔（部署在 Vercel 後測）→ 轉錄在 `maxDuration` 內完成，不觸發 function timeout
 - 轉錄等待中把頁面關掉 → 重新打開後文字已在（server 先寫 DB 的行為驗證）
+- 隱私檢查：`/privacy` 已含第三方轉錄聲明與 OpenAI 列項；錄音介面有揭露文字並可連至政策頁
 
 ---
 
@@ -238,6 +262,7 @@ S3 key 沿用 `books/{bookId}/...` 前綴，自動被既有 CloudFront 行為保
 - `app/api/books/[bookId]/pages/[pageId]/transcribe/route.ts`（新）：轉錄
 - `lib/transcribe.ts`（新）：OpenAI 呼叫 + 繁體 prompt + OpenCC 轉換
 - `lib/quick-capture.ts`、`app/api/books/quick/route.ts`：mode 加 `'audio'`
+- `app/privacy/page.tsx`：第三方轉錄聲明（見「隱私與合規」，與功能同批上線）
 - `components/audio-recorder.tsx`（新）、`components/audio-player.tsx`（新）
 - `components/add-page-button.tsx`、`components/quick-capture-bar.tsx`
 - `components/book-editor-client.tsx`、`components/read-page-client.tsx`
