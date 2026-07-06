@@ -119,6 +119,8 @@
 
 **方向**：新增 `audio` 頁面類型。瀏覽器 `MediaRecorder API` 錄音，存入 S3。可選：接 Whisper API 自動轉錄文字。最符合「捕捉優先於整理」精神，尤其適合手還濕著的潛水上岸場景。
 
+**詳細設計**：[docs/superpowers/specs/2026-07-07-audio-page-design.md](superpowers/specs/2026-07-07-audio-page-design.md)（規劃完成，待實作）
+
 ---
 
 ### PDF / 匯出實體書
@@ -135,16 +137,20 @@
 
 **方向**：新增 `Collection`（收藏夾）概念，多對多關聯 `Collection ↔ Book`。純個人整理工具，不影響分享機制。例如「和 Yuki 的潛水」收藏夾包含歷年的書。
 
+**詳細設計**：[docs/superpowers/specs/2026-07-07-book-collection-design.md](superpowers/specs/2026-07-07-book-collection-design.md)（規劃完成，待實作）
+
 ---
 
 ### 閱讀結束體驗（最後一頁設計）
 
 **問題**：閱讀結束的那一刻目前只有 Like 和 HandoverLetter，設計最薄，但情感上最重要。
 
-**方向**（三個互斥選項，待討論）：
+**方向**（三個互斥選項，已選定 **Reader 私訊**）：
 - **微動畫**：最後一頁滑完後出現「書本合起來」的視覺確認感
-- **Reader 私訊**：讀完可留一句話給 creator（不公開，creator 在 dashboard 看到）；打破 Like 匿名性，但帶來情感回應
+- **Reader 私訊** ✅ 選定：讀完可留一句話給 creator（不公開，creator 在 dashboard 看到）；打破 Like 匿名性，但帶來情感回應
 - **無需改動**：保持現狀，現有 Like + HandoverLetter 已足夠
+
+**詳細設計**：[docs/superpowers/specs/2026-07-07-reader-message-design.md](superpowers/specs/2026-07-07-reader-message-design.md)（規劃完成，待實作）
 
 ---
 
