@@ -153,9 +153,19 @@ S3 key 沿用 `books/{bookId}/...` 前綴，自動被既有 CloudFront 行為保
 - 前置：該頁 `type === 'audio'` 且 `mediaUrls[0]` 存在，否則 400
 - 行為：設 `transcriptionStatus = 'pending'` → 從 S3 讀音檔 → 呼叫 OpenAI 轉錄（`whisper-1` 起步，帶繁體中文 prompt）→ OpenCC `s2twp` 轉換 → 寫入 `content` → `transcriptionStatus = 'done'`。失敗設 `'error'` 並回 5xx
 - **`content` 覆蓋規則**：`content` 為空時直接寫入；已有文字時**附加在既有文字之後**（隔一空行）——使用者先打了幾個字再錄音的場景不該被轉錄覆蓋
-- 音檔只有幾分鐘、轉錄數秒完成，route 內同步 await 即可，不需要 webhook / queue；client 端 await 這支 API 的回應來更新 textarea
+- 音檔只有幾分鐘、轉錄通常數秒到數十秒完成，route 內同步 await 即可，不需要 webhook / queue；client 端 await 這支 API 的回應來更新 textarea
 - 重試 = 前端再打一次同一支 API（狀態為 `'error'` 時 UI 露出重試按鈕）
 - 新增環境變數：`OPENAI_API_KEY`；新增依賴：`openai`、`opencc-js`
+
+### 部署考量（Vercel serverless，2026-07-07 討論結論）
+
+無 VM、無 Lambda——transcribe route 在 Vercel function 內做完整趟（S3 讀檔 → whisper-1 → OpenCC → 寫 DB），timeout 靠以下設計壓住：
+
+- **route 設 `export const maxDuration = 300`**（Hobby 方案上限）。時間預算：S3 抓 5–10MB 約 1–2 秒；whisper-1 轉 1–3 分鐘備忘錄約 5–20 秒（典型情境），頂格 10 分鐘錄音約 30–60 秒（最壞情境）——錄音的 10 分鐘上限同時就是 timeout 的天花板，兩個限制互相支撐
+- **whisper-1 維持預設**：文件最全、行為最被驗證。它相對 Groq 的劣勢是尾端變異（OpenAI 負載高峰時偶有慢回應），但失敗本來就由 `transcriptionStatus = 'error'` ＋重試按鈕接住，代價是多按一次，不是丟資料
+- **Groq 是一行設定的替換選項**：API 為 OpenAI 相容格式，共用同一個 SDK，換 base URL 與 model 名即可（`whisper-large-v3-turbo` 轉 10 分鐘音檔僅數秒，且更便宜）。哪天嫌慢了再切，不是架構決策
+- **client 斷線無害**：server 先寫 DB 再回應，瀏覽器請求中斷（行動網路不穩、使用者關頁）不會中斷 function 執行，重新整理即看到結果。若實測發現行動網路上長 await 體感太脆，可把前端改為輪詢 `transcriptionStatus`（欄位已備），server 流程不變
+- **升級路徑**：若真實使用出現超時，沿影片轉檔的既有模式（S3 trigger → Lambda → 回寫）把轉錄搬進 Lambda，`transcriptionStatus` 與重試介面都不用改
 
 ### 播放授權（沿用既有）
 
@@ -214,6 +224,8 @@ S3 key 沿用 `books/{bookId}/...` 前綴，自動被既有 CloudFront 行為保
 - content 已有文字時錄音 → 轉錄結果附加在原文之後，不覆蓋
 - 中斷網路讓轉錄失敗 → 顯示重試按鈕，音檔仍可播放；按重試成功補上文字
 - 轉錄中重新整理頁面 → 依 `transcriptionStatus` 正確顯示狀態，不卡在假的「轉錄中」
+- 錄滿 10 分鐘上限的音檔（部署在 Vercel 後測）→ 轉錄在 `maxDuration` 內完成，不觸發 function timeout
+- 轉錄等待中把頁面關掉 → 重新打開後文字已在（server 先寫 DB 的行為驗證）
 
 ---
 
@@ -237,4 +249,5 @@ S3 key 沿用 `books/{bookId}/...` 前綴，自動被既有 CloudFront 行為保
 - **波形視覺化**：以 Web Audio API 畫靜態波形取代素進度條，強化「聲音的樣子」
 - **MediaConvert 統一轉 AAC**：若相容性實測出問題，走方案 B 升級，`transcodingStatus` 欄位與 Lambda 管道皆現成
 - **自架 whisper.cpp**：若對「音檔送第三方」的隱私權衡改變，轉錄可換成自架服務，API 介面不變
-- **轉錄服務比價**：`gpt-4o-mini-transcribe`（約半價）或 Groq（更低），起步用 `whisper-1` 是為了文件與生態最省事，量大再換
+- **轉錄服務切換**：Groq（OpenAI 相容 API，換 base URL＋model 名即可）更快更便宜，`gpt-4o-mini-transcribe` 約半價；起步用 `whisper-1` 是為了文件與生態最省事，嫌慢或量大再切，見「部署考量」
+- **Lambda 轉錄管道**：實際使用中若 Vercel function 超時成為常態，沿影片轉檔模式搬進 Lambda，前端介面不變
