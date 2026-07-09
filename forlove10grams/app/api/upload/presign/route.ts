@@ -25,7 +25,7 @@ const CLOUDFRONT_URL = process.env.CLOUDFRONT_URL?.replace(/\/$/, '')
 const PresignBody = z.object({
   bookId: z.string(),
   pageId: z.string().optional(),
-  fileType: z.enum(['carousel', 'video', 'cover']),
+  fileType: z.enum(['carousel', 'video', 'cover', 'audio']),
   contentType: z.string(),
   index: z.number().int().min(0).optional(),
 })
@@ -39,6 +39,9 @@ function extFromContentType(contentType: string): string {
     'video/mp4': 'mp4',
     'video/quicktime': 'mov',
     'video/x-m4v': 'm4v',
+    'audio/mp4': 'm4a',
+    'audio/webm': 'weba',
+    'audio/mpeg': 'mp3',
   }
   return map[contentType] ?? contentType.split('/')[1] ?? 'bin'
 }
@@ -72,6 +75,9 @@ export async function POST(req: NextRequest) {
   } else if (fileType === 'video') {
     if (!pageId) return Response.json({ error: 'pageId required for video' }, { status: 400 })
     s3Key = `books/${bookId}/pages/${pageId}/video-raw.${ext}`
+  } else if (fileType === 'audio') {
+    if (!pageId) return Response.json({ error: 'pageId required for audio' }, { status: 400 })
+    s3Key = `books/${bookId}/pages/${pageId}/audio.${ext}`
   } else {
     s3Key = `books/${bookId}/pages/${pageId}/carousel/${randomUUID().slice(0, 8)}-image.${ext}`
   }
