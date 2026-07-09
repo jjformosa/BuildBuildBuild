@@ -40,15 +40,17 @@ export async function GET(
       _id: p!._id.toString(),
       type: p!.type,
       content: p!.content ?? '',
-      mediaUrls: p!.type === 'carousel' ? p!.mediaUrls.map(signImageUrl) : p!.mediaUrls,
+      mediaUrls: p!.type === 'video' ? p!.mediaUrls : p!.mediaUrls.map(signImageUrl),
       transcodingStatus: p!.transcodingStatus ?? null,
+      durationSec: p!.durationSec ?? null,
+      transcriptionStatus: p!.transcriptionStatus ?? null,
     }))
 
   return Response.json(sorted)
 }
 
 const CreatePageBody = z.object({
-  type: z.enum(['carousel', 'video']),
+  type: z.enum(['carousel', 'video', 'audio']),
   content: z.string().optional(),
   mediaUrls: z.array(z.string()).optional(),
 })
