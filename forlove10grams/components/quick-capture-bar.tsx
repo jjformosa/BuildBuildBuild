@@ -12,6 +12,7 @@ class QuickCaptureRequestError extends Error {}
 const OPTIONS: Array<{ mode: QuickCaptureMode; label: string }> = [
   { mode: 'photo', label: '照片' },
   { mode: 'text', label: '文字' },
+  { mode: 'audio', label: '語音' },
 ]
 
 export function QuickCaptureBar() {

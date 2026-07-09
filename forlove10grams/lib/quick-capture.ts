@@ -1,7 +1,7 @@
-export const QUICK_CAPTURE_MODES = ['photo', 'video', 'text'] as const
+export const QUICK_CAPTURE_MODES = ['photo', 'video', 'text', 'audio'] as const
 
 export type QuickCaptureMode = (typeof QUICK_CAPTURE_MODES)[number]
-export type QuickCapturePageType = 'carousel' | 'video'
+export type QuickCapturePageType = 'carousel' | 'video' | 'audio'
 
 export function isQuickCaptureMode(value: unknown): value is QuickCaptureMode {
   return (
@@ -13,7 +13,9 @@ export function isQuickCaptureMode(value: unknown): value is QuickCaptureMode {
 export function pageTypeForQuickCaptureMode(
   mode: QuickCaptureMode,
 ): QuickCapturePageType {
-  return mode === 'video' ? 'video' : 'carousel'
+  if (mode === 'video') return 'video'
+  if (mode === 'audio') return 'audio'
+  return 'carousel'
 }
 
 export function formatQuickCaptureTitle(date = new Date()): string {
