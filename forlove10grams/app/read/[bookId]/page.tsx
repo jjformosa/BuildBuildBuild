@@ -57,23 +57,24 @@ export default async function ReadBookPage({
 
   if (!isManagerViewer) {
     canMessage = true
-    const reader = await BookReader.findOne(
-      { bookId: book._id, userId },
-      'sharedBy'
-    ).lean<{ sharedBy?: import('mongoose').Types.ObjectId }>()
+    const [reader, creator, myMsg] = await Promise.all([
+      BookReader.findOne(
+        { bookId: book._id, userId },
+        'sharedBy'
+      ).lean<{ sharedBy?: import('mongoose').Types.ObjectId }>(),
+      User.findById(book.createdBy, 'name nickname').lean<{ name?: string; nickname?: string | null }>(),
+      BookMessage.findOne({ bookId: book._id, fromUserId: userId }, 'body').lean<{ body: string }>(),
+    ])
     const sharedBy = reader?.sharedBy?.toString() ?? book.createdBy.toString() // fallback: creator
     const sharerIsEditor = book.editorId ? sharedBy === book.editorId.toString() : false
 
-    const creator = await User.findById(book.createdBy, 'name nickname').lean<{ name?: string; nickname?: string | null }>()
     messageCreatorName = creator?.nickname ?? creator?.name ?? '作者'
+    initialMessage = myMsg?.body ?? null
 
     if (sharerIsEditor && book.editorId) {
       const ed = await User.findById(book.editorId, 'name nickname').lean<{ name?: string; nickname?: string | null }>()
       messageEditorName = ed?.nickname ?? ed?.name ?? null
     }
-
-    const myMsg = await BookMessage.findOne({ bookId: book._id, fromUserId: userId }, 'body').lean<{ body: string }>()
-    initialMessage = myMsg?.body ?? null
   }
 
   const pageIds = book.pageOrder.map((id) => id.toString())
