@@ -8,6 +8,9 @@ import { PencilIcon } from '@/components/icons/pencil'
 import { CheckCircleIcon } from '@/components/icons/check-circle'
 import { CircleIcon } from '@/components/icons/circle'
 import TagManagerModal from '@/components/tag-manager-modal'
+import CollectionPickerModal from '@/components/collection-picker-modal'
+import { CollectionBar } from '@/components/collection-bar'
+import { CollectionView } from '@/components/collection-view'
 import { createRipple } from '@/lib/ripple'
 
 export type DashboardBook = {
@@ -79,6 +82,7 @@ function BookCard({
   onTagsChanged: (bookId: string, updatedTags: string[]) => void
 }) {
   const [showTagModal, setShowTagModal] = useState(false)
+  const [showCollectionModal, setShowCollectionModal] = useState(false)
   const initial = book.title.charAt(0)
 
   const handleAddTag = async (tag: string) => {
@@ -200,6 +204,14 @@ function BookCard({
         >
           + 標籤
         </button>
+        <button
+          type="button"
+          onClick={(e) => { createRipple(e); setShowCollectionModal(true) }}
+          className="relative overflow-hidden rounded-md text-xs text-muted-foreground hover:text-foreground hover:bg-muted transition-colors px-1.5 py-0.5 cursor-pointer"
+          title="加入收藏夾"
+        >
+          + 收藏夾
+        </button>
 
         {/* Mobile editor actions */}
         {role === 'editor' && (
@@ -247,6 +259,10 @@ function BookCard({
           onRemove={handleRemoveTag}
           onClose={() => setShowTagModal(false)}
         />
+      )}
+
+      {showCollectionModal && (
+        <CollectionPickerModal bookId={book._id} onClose={() => setShowCollectionModal(false)} />
       )}
     </div>
   )
@@ -566,11 +582,23 @@ export function DashboardShell({
 }) {
   const [query, setQuery] = useState('')
   const [debouncedSearch, setDebouncedSearch] = useState('')
+  const [activeCollectionId, setActiveCollectionId] = useState<string | null>(null)
+  const [activeCollectionName, setActiveCollectionName] = useState<string | null>(null)
 
   useEffect(() => {
     const timer = setTimeout(() => setDebouncedSearch(query.trim()), 300)
     return () => clearTimeout(timer)
   }, [query])
+
+  // Collection view is mutually exclusive with search (same convention as sort/filter).
+  function selectCollection(id: string | null, name: string | null) {
+    setActiveCollectionId(id)
+    setActiveCollectionName(name)
+    if (id) {
+      setQuery('')
+      setDebouncedSearch('')
+    }
+  }
 
   const hasSharedContent = editorBooks.length > 0 || readerBooks.length > 0
 
@@ -612,8 +640,18 @@ export function DashboardShell({
 
       {quickCapture && <div className="-mt-4">{quickCapture}</div>}
 
-      {/* Admin: owner books */}
-      {isAdmin && (
+      <CollectionBar activeId={activeCollectionId} onSelect={selectCollection} />
+
+      {activeCollectionId && activeCollectionName ? (
+        <CollectionView
+          collectionId={activeCollectionId}
+          collectionName={activeCollectionName}
+          onDeleted={() => selectCollection(null, null)}
+        />
+      ) : (
+        <>
+          {/* Admin: owner books */}
+          {isAdmin && (
         <section>
           <div className="flex items-center justify-between mb-5">
             <SectionHeading>謝謝你，幫我記住</SectionHeading>
@@ -650,6 +688,8 @@ export function DashboardShell({
             </>
           )}
         </section>
+      )}
+        </>
       )}
     </div>
   )
