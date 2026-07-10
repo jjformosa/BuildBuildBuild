@@ -14,6 +14,7 @@ import {
   type ReaderBookItem,
 } from '@/components/dashboard-books-client'
 import { getLikeCountsByBook } from '@/lib/queries/book-like-counts'
+import { getMessageCountsByBook } from '@/lib/queries/book-message-counts'
 
 const INITIAL_LIMIT = 10
 
@@ -28,7 +29,12 @@ type OwnerBookDoc = {
   editorId?: { name: string } | null
 }
 
-function toBook(b: OwnerBookDoc, likeCount = 0): DashboardBook {
+function toBook(
+  b: OwnerBookDoc,
+  likeCount = 0,
+  messageTotal = 0,
+  messageUnread = 0
+): DashboardBook {
   return {
     _id: b._id.toString(),
     title: b.title,
@@ -38,6 +44,8 @@ function toBook(b: OwnerBookDoc, likeCount = 0): DashboardBook {
     tags: b.tags ?? [],
     likeCount,
     editorName: b.editorId?.name ?? null,
+    messageTotal,
+    messageUnread,
   }
 }
 
@@ -75,6 +83,23 @@ export default async function DashboardPage() {
         )
       : new Map<string, number>()
 
+  const ownerMessageCounts = isAdmin
+    ? await getMessageCountsByBook(
+        ownerBooksRaw.map((b) => b._id as mongoose.Types.ObjectId),
+        userId,
+        'owner'
+      )
+    : new Map<string, { total: number; unread: number }>()
+
+  const editorMessageCounts =
+    editorBooksRaw.length > 0
+      ? await getMessageCountsByBook(
+          editorBooksRaw.map((b) => b._id as mongoose.Types.ObjectId),
+          userId,
+          'editor'
+        )
+      : new Map<string, { total: number; unread: number }>()
+
   const readCountMap = new Map<string, number>(
     progressAgg.map((r) => [r._id.toString(), r.count])
   )
@@ -88,13 +113,15 @@ export default async function DashboardPage() {
       }).lean<OwnerBookDoc[]>()
     : []
 
-  const ownerBooks = ownerBooksRaw.map((b) =>
-    toBook(b, ownerLikeCounts.get(b._id.toString()) ?? 0)
-  )
+  const ownerBooks = ownerBooksRaw.map((b) => {
+    const mc = ownerMessageCounts.get(b._id.toString())
+    return toBook(b, ownerLikeCounts.get(b._id.toString()) ?? 0, mc?.total ?? 0, mc?.unread ?? 0)
+  })
 
-  const editorBooks: DashboardBook[] = editorBooksRaw.map((b) =>
-    toBook(b, editorLikeCounts.get(b._id.toString()) ?? 0)
-  )
+  const editorBooks: DashboardBook[] = editorBooksRaw.map((b) => {
+    const mc = editorMessageCounts.get(b._id.toString())
+    return toBook(b, editorLikeCounts.get(b._id.toString()) ?? 0, mc?.total ?? 0, mc?.unread ?? 0)
+  })
 
   const readerBooks: ReaderBookItem[] = readerBooksRaw.map((b) => {
     const readCount = readCountMap.get(b._id.toString()) ?? 0
