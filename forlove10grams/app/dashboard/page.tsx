@@ -72,33 +72,29 @@ export default async function DashboardPage() {
     ]),
   ])
 
-  const ownerLikeCounts = isAdmin
-    ? await getLikeCountsByBook(ownerBooksRaw.map((b) => b._id as mongoose.Types.ObjectId))
-    : new Map<string, number>()
-
-  const editorLikeCounts =
-    editorBooksRaw.length > 0
-      ? await getLikeCountsByBook(
-          editorBooksRaw.map((b) => b._id as mongoose.Types.ObjectId),
-        )
-      : new Map<string, number>()
-
-  const ownerMessageCounts = isAdmin
-    ? await getMessageCountsByBook(
-        ownerBooksRaw.map((b) => b._id as mongoose.Types.ObjectId),
-        userId,
-        'owner'
-      )
-    : new Map<string, { total: number; unread: number }>()
-
-  const editorMessageCounts =
-    editorBooksRaw.length > 0
-      ? await getMessageCountsByBook(
-          editorBooksRaw.map((b) => b._id as mongoose.Types.ObjectId),
-          userId,
-          'editor'
-        )
-      : new Map<string, { total: number; unread: number }>()
+  const [ownerLikeCounts, editorLikeCounts, ownerMessageCounts, editorMessageCounts] =
+    await Promise.all([
+      isAdmin
+        ? getLikeCountsByBook(ownerBooksRaw.map((b) => b._id as mongoose.Types.ObjectId))
+        : new Map<string, number>(),
+      editorBooksRaw.length > 0
+        ? getLikeCountsByBook(editorBooksRaw.map((b) => b._id as mongoose.Types.ObjectId))
+        : new Map<string, number>(),
+      isAdmin
+        ? getMessageCountsByBook(
+            ownerBooksRaw.map((b) => b._id as mongoose.Types.ObjectId),
+            userId,
+            'owner'
+          )
+        : new Map<string, { total: number; unread: number }>(),
+      editorBooksRaw.length > 0
+        ? getMessageCountsByBook(
+            editorBooksRaw.map((b) => b._id as mongoose.Types.ObjectId),
+            userId,
+            'editor'
+          )
+        : new Map<string, { total: number; unread: number }>(),
+    ])
 
   const readCountMap = new Map<string, number>(
     progressAgg.map((r) => [r._id.toString(), r.count])
