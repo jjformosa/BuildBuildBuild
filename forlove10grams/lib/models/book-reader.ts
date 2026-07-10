@@ -4,6 +4,7 @@ export interface IBookReader extends Document {
   bookId: Types.ObjectId
   userId: Types.ObjectId
   joinedAt: Date
+  sharedBy?: Types.ObjectId // Share.createdBy at first entry — governs message visibility
 }
 
 const BookReaderSchema = new Schema<IBookReader>(
@@ -11,6 +12,7 @@ const BookReaderSchema = new Schema<IBookReader>(
     bookId: { type: Schema.Types.ObjectId, ref: 'Book', required: true },
     userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
     joinedAt: { type: Date, default: () => new Date() },
+    sharedBy: { type: Schema.Types.ObjectId, ref: 'User' },
   },
   { timestamps: false }
 )
