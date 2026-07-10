@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, type RefObject } from 'react'
 import { LikeButton } from '@/components/like-button'
 import { HandoverLetter } from '@/components/handover-letter'
+import { MessageComposer } from '@/components/message-composer'
 
 const CLOSE_DURATION_MS = 1100
 const HOLD_MS = 700
@@ -20,6 +21,10 @@ export function BookCloseEnding({
   isEditor,
   editorLetter,
   creatorName,
+  canMessage,
+  initialMessage,
+  messageCreatorName,
+  messageEditorName,
 }: {
   bookId: string
   lastPageId: string
@@ -29,6 +34,10 @@ export function BookCloseEnding({
   isEditor?: boolean
   editorLetter?: string | null
   creatorName?: string | null
+  canMessage?: boolean
+  initialMessage?: string | null
+  messageCreatorName?: string
+  messageEditorName?: string | null
 }) {
   const [phase, setPhase] = useState<Phase>('idle')
   const playedRef = useRef(false)
@@ -107,6 +116,15 @@ export function BookCloseEnding({
         <div className="flex justify-center">
           <LikeButton bookId={bookId} initialHasLiked={hasLiked} initialLikeCount={likeCount} />
         </div>
+
+        {canMessage && messageCreatorName && (
+          <MessageComposer
+            bookId={bookId}
+            initialMessage={initialMessage ?? null}
+            creatorName={messageCreatorName}
+            editorName={messageEditorName ?? null}
+          />
+        )}
 
         {isEditor && editorLetter && creatorName && (
           <HandoverLetter

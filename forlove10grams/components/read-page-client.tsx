@@ -41,6 +41,10 @@ type Props = {
   isEditor?: boolean
   editorLetter?: string | null
   creatorName?: string | null
+  canMessage?: boolean
+  initialMessage?: string | null
+  messageCreatorName?: string
+  messageEditorName?: string | null
 }
 
 function TocIcon() {
@@ -66,6 +70,7 @@ function LogOutIcon() {
 export function ReadPageClient({
   bookId, bookTitle, initialPages, totalCount,
   viewerNickname, viewerMyNickname, hasLiked, likeCount, isEditor, editorLetter, creatorName,
+  canMessage, initialMessage, messageCreatorName, messageEditorName,
 }: Props) {
   const scrollContainerRef = useRef<HTMLElement>(null)
 
@@ -308,6 +313,10 @@ export function ReadPageClient({
               isEditor={isEditor}
               editorLetter={editorLetter}
               creatorName={creatorName}
+              canMessage={canMessage}
+              initialMessage={initialMessage}
+              messageCreatorName={messageCreatorName}
+              messageEditorName={messageEditorName}
             />
           )}
         </div>
