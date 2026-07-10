@@ -26,3 +26,21 @@ export function signImageUrl(url: string): string {
     return url
   }
 }
+
+// Rejects mediaUrls that don't point at this book+page's own S3 prefix, regardless
+// of host. Without this, a stored mediaUrl (settable via PATCH) could be used to make
+// the server fetch an attacker-chosen path — either another book's private media
+// (cross-tenant) or, if CLOUDFRONT_* env vars are unset and signImageUrl falls back to
+// returning the raw URL unchanged, an arbitrary internal/external host (SSRF).
+export function assertOwnMediaUrl(url: string, bookId: string, pageId: string): void {
+  const expectedPrefix = `/books/${bookId}/pages/${pageId}/`
+  let pathname: string
+  try {
+    pathname = new URL(url).pathname
+  } catch {
+    throw new Error('Invalid media URL')
+  }
+  if (!pathname.startsWith(expectedPrefix)) {
+    throw new Error('Media URL does not belong to this page')
+  }
+}

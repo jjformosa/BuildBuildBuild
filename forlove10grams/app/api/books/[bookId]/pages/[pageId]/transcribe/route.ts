@@ -4,7 +4,7 @@ import { dbConnect } from '@/lib/mongoose'
 import Book from '@/lib/models/book'
 import Page from '@/lib/models/page'
 import { canEditBook } from '@/lib/access'
-import { signImageUrl } from '@/lib/sign-media'
+import { assertOwnMediaUrl, signImageUrl } from '@/lib/sign-media'
 import { transcribeAudio } from '@/lib/transcribe'
 
 // Whole trip (S3 read → Whisper → OpenCC → DB write) runs in one function.
@@ -32,6 +32,11 @@ export async function POST(
   const page = await Page.findOne({ _id: pageId, bookId: book._id })
   if (!page) return Response.json({ error: 'Page not found' }, { status: 404 })
   if (page.type !== 'audio' || !page.mediaUrls[0]) {
+    return Response.json({ error: 'Page has no audio to transcribe' }, { status: 400 })
+  }
+  try {
+    assertOwnMediaUrl(page.mediaUrls[0], book._id.toString(), page._id.toString())
+  } catch {
     return Response.json({ error: 'Page has no audio to transcribe' }, { status: 400 })
   }
 
