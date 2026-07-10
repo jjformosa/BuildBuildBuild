@@ -27,12 +27,15 @@ export function signImageUrl(url: string): string {
   }
 }
 
-// Rejects mediaUrls that don't point at this book+page's own S3 prefix, regardless
-// of host. Without this, a stored mediaUrl (settable via PATCH) could be used to make
-// the server fetch an attacker-chosen path — either another book's private media
-// (cross-tenant) or, if CLOUDFRONT_* env vars are unset and signImageUrl falls back to
-// returning the raw URL unchanged, an arbitrary internal/external host (SSRF).
-export function assertOwnMediaUrl(url: string, bookId: string, pageId: string): void {
+// Validates that a stored mediaUrl's path belongs to this book+page, then rebuilds
+// the URL from our own trusted media origin — never the host in the stored value.
+// A stored mediaUrl is attacker-influenceable via PATCH, so trusting either its host
+// or its path alone is unsafe: trusting the host allows SSRF to an arbitrary origin
+// (especially when CLOUDFRONT_* env vars are unset and signImageUrl's fallback would
+// otherwise fetch the raw URL as-is); trusting the path alone still lets that
+// attacker-chosen host serve the response. Discarding the host and only keeping the
+// path (rooted at our own origin) closes both.
+export function ownMediaUrl(url: string, bookId: string, pageId: string): string {
   const expectedPrefix = `/books/${bookId}/pages/${pageId}/`
   let pathname: string
   try {
@@ -43,4 +46,8 @@ export function assertOwnMediaUrl(url: string, bookId: string, pageId: string): 
   if (!pathname.startsWith(expectedPrefix)) {
     throw new Error('Media URL does not belong to this page')
   }
+  if (!MEDIA_URL) {
+    throw new Error('Media origin not configured')
+  }
+  return `${MEDIA_URL}${pathname}`
 }

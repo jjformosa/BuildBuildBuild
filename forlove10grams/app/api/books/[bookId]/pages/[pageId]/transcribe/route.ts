@@ -4,7 +4,7 @@ import { dbConnect } from '@/lib/mongoose'
 import Book from '@/lib/models/book'
 import Page from '@/lib/models/page'
 import { canEditBook } from '@/lib/access'
-import { assertOwnMediaUrl, signImageUrl } from '@/lib/sign-media'
+import { ownMediaUrl, signImageUrl } from '@/lib/sign-media'
 import { transcribeAudio } from '@/lib/transcribe'
 
 // Whole trip (S3 read → Whisper → OpenCC → DB write) runs in one function.
@@ -34,8 +34,9 @@ export async function POST(
   if (page.type !== 'audio' || !page.mediaUrls[0]) {
     return Response.json({ error: 'Page has no audio to transcribe' }, { status: 400 })
   }
+  let trustedUrl: string
   try {
-    assertOwnMediaUrl(page.mediaUrls[0], book._id.toString(), page._id.toString())
+    trustedUrl = ownMediaUrl(page.mediaUrls[0], book._id.toString(), page._id.toString())
   } catch {
     return Response.json({ error: 'Page has no audio to transcribe' }, { status: 400 })
   }
@@ -44,8 +45,8 @@ export async function POST(
   await page.save()
 
   try {
-    // Re-sign from the stored URL so the fetch always uses a fresh, valid Signed URL.
-    const audioUrl = signImageUrl(page.mediaUrls[0])
+    // Re-sign the trusted (own-origin, own-path) URL so the fetch always uses a fresh, valid Signed URL.
+    const audioUrl = signImageUrl(trustedUrl)
     const transcript = await transcribeAudio(audioUrl)
 
     const existing = (page.content ?? '').trim()
