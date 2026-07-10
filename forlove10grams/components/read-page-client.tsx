@@ -8,6 +8,7 @@ import { signOut } from 'next-auth/react'
 import { Toc, type TocPage } from '@/components/toc'
 import { PolaroidCarousel } from '@/components/polaroid-carousel'
 import { VideoPlayer } from '@/components/video-player'
+import { AudioPlayer } from '@/components/audio-player'
 import { useReadProgress } from '@/hooks/use-read-progress'
 import { useInfiniteScroll } from '@/hooks/use-infinite-scroll'
 import { useActivePage } from '@/hooks/use-active-page'
@@ -21,10 +22,11 @@ const ReactMarkdown = dynamic(() => import('react-markdown'), {
 
 export type ReadPageData = {
   _id: string
-  type: 'carousel' | 'video'
+  type: 'carousel' | 'video' | 'audio'
   content: string
   mediaUrls: string[]
   transcodingStatus?: 'pending' | 'processing' | 'ready' | 'error' | null
+  durationSec?: number | null
 }
 
 type Props = {
@@ -266,6 +268,8 @@ export function ReadPageClient({
                     <div className="-mx-4 sm:mx-0">
                       {page.type === 'carousel' ? (
                         <PolaroidCarousel urls={page.mediaUrls} />
+                      ) : page.type === 'audio' ? (
+                        <AudioPlayer url={page.mediaUrls[0]} durationSec={page.durationSec} />
                       ) : (
                         <VideoPlayer url={page.mediaUrls[0]} transcodingStatus={page.transcodingStatus} tokenReady={tokenReady} />
                       )}

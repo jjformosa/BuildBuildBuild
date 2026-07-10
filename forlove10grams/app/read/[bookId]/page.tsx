@@ -59,8 +59,9 @@ export default async function ReadBookPage({
     _id: p._id.toString(),
     type: p.type,
     content: p.content ?? '',
-    mediaUrls: p.type === 'carousel' ? p.mediaUrls.map(signImageUrl) : p.mediaUrls,
+    mediaUrls: p.type === 'video' ? p.mediaUrls : p.mediaUrls.map(signImageUrl),
     transcodingStatus: p.transcodingStatus ?? null,
+    durationSec: p.durationSec ?? null,
   }))
 
   return (
