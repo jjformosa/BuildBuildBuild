@@ -6,6 +6,7 @@ import Page from '@/lib/models/page'
 import { canEditBook } from '@/lib/access'
 import { ownMediaUrl, signImageUrl } from '@/lib/sign-media'
 import { transcribeAudio } from '@/lib/transcribe'
+import { AUDIO_ENABLED } from '@/lib/features'
 
 // Whole trip (S3 read → Whisper → OpenCC → DB write) runs in one function.
 // 10-min recording cap keeps this comfortably under the Hobby-plan ceiling.
@@ -15,6 +16,10 @@ export async function POST(
   _req: NextRequest,
   ctx: { params: Promise<{ bookId: string; pageId: string }> }
 ) {
+  if (!AUDIO_ENABLED) {
+    return Response.json({ error: 'Transcription is disabled' }, { status: 503 })
+  }
+
   const session = await auth()
   if (!session?.user) {
     return Response.json({ error: 'Unauthorized' }, { status: 401 })

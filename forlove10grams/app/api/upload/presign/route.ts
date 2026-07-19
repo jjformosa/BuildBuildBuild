@@ -9,6 +9,7 @@ import Book from '@/lib/models/book'
 import Page from '@/lib/models/page'
 import { canEditBook } from '@/lib/access'
 import { signImageUrl } from '@/lib/sign-media'
+import { AUDIO_ENABLED } from '@/lib/features'
 
 const s3 = new S3Client({
   region: process.env.AWS_REGION!,
@@ -58,6 +59,9 @@ export async function POST(req: NextRequest) {
   }
 
   const { bookId, pageId, fileType, contentType, index = 0 } = parsed.data
+  if (fileType === 'audio' && !AUDIO_ENABLED) {
+    return Response.json({ error: 'Audio uploads are disabled' }, { status: 400 })
+  }
 
   await dbConnect()
   const book = await Book.findById(bookId)

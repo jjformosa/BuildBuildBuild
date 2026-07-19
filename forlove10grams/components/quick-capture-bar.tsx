@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createRipple } from '@/lib/ripple'
+import { AUDIO_ENABLED } from '@/lib/features'
 import type { QuickCaptureMode } from '@/lib/quick-capture'
 
 type Status = 'idle' | 'loading' | 'error'
@@ -12,7 +13,7 @@ class QuickCaptureRequestError extends Error {}
 const OPTIONS: Array<{ mode: QuickCaptureMode; label: string }> = [
   { mode: 'photo', label: '照片' },
   { mode: 'text', label: '文字' },
-  { mode: 'audio', label: '語音' },
+  ...(AUDIO_ENABLED ? [{ mode: 'audio', label: '語音' } as const] : []),
 ]
 
 export function QuickCaptureBar() {

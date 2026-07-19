@@ -8,6 +8,7 @@ import {
   isQuickCaptureMode,
   pageTypeForQuickCaptureMode,
 } from '@/lib/quick-capture'
+import { AUDIO_ENABLED } from '@/lib/features'
 
 export async function POST(req: NextRequest) {
   const session = await auth()
@@ -21,6 +22,9 @@ export async function POST(req: NextRequest) {
   const body = await req.json().catch(() => null)
   const mode = body && typeof body === 'object' ? (body as { mode?: unknown }).mode : null
   if (!isQuickCaptureMode(mode)) {
+    return Response.json({ error: 'Invalid mode' }, { status: 400 })
+  }
+  if (mode === 'audio' && !AUDIO_ENABLED) {
     return Response.json({ error: 'Invalid mode' }, { status: 400 })
   }
 
