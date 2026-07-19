@@ -23,11 +23,16 @@ import '@uiw/react-md-editor/markdown-editor.css'
 import { MediaUploader } from '@/components/media-uploader'
 import { AudioRecorder } from '@/components/audio-recorder'
 import TagManagerModal from '@/components/tag-manager-modal'
+import { AUDIO_ENABLED } from '@/lib/features'
 import type { QuickCaptureMode } from '@/lib/quick-capture'
 
 import { getCommands, getExtraCommands } from '@uiw/react-md-editor'
 
 const MDEditor = dynamic(() => import('@uiw/react-md-editor'), { ssr: false })
+
+const ADDABLE_PAGE_TYPES = AUDIO_ENABLED
+  ? (['carousel', 'video', 'audio'] as const)
+  : (['carousel', 'video'] as const)
 
 export type PageData = {
   _id: string
@@ -362,7 +367,7 @@ export function BookEditorClient({
             </p>
           ) : (
             <div className="flex gap-2">
-              {(['carousel', 'video', 'audio'] as const).map((type) => (
+              {ADDABLE_PAGE_TYPES.map((type) => (
                 <button
                   key={type}
                   onClick={() => handleAddPage(type)}
@@ -425,7 +430,7 @@ export function BookEditorClient({
             {pages.length >= PAGE_LIMIT ? (
               <span className="text-xs text-foreground/40 px-2 py-1">已達上限</span>
             ) : (
-              (['carousel', 'video', 'audio'] as const).map((type) => (
+              ADDABLE_PAGE_TYPES.map((type) => (
                 <button
                   key={type}
                   onClick={() => handleAddPage(type)}

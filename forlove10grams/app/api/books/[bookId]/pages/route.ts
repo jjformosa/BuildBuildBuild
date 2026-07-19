@@ -6,6 +6,7 @@ import Book from '@/lib/models/book'
 import Page from '@/lib/models/page'
 import { canEditBook } from '@/lib/access'
 import { signImageUrl } from '@/lib/sign-media'
+import { AUDIO_ENABLED } from '@/lib/features'
 
 export async function GET(
   req: NextRequest,
@@ -69,6 +70,9 @@ export async function POST(
   const parsed = CreatePageBody.safeParse(body)
   if (!parsed.success) {
     return Response.json({ error: parsed.error.issues }, { status: 400 })
+  }
+  if (parsed.data.type === 'audio' && !AUDIO_ENABLED) {
+    return Response.json({ error: 'Audio pages are disabled' }, { status: 400 })
   }
 
   await dbConnect()
