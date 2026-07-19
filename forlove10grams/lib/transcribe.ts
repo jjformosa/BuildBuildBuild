@@ -1,8 +1,6 @@
 import OpenAI from 'openai'
 import * as OpenCC from 'opencc-js'
 
-const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
-
 // Simplified/other → Traditional Chinese (Taiwan) with phrase conversion.
 const toTraditional = OpenCC.Converter({ from: 'cn', to: 'twp' })
 
@@ -15,6 +13,14 @@ const MAX_AUDIO_BYTES = 25 * 1024 * 1024
  * Throws if the fetch or the OpenAI call fails.
  */
 export async function transcribeAudio(audioUrl: string): Promise<string> {
+  // Creating the SDK client at module scope makes `next build` require a
+  // runtime-only secret while it is collecting route metadata.
+  const apiKey = process.env.OPENAI_API_KEY
+  if (!apiKey) {
+    throw new Error('OPENAI_API_KEY is not configured')
+  }
+  const client = new OpenAI({ apiKey })
+
   const res = await fetch(audioUrl)
   if (!res.ok) {
     throw new Error(`Failed to fetch audio for transcription: ${res.status}`)
