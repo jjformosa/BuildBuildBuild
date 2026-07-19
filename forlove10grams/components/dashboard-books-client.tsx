@@ -8,6 +8,10 @@ import { PencilIcon } from '@/components/icons/pencil'
 import { CheckCircleIcon } from '@/components/icons/check-circle'
 import { CircleIcon } from '@/components/icons/circle'
 import TagManagerModal from '@/components/tag-manager-modal'
+import BookMessagesModal from '@/components/book-messages-modal'
+import CollectionPickerModal from '@/components/collection-picker-modal'
+import { CollectionBar } from '@/components/collection-bar'
+import { CollectionView } from '@/components/collection-view'
 import { createRipple } from '@/lib/ripple'
 
 export type DashboardBook = {
@@ -19,6 +23,8 @@ export type DashboardBook = {
   tags: string[]
   likeCount: number
   editorName: string | null
+  messageTotal: number
+  messageUnread: number
 }
 
 export type ReaderBookItem = {
@@ -31,6 +37,15 @@ export type ReaderBookItem = {
 
 type Sort = 'newest' | 'oldest' | 'title'
 type Status = 'all' | 'published' | 'unpublished'
+
+function MailIcon() {
+  return (
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="3" y="5" width="18" height="14" rx="2" />
+      <path d="m3 7 9 6 9-6" />
+    </svg>
+  )
+}
 
 function HeartIcon() {
   return (
@@ -79,6 +94,9 @@ function BookCard({
   onTagsChanged: (bookId: string, updatedTags: string[]) => void
 }) {
   const [showTagModal, setShowTagModal] = useState(false)
+  const [showCollectionModal, setShowCollectionModal] = useState(false)
+  const [showMessagesModal, setShowMessagesModal] = useState(false)
+  const [messageUnread, setMessageUnread] = useState(book.messageUnread)
   const initial = book.title.charAt(0)
 
   const handleAddTag = async (tag: string) => {
@@ -191,6 +209,19 @@ function BookCard({
             <HeartIcon /> 心意 {formatGramCount(book.likeCount)}
           </span>
         )}
+        {book.messageTotal > 0 && (
+          <button
+            type="button"
+            onClick={(e) => { createRipple(e); setShowMessagesModal(true) }}
+            className="relative flex items-center gap-1 rounded-md px-1.5 py-0.5 text-xs text-muted-foreground hover:text-foreground hover:bg-muted transition-colors cursor-pointer"
+            title="讀者的話"
+          >
+            <MailIcon /> {book.messageTotal}
+            {messageUnread > 0 && (
+              <span className="absolute -right-0.5 -top-0.5 h-1.5 w-1.5 rounded-full bg-rose" />
+            )}
+          </button>
+        )}
         <StatusBadge status={book.shareStatus} />
         <button
           type="button"
@@ -199,6 +230,14 @@ function BookCard({
           title="管理標籤"
         >
           + 標籤
+        </button>
+        <button
+          type="button"
+          onClick={(e) => { createRipple(e); setShowCollectionModal(true) }}
+          className="relative overflow-hidden rounded-md text-xs text-muted-foreground hover:text-foreground hover:bg-muted transition-colors px-1.5 py-0.5 cursor-pointer"
+          title="加入收藏夾"
+        >
+          + 收藏夾
         </button>
 
         {/* Mobile editor actions */}
@@ -246,6 +285,19 @@ function BookCard({
           onAdd={handleAddTag}
           onRemove={handleRemoveTag}
           onClose={() => setShowTagModal(false)}
+        />
+      )}
+
+      {showCollectionModal && (
+        <CollectionPickerModal bookId={book._id} onClose={() => setShowCollectionModal(false)} />
+      )}
+
+      {showMessagesModal && (
+        <BookMessagesModal
+          bookId={book._id}
+          role={role}
+          onClose={() => setShowMessagesModal(false)}
+          onRead={() => setMessageUnread(0)}
         />
       )}
     </div>
@@ -566,11 +618,23 @@ export function DashboardShell({
 }) {
   const [query, setQuery] = useState('')
   const [debouncedSearch, setDebouncedSearch] = useState('')
+  const [activeCollectionId, setActiveCollectionId] = useState<string | null>(null)
+  const [activeCollectionName, setActiveCollectionName] = useState<string | null>(null)
 
   useEffect(() => {
     const timer = setTimeout(() => setDebouncedSearch(query.trim()), 300)
     return () => clearTimeout(timer)
   }, [query])
+
+  // Collection view is mutually exclusive with search (same convention as sort/filter).
+  function selectCollection(id: string | null, name: string | null) {
+    setActiveCollectionId(id)
+    setActiveCollectionName(name)
+    if (id) {
+      setQuery('')
+      setDebouncedSearch('')
+    }
+  }
 
   const hasSharedContent = editorBooks.length > 0 || readerBooks.length > 0
 
@@ -612,8 +676,18 @@ export function DashboardShell({
 
       {quickCapture && <div className="-mt-4">{quickCapture}</div>}
 
-      {/* Admin: owner books */}
-      {isAdmin && (
+      <CollectionBar activeId={activeCollectionId} onSelect={selectCollection} />
+
+      {activeCollectionId && activeCollectionName ? (
+        <CollectionView
+          collectionId={activeCollectionId}
+          collectionName={activeCollectionName}
+          onDeleted={() => selectCollection(null, null)}
+        />
+      ) : (
+        <>
+          {/* Admin: owner books */}
+          {isAdmin && (
         <section>
           <div className="flex items-center justify-between mb-5">
             <SectionHeading>謝謝你，幫我記住</SectionHeading>
@@ -650,6 +724,8 @@ export function DashboardShell({
             </>
           )}
         </section>
+      )}
+        </>
       )}
     </div>
   )

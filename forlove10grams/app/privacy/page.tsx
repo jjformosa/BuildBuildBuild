@@ -44,7 +44,7 @@ export default function PrivacyPage() {
             <ul>
               <li><strong>暱稱</strong>：您在本服務中設定的顯示名稱</li>
               <li><strong>記憶書內容</strong>：標題、描述、封面圖、頁面文字</li>
-              <li><strong>媒體檔案</strong>：您上傳的圖片與影片</li>
+              <li><strong>媒體檔案</strong>：您上傳的圖片與影片，以及在語音頁錄製的<strong>語音錄音</strong></li>
             </ul>
           </Subsection>
 
@@ -98,7 +98,24 @@ export default function PrivacyPage() {
           </p>
         </Section>
 
-        <Section title="四、資料存放位置">
+        <Section title="四、第三方資料處理（語音轉錄）">
+          <p>
+            當您在語音頁錄製聲音後，該錄音會傳送至外部語音轉錄服務（目前為 <strong>OpenAI API</strong>），
+            僅用於「語音轉文字」這一單一目的，將結果作為可編輯的文字草稿填入頁面。
+          </p>
+          <p>
+            依 OpenAI API 的資料政策，透過 API 傳送的內容<strong>不會用於訓練其模型</strong>，
+            僅為濫用偵測目的短期保留（最長 30 天）後刪除。我們只會採用明確聲明「API 資料不用於模型訓練」的轉錄服務。
+          </p>
+          <p>
+            OpenAI 隱私政策：{' '}
+            <a href="https://openai.com/policies/privacy-policy" target="_blank" rel="noopener noreferrer">
+              openai.com/policies/privacy-policy
+            </a>
+          </p>
+        </Section>
+
+        <Section title="五、資料存放位置">
           <table>
             <thead>
               <tr>
@@ -111,11 +128,12 @@ export default function PrivacyPage() {
               <tr><td>MongoDB Atlas</td><td>帳號資料、書籍資訊、閱讀記錄</td><td>雲端資料庫（加密存儲）</td></tr>
               <tr><td>AWS S3（東京區域）</td><td>圖片與影片媒體檔案</td><td>日本東京資料中心</td></tr>
               <tr><td>AWS CloudFront</td><td>媒體 CDN 加速</td><td>全球邊緣節點</td></tr>
+              <tr><td>OpenAI API</td><td>語音轉文字（轉錄）</td><td>美國</td></tr>
             </tbody>
           </table>
         </Section>
 
-        <Section title="五、第三方登入服務">
+        <Section title="六、第三方登入服務">
           <table>
             <thead>
               <tr>
@@ -148,7 +166,7 @@ export default function PrivacyPage() {
           <p>本服務僅取得您在登入時同意授權的基本資料，不會讀取您的 Google 或 LINE 通訊內容。</p>
         </Section>
 
-        <Section title="六、Cookie 使用說明">
+        <Section title="七、Cookie 使用說明">
           <p>
             本服務使用 <strong>HTTP-only Session Cookie</strong>（名稱：<code>authjs.session-token</code>）維持登入狀態。此 Cookie：
           </p>
@@ -160,7 +178,7 @@ export default function PrivacyPage() {
           <p>本服務<strong>不使用</strong>廣告 Cookie 或第三方追蹤 Cookie。</p>
         </Section>
 
-        <Section title="七、資料保留期限">
+        <Section title="八、資料保留期限">
           <table>
             <thead>
               <tr>
@@ -179,7 +197,7 @@ export default function PrivacyPage() {
           </table>
         </Section>
 
-        <Section title="八、您的權利">
+        <Section title="九、您的權利">
           <p>您可以：</p>
           <ul>
             <li>要求查閱本服務儲存您的哪些資料</li>
@@ -189,7 +207,7 @@ export default function PrivacyPage() {
           <p>如需行使上述權利，請透過下方聯絡方式與我們聯繫。</p>
         </Section>
 
-        <Section title="九、聯絡方式">
+        <Section title="十、聯絡方式">
           <p>若您對本隱私權政策有任何疑問，請聯絡：</p>
           <p>
             <strong>Email</strong>：

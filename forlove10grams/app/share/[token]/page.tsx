@@ -43,7 +43,7 @@ export default async function SharePage({
   if (book.shareStatus === 'shared' && !isManager(session.user.id!, book)) {
     await BookReader.findOneAndUpdate(
       { bookId: book._id, userId: session.user.id },
-      { $setOnInsert: { joinedAt: new Date() } },
+      { $setOnInsert: { joinedAt: new Date(), sharedBy: share.createdBy } },
       { upsert: true }
     )
   }

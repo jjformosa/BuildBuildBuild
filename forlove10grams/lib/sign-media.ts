@@ -26,3 +26,28 @@ export function signImageUrl(url: string): string {
     return url
   }
 }
+
+// Validates that a stored mediaUrl's path belongs to this book+page, then rebuilds
+// the URL from our own trusted media origin — never the host in the stored value.
+// A stored mediaUrl is attacker-influenceable via PATCH, so trusting either its host
+// or its path alone is unsafe: trusting the host allows SSRF to an arbitrary origin
+// (especially when CLOUDFRONT_* env vars are unset and signImageUrl's fallback would
+// otherwise fetch the raw URL as-is); trusting the path alone still lets that
+// attacker-chosen host serve the response. Discarding the host and only keeping the
+// path (rooted at our own origin) closes both.
+export function ownMediaUrl(url: string, bookId: string, pageId: string): string {
+  const expectedPrefix = `/books/${bookId}/pages/${pageId}/`
+  let pathname: string
+  try {
+    pathname = new URL(url).pathname
+  } catch {
+    throw new Error('Invalid media URL')
+  }
+  if (!pathname.startsWith(expectedPrefix)) {
+    throw new Error('Media URL does not belong to this page')
+  }
+  if (!MEDIA_URL) {
+    throw new Error('Media origin not configured')
+  }
+  return `${MEDIA_URL}${pathname}`
+}

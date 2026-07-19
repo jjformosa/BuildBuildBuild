@@ -31,7 +31,10 @@ export async function GET(
   return Response.json({
     _id: page._id.toString(),
     transcodingStatus: page.transcodingStatus ?? null,
-    mediaUrls: page.type === 'carousel' ? page.mediaUrls.map(signImageUrl) : page.mediaUrls,
+    transcriptionStatus: page.transcriptionStatus ?? null,
+    durationSec: page.durationSec ?? null,
+    content: page.content ?? '',
+    mediaUrls: page.type === 'video' ? page.mediaUrls : page.mediaUrls.map(signImageUrl),
   })
 }
 
@@ -39,6 +42,7 @@ const PatchPageBody = z.object({
   content: z.string().optional(),
   mediaUrls: z.array(z.string()).optional(),
   happenedAt: z.string().nullable().optional(),
+  durationSec: z.number().optional(),
 })
 
 export async function PATCH(

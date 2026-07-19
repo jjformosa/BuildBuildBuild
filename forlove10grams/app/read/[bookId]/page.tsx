@@ -8,6 +8,9 @@ import User from '@/lib/models/user'
 import { canReadBook } from '@/lib/access'
 import { signImageUrl } from '@/lib/sign-media'
 import BookLike from '@/lib/models/book-like'
+import BookReader from '@/lib/models/book-reader'
+import BookMessage from '@/lib/models/book-message'
+import { canEditBook } from '@/lib/access'
 import { ReadPageClient, type ReadPageData } from '@/components/read-page-client'
 
 export default async function ReadBookPage({
@@ -45,6 +48,35 @@ export default async function ReadBookPage({
   const viewerNickname = viewer?.nickname ?? null
   const viewerMyNickname = viewer?.myNickname ?? null
 
+  // ── Reader-message composer props (only for readers, never managers) ──
+  const isManagerViewer = canEditBook(userId, book, session.user.role ?? undefined)
+  let canMessage = false
+  let initialMessage: string | null = null
+  let messageCreatorName = ''
+  let messageEditorName: string | null = null
+
+  if (!isManagerViewer) {
+    canMessage = true
+    const [reader, creator, myMsg] = await Promise.all([
+      BookReader.findOne(
+        { bookId: book._id, userId },
+        'sharedBy'
+      ).lean<{ sharedBy?: import('mongoose').Types.ObjectId }>(),
+      User.findById(book.createdBy, 'name nickname').lean<{ name?: string; nickname?: string | null }>(),
+      BookMessage.findOne({ bookId: book._id, fromUserId: userId }, 'body').lean<{ body: string }>(),
+    ])
+    const sharedBy = reader?.sharedBy?.toString() ?? book.createdBy.toString() // fallback: creator
+    const sharerIsEditor = book.editorId ? sharedBy === book.editorId.toString() : false
+
+    messageCreatorName = creator?.nickname ?? creator?.name ?? '作者'
+    initialMessage = myMsg?.body ?? null
+
+    if (sharerIsEditor && book.editorId) {
+      const ed = await User.findById(book.editorId, 'name nickname').lean<{ name?: string; nickname?: string | null }>()
+      messageEditorName = ed?.nickname ?? ed?.name ?? null
+    }
+  }
+
   const pageIds = book.pageOrder.map((id) => id.toString())
   const totalCount = pageIds.length
   const firstBatchIds = pageIds.slice(0, 5)
@@ -59,8 +91,9 @@ export default async function ReadBookPage({
     _id: p._id.toString(),
     type: p.type,
     content: p.content ?? '',
-    mediaUrls: p.type === 'carousel' ? p.mediaUrls.map(signImageUrl) : p.mediaUrls,
+    mediaUrls: p.type === 'video' ? p.mediaUrls : p.mediaUrls.map(signImageUrl),
     transcodingStatus: p.transcodingStatus ?? null,
+    durationSec: p.durationSec ?? null,
   }))
 
   return (
@@ -76,6 +109,10 @@ export default async function ReadBookPage({
       isEditor={isEditor}
       editorLetter={book.editorLetter ?? null}
       creatorName={creatorName}
+      canMessage={canMessage}
+      initialMessage={initialMessage}
+      messageCreatorName={messageCreatorName}
+      messageEditorName={messageEditorName}
     />
   )
 }

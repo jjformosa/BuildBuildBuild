@@ -21,6 +21,7 @@ import {
 import { CSS } from '@dnd-kit/utilities'
 import '@uiw/react-md-editor/markdown-editor.css'
 import { MediaUploader } from '@/components/media-uploader'
+import { AudioRecorder } from '@/components/audio-recorder'
 import TagManagerModal from '@/components/tag-manager-modal'
 import type { QuickCaptureMode } from '@/lib/quick-capture'
 
@@ -30,10 +31,11 @@ const MDEditor = dynamic(() => import('@uiw/react-md-editor'), { ssr: false })
 
 export type PageData = {
   _id: string
-  type: 'carousel' | 'video'
+  type: 'carousel' | 'video' | 'audio'
   content?: string
   mediaUrls: string[]
   happenedAt?: string | null
+  durationSec?: number | null
 }
 
 function SortablePageItem({
@@ -83,7 +85,7 @@ function SortablePageItem({
           <div className="flex items-center gap-1.5">
             <span className="text-xs text-foreground/35">{index + 1}</span>
             <span className="rounded bg-foreground/8 px-1.5 py-0.5 text-xs text-foreground/55">
-              {page.type === 'carousel' ? '輪播' : '影片'}
+              {page.type === 'carousel' ? '輪播' : page.type === 'video' ? '影片' : '錄音'}
             </span>
           </div>
           {page.content && (
@@ -136,7 +138,7 @@ export function BookEditorClient({
     initialPages.length > 0 ? initialPages[0]._id : null
   )
   const [saveState, setSaveState] = useState<'saved' | 'saving' | 'unsaved'>('saved')
-  const [addingType, setAddingType] = useState<'carousel' | 'video' | null>(null)
+  const [addingType, setAddingType] = useState<'carousel' | 'video' | 'audio' | null>(null)
   const [showTagModal, setShowTagModal] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
   const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -261,7 +263,7 @@ export function BookEditorClient({
 
   const PAGE_LIMIT = 30
 
-  async function handleAddPage(type: 'carousel' | 'video') {
+  async function handleAddPage(type: 'carousel' | 'video' | 'audio') {
     if (pages.length >= PAGE_LIMIT) return
     setAddingType(type)
     try {
@@ -278,6 +280,7 @@ export function BookEditorClient({
           content: raw.content,
           mediaUrls: raw.mediaUrls ?? [],
           happenedAt: raw.happenedAt ?? null,
+          durationSec: raw.durationSec ?? null,
         }
         setPages((prev) => [...prev, newPage])
         setSelectedId(newPage._id)
@@ -359,14 +362,20 @@ export function BookEditorClient({
             </p>
           ) : (
             <div className="flex gap-2">
-              {(['carousel', 'video'] as const).map((type) => (
+              {(['carousel', 'video', 'audio'] as const).map((type) => (
                 <button
                   key={type}
                   onClick={() => handleAddPage(type)}
                   disabled={addingType !== null}
                   className="flex-1 rounded-md border border-foreground/20 py-1.5 text-xs text-foreground hover:bg-foreground/5 disabled:opacity-40 transition-colors"
                 >
-                  {addingType === type ? '新增中…' : type === 'carousel' ? '+ 輪播' : '+ 影片'}
+                  {addingType === type
+                    ? '新增中…'
+                    : type === 'carousel'
+                      ? '+ 輪播'
+                      : type === 'video'
+                        ? '+ 影片'
+                        : '+ 錄音'}
                 </button>
               ))}
             </div>
@@ -407,7 +416,7 @@ export function BookEditorClient({
                     : 'text-foreground/50 hover:bg-foreground/5'
                 }`}
               >
-                {i + 1}. {page.type === 'carousel' ? '輪播' : '影片'}
+                {i + 1}. {page.type === 'carousel' ? '輪播' : page.type === 'video' ? '影片' : '錄音'}
               </button>
             ))}
           </div>
@@ -416,14 +425,20 @@ export function BookEditorClient({
             {pages.length >= PAGE_LIMIT ? (
               <span className="text-xs text-foreground/40 px-2 py-1">已達上限</span>
             ) : (
-              (['carousel', 'video'] as const).map((type) => (
+              (['carousel', 'video', 'audio'] as const).map((type) => (
                 <button
                   key={type}
                   onClick={() => handleAddPage(type)}
                   disabled={addingType !== null}
                   className="btn-outline-xs flex-none min-h-[44px]"
                 >
-                  {addingType === type ? '…' : type === 'carousel' ? '+ 輪播' : '+ 影片'}
+                  {addingType === type
+                    ? '…'
+                    : type === 'carousel'
+                      ? '+ 輪播'
+                      : type === 'video'
+                        ? '+ 影片'
+                        : '+ 錄音'}
                 </button>
               ))
             )}
@@ -435,7 +450,7 @@ export function BookEditorClient({
             <div className="flex-none border-b border-foreground/10 px-6 py-3 flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <span className="rounded bg-foreground/8 px-2 py-0.5 text-xs text-foreground/60">
-                  {selectedPage.type === 'carousel' ? '輪播頁' : '影片頁'}
+                  {selectedPage.type === 'carousel' ? '輪播頁' : selectedPage.type === 'video' ? '影片頁' : '錄音頁'}
                 </span>
                 <input
                   type="date"
@@ -484,15 +499,36 @@ export function BookEditorClient({
                 }`}
               >
                 <p className="mb-2 text-xs text-foreground/50">
-                  {selectedPage.type === 'carousel' ? '圖片（可多張）' : '影片'}
+                  {selectedPage.type === 'carousel' ? '圖片（可多張）' : selectedPage.type === 'video' ? '影片' : '錄音'}
                 </p>
-                <MediaUploader
-                  bookId={bookId}
-                  pageId={selectedPage._id}
-                  fileType={selectedPage.type}
-                  mediaUrls={selectedPage.mediaUrls}
-                  onUrlsChange={handleMediaUrlsChange}
-                />
+                {selectedPage.type === 'audio' ? (
+                  <AudioRecorder
+                    bookId={bookId}
+                    pageId={selectedPage._id}
+                    mediaUrls={selectedPage.mediaUrls}
+                    durationSec={selectedPage.durationSec}
+                    onSaved={(url, durationSec) =>
+                      setPages((prev) =>
+                        prev.map((p) =>
+                          p._id === selectedPage._id ? { ...p, mediaUrls: [url], durationSec } : p,
+                        ),
+                      )
+                    }
+                    onTranscribed={(content) =>
+                      setPages((prev) =>
+                        prev.map((p) => (p._id === selectedPage._id ? { ...p, content } : p)),
+                      )
+                    }
+                  />
+                ) : (
+                  <MediaUploader
+                    bookId={bookId}
+                    pageId={selectedPage._id}
+                    fileType={selectedPage.type}
+                    mediaUrls={selectedPage.mediaUrls}
+                    onUrlsChange={handleMediaUrlsChange}
+                  />
+                )}
               </div>
             </div>
           </>

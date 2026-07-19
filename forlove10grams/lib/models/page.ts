@@ -4,17 +4,19 @@ export type TranscodingStatus = 'pending' | 'processing' | 'ready' | 'error'
 
 export interface IPage extends Document {
   bookId: Types.ObjectId
-  type: 'carousel' | 'video'
+  type: 'carousel' | 'video' | 'audio'
   content?: string
   mediaUrls: string[]
   transcodingStatus?: TranscodingStatus
   happenedAt?: Date
+  durationSec?: number
+  transcriptionStatus?: 'pending' | 'done' | 'error'
 }
 
 const PageSchema = new Schema<IPage>(
   {
     bookId: { type: Schema.Types.ObjectId, ref: 'Book', required: true },
-    type: { type: String, enum: ['carousel', 'video'], required: true },
+    type: { type: String, enum: ['carousel', 'video', 'audio'], required: true },
     content: String,
     mediaUrls: [{ type: String }],
     transcodingStatus: {
@@ -22,6 +24,11 @@ const PageSchema = new Schema<IPage>(
       enum: ['pending', 'processing', 'ready', 'error'],
     },
     happenedAt: { type: Date },
+    durationSec: { type: Number },
+    transcriptionStatus: {
+      type: String,
+      enum: ['pending', 'done', 'error'],
+    },
   },
   { timestamps: true }
 )

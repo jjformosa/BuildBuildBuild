@@ -1,0 +1,12 @@
+# 本檔案適用於「重建開發環境」，aka first pull from git，重建時執行dockerscripts/rebuilddev.sh
+# 指定開發環境
+FROM node:22-alpine
+# 指定預設工作目錄，因此要記得在執行Docker Run要採對應的mount或者COPY
+WORKDIR /app
+COPY forlove10grams/ .
+# RUN npm install -g @quasar/cli && npm install
+# 因為quasar預設用9000 port，類似WORKDIR，Docker Run指令內容要處理對應的-p
+EXPOSE 3000
+
+# ENTRYPOINT [ "sh" ]
+CMD [ "dockerscripts/dev-install.sh", "--force" ]

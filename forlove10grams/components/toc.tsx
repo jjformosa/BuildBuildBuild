@@ -4,7 +4,7 @@ import { useState } from 'react'
 
 export type TocPage = {
   _id: string
-  type: 'carousel' | 'video'
+  type: 'carousel' | 'video' | 'audio'
   content: string
   index: number
 }
