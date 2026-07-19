@@ -33,3 +33,16 @@ LINE_ALBUM_202451_250227_12.jpg
 .vercel
 elder.perf-log/
 .perf-log/
+
+# spec/skill/dev-tooling — kept on refactor branches, stripped before master release
+/openspec
+/improve-ui
+/devcontainer
+/Dockerfile.dev
+/Dockerfile.claude
+/.dockerignore
+/pre-commit
+/skills-lock.json
+/forlove10grams/skills-lock.json
+/forlove10grams/docs
+/forlove10grams/public/simple-log.png
