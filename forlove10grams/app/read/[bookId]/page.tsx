@@ -94,6 +94,7 @@ export default async function ReadBookPage({
     mediaUrls: p.type === 'video' ? p.mediaUrls : p.mediaUrls.map(signImageUrl),
     transcodingStatus: p.transcodingStatus ?? null,
     durationSec: p.durationSec ?? null,
+    playlistTrackIndex: p.playlistTrackIndex ?? null,
   }))
 
   return (
@@ -113,6 +114,9 @@ export default async function ReadBookPage({
       initialMessage={initialMessage}
       messageCreatorName={messageCreatorName}
       messageEditorName={messageEditorName}
+      backgroundPlaylist={
+        book.backgroundPlaylist ? { playlistId: book.backgroundPlaylist.playlistId } : null
+      }
     />
   )
 }

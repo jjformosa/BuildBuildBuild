@@ -27,6 +27,7 @@ export type ReadPageData = {
   mediaUrls: string[]
   transcodingStatus?: 'pending' | 'processing' | 'ready' | 'error' | null
   durationSec?: number | null
+  playlistTrackIndex?: number | null
 }
 
 type Props = {
@@ -45,6 +46,7 @@ type Props = {
   initialMessage?: string | null
   messageCreatorName?: string
   messageEditorName?: string | null
+  backgroundPlaylist?: { playlistId: string } | null
 }
 
 function TocIcon() {
@@ -70,7 +72,7 @@ function LogOutIcon() {
 export function ReadPageClient({
   bookId, bookTitle, initialPages, totalCount,
   viewerNickname, viewerMyNickname, hasLiked, likeCount, isEditor, editorLetter, creatorName,
-  canMessage, initialMessage, messageCreatorName, messageEditorName,
+  canMessage, initialMessage, messageCreatorName, messageEditorName, backgroundPlaylist,
 }: Props) {
   const scrollContainerRef = useRef<HTMLElement>(null)
 
