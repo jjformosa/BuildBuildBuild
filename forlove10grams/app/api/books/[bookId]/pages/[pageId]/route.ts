@@ -43,6 +43,7 @@ const PatchPageBody = z.object({
   mediaUrls: z.array(z.string()).optional(),
   happenedAt: z.string().nullable().optional(),
   durationSec: z.number().optional(),
+  playlistTrackIndex: z.number().int().min(0).nullable().optional(),
 })
 
 export async function PATCH(
