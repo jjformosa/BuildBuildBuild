@@ -14,6 +14,7 @@ import { useInfiniteScroll } from '@/hooks/use-infinite-scroll'
 import { useActivePage } from '@/hooks/use-active-page'
 import { resolveSlots } from '@/lib/resolve-slots'
 import { BookCloseEnding } from '@/components/book-close-ending'
+import { BackgroundPlaylistPlayer } from '@/components/background-playlist-player'
 
 const ReactMarkdown = dynamic(() => import('react-markdown'), {
   ssr: false,
@@ -193,6 +194,13 @@ export function ReadPageClient({
 
   return (
     <div className="flex h-dvh bg-background">
+      {backgroundPlaylist && (
+        <BackgroundPlaylistPlayer
+          playlistId={backgroundPlaylist.playlistId}
+          activePageId={activePageId}
+          pages={pages.map((p) => ({ _id: p._id, playlistTrackIndex: p.playlistTrackIndex ?? null }))}
+        />
+      )}
       <Toc
         pages={tocPages}
         readPageIds={readPageIds}
