@@ -48,6 +48,7 @@ export default async function EditBookPage({
     mediaUrls: p.type === 'video' ? p.mediaUrls : p.mediaUrls.map(signImageUrl),
     happenedAt: p.happenedAt ? p.happenedAt.toISOString().slice(0, 10) : null,
     durationSec: p.durationSec ?? null,
+    playlistTrackIndex: p.playlistTrackIndex ?? null,
   }))
 
   const carouselImages = rawPages
@@ -90,6 +91,9 @@ export default async function EditBookPage({
         initialPages={pages}
         initialTags={book.tags ?? []}
         quickMode={quickMode}
+        backgroundPlaylist={
+          book.backgroundPlaylist ? { playlistId: book.backgroundPlaylist.playlistId } : null
+        }
       />
       <section className="flex-none border-t border-foreground/10 bg-background px-4 sm:px-6 py-4 space-y-6">
         {(isOwner || isEditor) && <ShareLinkManager bookId={bookId} />}

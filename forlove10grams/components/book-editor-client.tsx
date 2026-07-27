@@ -41,6 +41,7 @@ export type PageData = {
   mediaUrls: string[]
   happenedAt?: string | null
   durationSec?: number | null
+  playlistTrackIndex?: number | null
 }
 
 function SortablePageItem({
@@ -131,11 +132,13 @@ export function BookEditorClient({
   initialPages,
   initialTags,
   quickMode,
+  backgroundPlaylist,
 }: {
   bookId: string
   initialPages: PageData[]
   initialTags: string[]
   quickMode?: QuickCaptureMode | null
+  backgroundPlaylist: { playlistId: string } | null
 }) {
   const [pages, setPages] = useState<PageData[]>(initialPages)
   const [tags, setTags] = useState<string[]>(initialTags)
@@ -257,6 +260,18 @@ export function BookEditorClient({
     })
   }
 
+  function handlePlaylistTrackIndexChange(value: string) {
+    const currentId = selectedId
+    if (!currentId) return
+    const playlistTrackIndex = value === '' ? null : Number(value)
+    setPages((prev) => prev.map((p) => (p._id === currentId ? { ...p, playlistTrackIndex } : p)))
+    fetch(`/api/books/${bookId}/pages/${currentId}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ playlistTrackIndex }),
+    })
+  }
+
   async function handleDeletePage(pageId: string) {
     await fetch(`/api/books/${bookId}/pages/${pageId}`, { method: 'DELETE' })
     const remaining = pages.filter((p) => p._id !== pageId)
@@ -286,6 +301,7 @@ export function BookEditorClient({
           mediaUrls: raw.mediaUrls ?? [],
           happenedAt: raw.happenedAt ?? null,
           durationSec: raw.durationSec ?? null,
+          playlistTrackIndex: raw.playlistTrackIndex ?? null,
         }
         setPages((prev) => [...prev, newPage])
         setSelectedId(newPage._id)
@@ -471,6 +487,28 @@ export function BookEditorClient({
                   >
                     ✕
                   </button>
+                )}
+                {backgroundPlaylist && (
+                  <>
+                    <input
+                      type="number"
+                      min={0}
+                      value={selectedPage.playlistTrackIndex ?? ''}
+                      onChange={(e) => handlePlaylistTrackIndexChange(e.target.value)}
+                      placeholder="指定曲目 index"
+                      title="歌單中第幾首（從 0 開始），留空 = 不指定"
+                      className="w-28 rounded border border-foreground/15 bg-transparent px-1.5 py-0.5 text-xs text-foreground/60"
+                    />
+                    {selectedPage.playlistTrackIndex != null && (
+                      <button
+                        onClick={() => handlePlaylistTrackIndexChange('')}
+                        className="text-xs text-foreground/30 hover:text-foreground/60"
+                        title="清除指定曲目"
+                      >
+                        ✕
+                      </button>
+                    )}
+                  </>
                 )}
               </div>
               <span className="text-xs text-foreground/35">
