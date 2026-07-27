@@ -51,6 +51,8 @@ export type BackgroundPlaylistPage = {
 
 export function BackgroundPlaylistPlayer({
   playlistId,
+  activePageId,
+  pages,
 }: {
   playlistId: string
   activePageId: string | null
@@ -58,6 +60,14 @@ export function BackgroundPlaylistPlayer({
 }) {
   const playerRef = useRef<YTPlayer | null>(null)
   const containerIdRef = useRef(`bg-playlist-player-${Math.random().toString(36).slice(2)}`)
+  const readyRef = useRef(false)
+  const startedRef = useRef(false)
+  const jumpedPageIdsRef = useRef<Set<string>>(new Set())
+  const activePageIdRef = useRef(activePageId)
+  const pagesRef = useRef(pages)
+
+  activePageIdRef.current = activePageId
+  pagesRef.current = pages
 
   useEffect(() => {
     let cancelled = false
@@ -73,7 +83,11 @@ export function BackgroundPlaylistPlayer({
           controls: 0,
           disablekb: 1,
         },
-        events: {},
+        events: {
+          onReady: () => {
+            readyRef.current = true
+          },
+        },
       })
     })
 
@@ -81,6 +95,35 @@ export function BackgroundPlaylistPlayer({
       cancelled = true
     }
   }, [playlistId])
+
+  // 首次使用者手勢：任何地方點擊/觸控都算，觸發後立即移除監聽
+  useEffect(() => {
+    function handleFirstGesture() {
+      if (startedRef.current || !readyRef.current || !playerRef.current) return
+      startedRef.current = true
+
+      const page = pagesRef.current.find((p) => p._id === activePageIdRef.current)
+      if (page?.playlistTrackIndex != null) {
+        playerRef.current.playVideoAt(page.playlistTrackIndex)
+        jumpedPageIdsRef.current.add(page._id)
+      } else {
+        playerRef.current.playVideo()
+      }
+    }
+
+    document.addEventListener('pointerdown', handleFirstGesture, { capture: true, once: true })
+    return () => document.removeEventListener('pointerdown', handleFirstGesture, { capture: true })
+  }, [])
+
+  // 換頁：有指定曲目且該頁尚未跳轉過 → 跳轉一次；否則不動作，讓目前曲目自然繼續 / 自然播完後交給 YouTube 自動接下一首
+  useEffect(() => {
+    if (!startedRef.current || !playerRef.current || !activePageId) return
+    const page = pages.find((p) => p._id === activePageId)
+    if (page?.playlistTrackIndex != null && !jumpedPageIdsRef.current.has(activePageId)) {
+      playerRef.current.playVideoAt(page.playlistTrackIndex)
+      jumpedPageIdsRef.current.add(activePageId)
+    }
+  }, [activePageId, pages])
 
   return (
     <div
