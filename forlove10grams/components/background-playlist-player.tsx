@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 interface YTPlayer {
   playVideo(): void
@@ -60,6 +60,9 @@ export function BackgroundPlaylistPlayer({
 }) {
   const playerRef = useRef<YTPlayer | null>(null)
   const containerIdRef = useRef(`bg-playlist-player-${Math.random().toString(36).slice(2)}`)
+  const [expanded, setExpanded] = useState(false)
+  const [isPlaying, setIsPlaying] = useState(false)
+  const [isMuted, setIsMuted] = useState(false)
   const readyRef = useRef(false)
   const startedRef = useRef(false)
   const jumpedPageIdsRef = useRef<Set<string>>(new Set())
@@ -84,8 +87,12 @@ export function BackgroundPlaylistPlayer({
           disablekb: 1,
         },
         events: {
-          onReady: () => {
+          onReady: (event) => {
             readyRef.current = true
+            setIsMuted(event.target.isMuted())
+          },
+          onStateChange: (event) => {
+            setIsPlaying(event.data === 1 /* YT.PlayerState.PLAYING */)
           },
         },
       })
@@ -110,6 +117,7 @@ export function BackgroundPlaylistPlayer({
       } else {
         playerRef.current.playVideo()
       }
+      setIsPlaying(true)
     }
 
     document.addEventListener('pointerdown', handleFirstGesture, { capture: true })
@@ -126,12 +134,61 @@ export function BackgroundPlaylistPlayer({
     }
   }, [activePageId, pages])
 
+  function togglePlay() {
+    if (!playerRef.current) return
+    if (isPlaying) {
+      playerRef.current.pauseVideo()
+    } else {
+      playerRef.current.playVideo()
+    }
+  }
+
+  function toggleMute() {
+    if (!playerRef.current) return
+    if (isMuted) {
+      playerRef.current.unMute()
+    } else {
+      playerRef.current.mute()
+    }
+    setIsMuted(!isMuted)
+  }
+
   return (
-    <div
-      style={{ position: 'absolute', width: 1, height: 1, opacity: 0, pointerEvents: 'none' }}
-      aria-hidden
-    >
-      <div id={containerIdRef.current} />
-    </div>
+    <>
+      <div
+        style={{ position: 'absolute', width: 1, height: 1, opacity: 0, pointerEvents: 'none' }}
+        aria-hidden
+      >
+        <div id={containerIdRef.current} />
+      </div>
+
+      <div className="fixed bottom-4 right-4 z-30 flex flex-col items-end gap-2">
+        {expanded && (
+          <div className="flex items-center gap-2 rounded-full border border-border bg-card px-3 py-2 shadow-sm">
+            <button
+              onClick={togglePlay}
+              className="flex h-8 w-8 items-center justify-center rounded-full text-foreground hover:bg-foreground/5 cursor-pointer"
+              aria-label={isPlaying ? '暫停' : '播放'}
+            >
+              {isPlaying ? '⏸' : '▶'}
+            </button>
+            <button
+              onClick={toggleMute}
+              className="flex h-8 w-8 items-center justify-center rounded-full text-foreground hover:bg-foreground/5 cursor-pointer"
+              aria-label={isMuted ? '取消靜音' : '靜音'}
+            >
+              {isMuted ? '🔇' : '🔊'}
+            </button>
+          </div>
+        )}
+        <button
+          onClick={() => setExpanded((v) => !v)}
+          className="flex h-11 w-11 items-center justify-center rounded-full border border-border bg-card text-foreground shadow-sm hover:bg-foreground/5 cursor-pointer"
+          aria-label="背景音樂控制"
+        >
+          🎵
+        </button>
+      </div>
+    </>
   )
 }
