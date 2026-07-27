@@ -2,6 +2,11 @@ import mongoose, { Schema, type Document, type Model, type Types } from 'mongoos
 
 export type ShareStatus = 'private' | 'shared' | 'public'
 
+export interface IBackgroundPlaylist {
+  url: string
+  playlistId: string
+}
+
 export interface IBook extends Document {
   title: string
   description?: string
@@ -12,7 +17,16 @@ export interface IBook extends Document {
   pageOrder: Types.ObjectId[]
   shareStatus: ShareStatus
   tags: string[]
+  backgroundPlaylist?: IBackgroundPlaylist
 }
+
+const BackgroundPlaylistSchema = new Schema<IBackgroundPlaylist>(
+  {
+    url: { type: String, required: true },
+    playlistId: { type: String, required: true },
+  },
+  { _id: false }
+)
 
 const BookSchema = new Schema<IBook>(
   {
@@ -29,6 +43,7 @@ const BookSchema = new Schema<IBook>(
       default: 'private',
     },
     tags: { type: [String], default: [] },
+    backgroundPlaylist: { type: BackgroundPlaylistSchema, default: undefined },
   },
   { timestamps: true }
 )
