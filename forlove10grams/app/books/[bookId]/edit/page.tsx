@@ -11,6 +11,7 @@ import { BookEditorClient, type PageData } from '@/components/book-editor-client
 import { ShareStatusProvider } from '@/lib/contexts/share-status-context'
 import { ShareLinkManager } from '@/components/share-link-manager'
 import { ReaderList } from '@/components/reader-list'
+import { BackgroundPlaylistManager } from '@/components/background-playlist-manager'
 import { isQuickCaptureMode, type QuickCaptureMode } from '@/lib/quick-capture'
 
 export default async function EditBookPage({
@@ -94,6 +95,16 @@ export default async function EditBookPage({
         {(isOwner || isEditor) && <ShareLinkManager bookId={bookId} />}
         {(isOwner || isEditor) && (
           <ReaderList bookId={bookId} shareStatus={book.shareStatus} />
+        )}
+        {(isOwner || isEditor) && (
+          <BackgroundPlaylistManager
+            bookId={bookId}
+            initialPlaylist={
+              book.backgroundPlaylist
+                ? { url: book.backgroundPlaylist.url, playlistId: book.backgroundPlaylist.playlistId }
+                : null
+            }
+          />
         )}
       </section>
     </main>
