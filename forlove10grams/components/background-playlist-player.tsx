@@ -101,6 +101,7 @@ export function BackgroundPlaylistPlayer({
     function handleFirstGesture() {
       if (startedRef.current || !readyRef.current || !playerRef.current) return
       startedRef.current = true
+      document.removeEventListener('pointerdown', handleFirstGesture, { capture: true })
 
       const page = pagesRef.current.find((p) => p._id === activePageIdRef.current)
       if (page?.playlistTrackIndex != null) {
@@ -111,7 +112,7 @@ export function BackgroundPlaylistPlayer({
       }
     }
 
-    document.addEventListener('pointerdown', handleFirstGesture, { capture: true, once: true })
+    document.addEventListener('pointerdown', handleFirstGesture, { capture: true })
     return () => document.removeEventListener('pointerdown', handleFirstGesture, { capture: true })
   }, [])
 
