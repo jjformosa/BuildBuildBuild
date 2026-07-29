@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { MusicToggleButton } from '@/components/music-toggle-button'
 
 export type TocPage = {
   _id: string
@@ -16,9 +17,15 @@ type Props = {
   onJumpTo?: (pageId: string) => Promise<void>
   mobileOpen?: boolean
   onMobileOpenChange?: (open: boolean) => void
+  isPlaylistPlaying?: boolean
+  isPlaylistReady?: boolean
+  onTogglePlaylist?: () => void
 }
 
-export function Toc({ pages, readPageIds, activePageId, onJumpTo, mobileOpen: externalOpen, onMobileOpenChange }: Props) {
+export function Toc({
+  pages, readPageIds, activePageId, onJumpTo, mobileOpen: externalOpen, onMobileOpenChange,
+  isPlaylistPlaying, isPlaylistReady, onTogglePlaylist,
+}: Props) {
   const [internalOpen, setInternalOpen] = useState(false)
   const [jumpingTo, setJumpingTo] = useState<string | null>(null)
   const readSet = new Set(readPageIds)
@@ -120,13 +127,23 @@ export function Toc({ pages, readPageIds, activePageId, onJumpTo, mobileOpen: ex
     <>
       {/* Desktop sidebar */}
       <aside className="hidden md:flex w-56 flex-none flex-col border-r border-border">
-        <div className="flex-none border-b border-border px-4 py-3">
-          <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-            目錄
-          </span>
-          <span className="ml-2 text-xs text-muted-foreground/70">
-            {readPageIds.length}/{pages.length}
-          </span>
+        <div className="flex flex-none items-center justify-between border-b border-border px-4 py-2">
+          <div>
+            <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+              目錄
+            </span>
+            <span className="ml-2 text-xs text-muted-foreground/70">
+              {readPageIds.length}/{pages.length}
+            </span>
+          </div>
+          {onTogglePlaylist && (
+            <MusicToggleButton
+              isPlaying={Boolean(isPlaylistPlaying)}
+              onClick={onTogglePlaylist}
+              disabled={!isPlaylistReady}
+              size="sm"
+            />
+          )}
         </div>
         <div className="flex-1 overflow-y-auto py-2 px-1">{buildPageList(true)}</div>
       </aside>

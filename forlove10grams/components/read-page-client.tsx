@@ -14,7 +14,8 @@ import { useInfiniteScroll } from '@/hooks/use-infinite-scroll'
 import { useActivePage } from '@/hooks/use-active-page'
 import { resolveSlots } from '@/lib/resolve-slots'
 import { BookCloseEnding } from '@/components/book-close-ending'
-import { BackgroundPlaylistPlayer } from '@/components/background-playlist-player'
+import { MusicToggleButton } from '@/components/music-toggle-button'
+import { useBackgroundPlaylist } from '@/hooks/use-background-playlist'
 
 const ReactMarkdown = dynamic(() => import('react-markdown'), {
   ssr: false,
@@ -108,6 +109,25 @@ export function ReadPageClient({
   const readPageIds = useReadProgress(bookId, pageIds)
   const activePageId = useActivePage(scrollContainerRef, pageIds)
 
+  // ── Background playlist ───────────────────────────────────────────────────────
+  const playlistPages = useMemo(
+    () => pages.map((p) => ({ _id: p._id, playlistTrackIndex: p.playlistTrackIndex ?? null })),
+    [pages]
+  )
+  const playlist = useBackgroundPlaylist({
+    playlistId: backgroundPlaylist?.playlistId ?? null,
+    activePageId,
+    pages: playlistPages,
+  })
+  const [showPlaylistIntro, setShowPlaylistIntro] = useState(() => Boolean(backgroundPlaylist))
+  function handlePlaylistIntroPlay() {
+    setShowPlaylistIntro(false)
+    playlist.play()
+  }
+  function handlePlaylistIntroSkip() {
+    setShowPlaylistIntro(false)
+  }
+
   const [seenIds, setSeenIds] = useState<Set<string>>(new Set())
   const markSeen = useCallback((id: string) => {
     setSeenIds(prev => {
@@ -195,11 +215,12 @@ export function ReadPageClient({
   return (
     <div className="flex h-dvh bg-background">
       {backgroundPlaylist && (
-        <BackgroundPlaylistPlayer
-          playlistId={backgroundPlaylist.playlistId}
-          activePageId={activePageId}
-          pages={pages.map((p) => ({ _id: p._id, playlistTrackIndex: p.playlistTrackIndex ?? null }))}
-        />
+        <div
+          style={{ position: 'fixed', left: -9999, top: -9999, width: 300, height: 300, pointerEvents: 'none' }}
+          aria-hidden
+        >
+          <div id={playlist.containerId} />
+        </div>
       )}
       <Toc
         pages={tocPages}
@@ -208,6 +229,9 @@ export function ReadPageClient({
         onJumpTo={handleJumpTo}
         mobileOpen={mobileOpen}
         onMobileOpenChange={setMobileOpen}
+        isPlaylistPlaying={playlist.isPlaying}
+        isPlaylistReady={playlist.isReady}
+        onTogglePlaylist={backgroundPlaylist ? playlist.toggle : undefined}
       />
 
       <main ref={scrollContainerRef} id="read-scroll-container" className="flex-1 overflow-y-auto">
@@ -241,14 +265,23 @@ export function ReadPageClient({
               {bookTitle}
             </p>
 
-            {/* Right: exit/logout button */}
-            <button
-              onClick={() => setShowExitConfirm(true)}
-              className="ml-auto flex h-11 w-11 items-center justify-center text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
-              aria-label="離開並登出"
-            >
-              <LogOutIcon />
-            </button>
+            {/* Right: background music toggle + exit/logout button */}
+            <div className="ml-auto flex items-center">
+              {backgroundPlaylist && (
+                <MusicToggleButton
+                  isPlaying={playlist.isPlaying}
+                  onClick={playlist.toggle}
+                  disabled={!playlist.isReady}
+                />
+              )}
+              <button
+                onClick={() => setShowExitConfirm(true)}
+                className="flex h-11 w-11 items-center justify-center text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+                aria-label="離開並登出"
+              >
+                <LogOutIcon />
+              </button>
+            </div>
           </div>
         </div>
 
@@ -331,6 +364,47 @@ export function ReadPageClient({
           )}
         </div>
       </main>
+
+      {/* ── Background playlist intro bottom sheet ───────────────────────────── */}
+      {backgroundPlaylist && showPlaylistIntro && (
+        <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center bg-black/40">
+          <div className="w-full max-w-sm rounded-t-2xl sm:rounded-2xl bg-card border border-border p-6 shadow-xl">
+            <div className="mx-auto mb-4 h-1 w-10 rounded-full bg-border sm:hidden" aria-hidden />
+            <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                <path d="M9 18V5l12-2v13" />
+                <circle cx="6" cy="18" r="3" />
+                <circle cx="18" cy="16" r="3" />
+              </svg>
+            </div>
+            <p className="text-base font-semibold text-foreground">這本書設定了背景音樂</p>
+            <p className="mt-1 mb-6 text-sm text-muted-foreground">
+              點「開始播放」即可解鎖自動播放，播放前請留意目前的音量。
+            </p>
+            <div className="flex flex-col gap-2">
+              <button
+                onClick={handlePlaylistIntroPlay}
+                disabled={!playlist.isReady}
+                className="flex w-full items-center justify-center gap-2 rounded-lg bg-primary py-2.5 text-sm font-medium text-primary-foreground shadow-sm hover:bg-primary/90 transition-all duration-150 active:scale-[0.97] cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-60 disabled:active:scale-100"
+              >
+                {!playlist.isReady && (
+                  <span
+                    className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-current border-t-transparent"
+                    aria-hidden
+                  />
+                )}
+                {playlist.isReady ? '開始播放' : '準備中…'}
+              </button>
+              <button
+                onClick={handlePlaylistIntroSkip}
+                className="w-full py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+              >
+                先不用，稍後再開
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* ── Exit confirmation bottom sheet ───────────────────────────────────── */}
       {showExitConfirm && (
