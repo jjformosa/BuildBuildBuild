@@ -7,6 +7,7 @@
   },
   "scripts": {
     "dev": "next dev",
+    "dev:https": "concurrently -k -n next,ssl-proxy -c blue,magenta \"next dev\" \"local-ssl-proxy --source 9000 --target 3000 --cert cert/localhost.pem --key cert/localhost-key.pem\"",
     "build": "next build",
     "start": "next start",
     "lint": "eslint"
@@ -48,8 +49,10 @@
     "@types/node": "^22",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "concurrently": "^9.1.0",
     "eslint": "^9",
     "eslint-config-next": "16.2.6",
+    "local-ssl-proxy": "^2.0.5",
     "tailwindcss": "^4",
     "typescript": "^5"
   }
