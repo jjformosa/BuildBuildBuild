@@ -51,7 +51,6 @@ export function PolaroidCarousel({ urls }: Props) {
   const touchRef   = useRef({ x: 0, y: 0 })
   const initialised = useRef(false)
 
-  const [displayIdx, setDisplayIdx] = useState(0)
   const [lbOpen,     setLbOpen]     = useState(false)
   const [lbIndex,    setLbIndex]    = useState(0)
 
@@ -81,8 +80,6 @@ export function PolaroidCarousel({ urls }: Props) {
 
     const cur     = curRef.current
     const nextCur = (cur + dir + n) % n
-
-    setDisplayIdx(nextCur) // update counter immediately
 
     tlRef.current?.kill()
     const tl = gsap.timeline({
@@ -173,11 +170,21 @@ export function PolaroidCarousel({ urls }: Props) {
 
   return (
     <>
-      <div className="flex flex-col items-center gap-6 py-4">
+      <div className="flex w-full items-center justify-center gap-3 py-4 sm:gap-4">
+        <button
+          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-foreground/10 bg-card/70 text-muted-foreground transition-colors hover:bg-card hover:text-foreground"
+          style={{ backdropFilter: 'blur(4px)' }}
+          onClick={() => shuffle(-1)}
+          aria-label="上一張"
+        >
+          <svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+            <path d="M10 2.5L5 7.5L10 12.5" />
+          </svg>
+        </button>
 
         {/* Stack area */}
         <div
-          className="relative select-none"
+          className="relative shrink-0 select-none"
           style={{ width: WRAP_W, height: WRAP_H }}
           onTouchStart={handleTouchStart}
           onTouchEnd={handleTouchEnd}
@@ -251,39 +258,16 @@ export function PolaroidCarousel({ urls }: Props) {
           ))}
         </div>
 
-        {/* Navigation row — only when there's more than one image */}
-        {n > 1 && (
-          <div className="flex items-center gap-5">
-            <button
-              className="w-10 h-10 rounded-full flex items-center justify-center border border-foreground/10 bg-card/70 text-muted-foreground hover:bg-card hover:text-foreground transition-colors"
-              style={{ backdropFilter: 'blur(4px)' }}
-              onClick={() => shuffle(-1)}
-              aria-label="上一張"
-            >
-              <svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                <path d="M10 2.5L5 7.5L10 12.5" />
-              </svg>
-            </button>
-
-            <span
-              className="min-w-[44px] text-center"
-              style={{ fontFamily: 'Georgia, serif', fontStyle: 'italic', fontSize: 14, color: 'var(--muted-foreground)' }}
-            >
-              {displayIdx + 1} / {n}
-            </span>
-
-            <button
-              className="w-10 h-10 rounded-full flex items-center justify-center border border-foreground/10 bg-card/70 text-muted-foreground hover:bg-card hover:text-foreground transition-colors"
-              style={{ backdropFilter: 'blur(4px)' }}
-              onClick={() => shuffle(1)}
-              aria-label="下一張"
-            >
-              <svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                <path d="M5 2.5L10 7.5L5 12.5" />
-              </svg>
-            </button>
-          </div>
-        )}
+        <button
+          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-foreground/10 bg-card/70 text-muted-foreground transition-colors hover:bg-card hover:text-foreground"
+          style={{ backdropFilter: 'blur(4px)' }}
+          onClick={() => shuffle(1)}
+          aria-label="下一張"
+        >
+          <svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+            <path d="M5 2.5L10 7.5L5 12.5" />
+          </svg>
+        </button>
 
       </div>
 

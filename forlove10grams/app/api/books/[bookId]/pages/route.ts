@@ -45,6 +45,7 @@ export async function GET(
       transcodingStatus: p!.transcodingStatus ?? null,
       durationSec: p!.durationSec ?? null,
       transcriptionStatus: p!.transcriptionStatus ?? null,
+      playlistTrackIndex: p!.playlistTrackIndex ?? null,
     }))
 
   return Response.json(sorted)

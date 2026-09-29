@@ -11,6 +11,7 @@ export interface IPage extends Document {
   happenedAt?: Date
   durationSec?: number
   transcriptionStatus?: 'pending' | 'done' | 'error'
+  playlistTrackIndex?: number
 }
 
 const PageSchema = new Schema<IPage>(
@@ -29,6 +30,7 @@ const PageSchema = new Schema<IPage>(
       type: String,
       enum: ['pending', 'done', 'error'],
     },
+    playlistTrackIndex: { type: Number, min: 0 },
   },
   { timestamps: true }
 )

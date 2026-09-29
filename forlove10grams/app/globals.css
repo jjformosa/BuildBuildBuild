@@ -2,6 +2,7 @@
 
 @theme inline {
   --animate-fade-up: fade-up 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+  --animate-heartbeat: heartbeat 1.15s ease-in-out infinite;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -111,6 +112,14 @@
 @keyframes fade-up {
   from { opacity: 0; transform: translateY(18px); }
   to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes heartbeat {
+  0%, 100% { transform: scale(1); }
+  22% { transform: scale(1.16); }
+  40% { transform: scale(1); }
+  55% { transform: scale(1.09); }
+  72% { transform: scale(1); }
 }
 
 @keyframes ripple-expand {
